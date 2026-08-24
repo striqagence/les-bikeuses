@@ -162,6 +162,10 @@ export interface Page {
   title: string;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    /**
+     * Ex. « Équipement moto femme · sélection 2026 ». Affiché en mono, en orange.
+     */
+    eyebrow?: string | null;
     richText?: {
       root: {
         type: string;
@@ -201,9 +205,50 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Visuel principal du héros.
+     */
     media?: (number | null) | Media;
+    /**
+     * Deux visuels au format portrait, sous le visuel principal.
+     */
+    mediaSecondary?:
+      | {
+          image: number | Media;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Ex. « 340+ » / « Pièces testées ». Affichées sous les boutons.
+     */
+    stats?:
+      | {
+          value: string;
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Bande sombre défilante sous le héros. Laisser vide pour la masquer.
+     */
+    marquee?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (
+    | ParcoursBlock
+    | IndexCategoriesBlock
+    | DebuterBlock
+    | JournalBlock
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -440,6 +485,176 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ParcoursBlock".
+ */
+export interface ParcoursBlock {
+  eyebrow?: string | null;
+  title: string;
+  /**
+   * Court texte affiché à droite du titre.
+   */
+  intro?: string | null;
+  /**
+   * Chaque entrée est repérée automatiquement par une lettre (A, B, C…).
+   */
+  entrees?:
+    | {
+        title: string;
+        text?: string | null;
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'parcours';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndexCategoriesBlock".
+ */
+export interface IndexCategoriesBlock {
+  eyebrow?: string | null;
+  title: string;
+  /**
+   * Affichés sur deux colonnes, dans cet ordre.
+   */
+  items?:
+    | {
+        label: string;
+        /**
+         * Ex. « 84 réf. ». Affichée en mono, alignée à droite.
+         */
+        meta?: string | null;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'indexCategories';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DebuterBlock".
+ */
+export interface DebuterBlock {
+  eyebrow?: string | null;
+  title: string;
+  /**
+   * Affichée en italique orange, à la suite du titre.
+   */
+  titleAccent?: string | null;
+  intro?: string | null;
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Numérotées automatiquement (01, 02, 03…) dans cet ordre.
+   */
+  etapes?:
+    | {
+        title: string;
+        text?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'debuter';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "JournalBlock".
+ */
+export interface JournalBlock {
+  eyebrow?: string | null;
+  title: string;
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  populateBy?: ('collection' | 'selection') | null;
+  categories?: (number | Category)[] | null;
+  /**
+   * Le premier est mis à la une, les suivants passent en brèves.
+   */
+  limit?: number | null;
+  /**
+   * Le premier est mis à la une, les suivants passent en brèves.
+   */
+  selectedDocs?:
+    | {
+        relationTo: 'posts';
+        value: number | Post;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'journal';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1107,6 +1322,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         type?: T;
+        eyebrow?: T;
         richText?: T;
         links?:
           | T
@@ -1124,10 +1340,33 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        mediaSecondary?:
+          | T
+          | {
+              image?: T;
+              id?: T;
+            };
+        stats?:
+          | T
+          | {
+              value?: T;
+              label?: T;
+              id?: T;
+            };
+        marquee?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
       };
   layout?:
     | T
     | {
+        parcours?: T | ParcoursBlockSelect<T>;
+        indexCategories?: T | IndexCategoriesBlockSelect<T>;
+        debuter?: T | DebuterBlockSelect<T>;
+        journal?: T | JournalBlockSelect<T>;
         cta?: T | CallToActionBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
         mediaBlock?: T | MediaBlockSelect<T>;
@@ -1147,6 +1386,119 @@ export interface PagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ParcoursBlock_select".
+ */
+export interface ParcoursBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  intro?: T;
+  entrees?:
+    | T
+    | {
+        title?: T;
+        text?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndexCategoriesBlock_select".
+ */
+export interface IndexCategoriesBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  items?:
+    | T
+    | {
+        label?: T;
+        meta?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DebuterBlock_select".
+ */
+export interface DebuterBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  titleAccent?: T;
+  intro?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  etapes?:
+    | T
+    | {
+        title?: T;
+        text?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "JournalBlock_select".
+ */
+export interface JournalBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  populateBy?: T;
+  categories?: T;
+  limit?: T;
+  selectedDocs?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

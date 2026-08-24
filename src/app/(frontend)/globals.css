@@ -50,7 +50,7 @@
   --breakpoint-lg: 64rem;
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 86rem;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: var(--font-dm-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display: var(--font-fraunces), Georgia, 'Times New Roman', serif;
 }
@@ -95,42 +95,49 @@
 }
 
 :root {
-  /* Les Bikeuses — palette claire (base chic + magenta signature) */
-  --background: #fbf9fb; /* papier */
-  --foreground: #17141b; /* encre */
+  /* Les Bikeuses — DA « fiche d'équipement »
+     Neutres froids (asphalte) + orange en unique source de chaleur.
+     Volontairement pas de papier crème : l'orange doit être seul à réchauffer. */
+  --background: #f7f6f4; /* papier */
+  --foreground: #16151a; /* encre asphalte */
   --card: #ffffff;
-  --card-foreground: #17141b;
+  --card-foreground: #16151a;
   --popover: #ffffff;
-  --popover-foreground: #17141b;
-  --primary: #e01b69; /* magenta signature */
+  --popover-foreground: #16151a;
+  --primary: #c43d10; /* orange brûlé — 5.2:1 sur papier, sûr pour le petit texte */
   --primary-foreground: #ffffff;
-  --secondary: #f3eef4; /* papier foncé */
-  --secondary-foreground: #17141b;
-  --muted: #f3eef4;
-  --muted-foreground: #6e6577; /* taupe */
-  --accent: #f7e8f0; /* blush */
-  --accent-foreground: #b01353; /* magenta foncé */
+  --secondary: #edebe7; /* papier foncé */
+  --secondary-foreground: #16151a;
+  --muted: #edebe7;
+  --muted-foreground: #6b6862; /* taupe */
+  --accent: #fcefe6; /* pêche pâle */
+  --accent-foreground: #9c300b; /* orange foncé */
   --destructive: #d92d20;
   --destructive-foreground: #ffffff;
-  --border: #eae3ec; /* trait */
-  --input: #eae3ec;
-  --ring: #e01b69; /* focus magenta */
-  --brand: #e01b69;
+  --border: #e3e0da; /* trait */
+  --input: #e3e0da;
+  --ring: #c43d10; /* focus orange */
+  --brand: #c43d10;
   --brand-foreground: #ffffff;
+  --brand-bright: #ee5b16; /* orange vif — aplats et fonds sombres uniquement */
+  --bitume: #1b1a1f; /* fond des bandes sombres */
+  --sur-bitume: #f2f0ec;
+  --taupe-nuit: #a09b93; /* texte secondaire sur bitume */
+  --trait-nuit: #332f2a; /* filets sur bitume */
   --chart-1: oklch(64.6% 0.222 41.116deg);
   --chart-2: oklch(60% 0.118 184.704deg);
   --chart-3: oklch(39.8% 0.07 227.392deg);
   --chart-4: oklch(82.8% 0.189 84.429deg);
   --chart-5: oklch(76.9% 0.188 70.08deg);
-  --radius: 0.625rem;
+  --radius: 0rem; /* angles vifs — parti pris de la DA */
   --sidebar: #ffffff;
-  --sidebar-foreground: #17141b;
-  --sidebar-primary: #e01b69;
+  --sidebar-foreground: #16151a;
+  --sidebar-primary: #c43d10;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f7e8f0;
-  --sidebar-accent-foreground: #b01353;
-  --sidebar-border: #eae3ec;
-  --sidebar-ring: #e01b69;
+  --sidebar-accent: #fcefe6;
+  --sidebar-accent-foreground: #9c300b;
+  --sidebar-border: #e3e0da;
+  --sidebar-ring: #c43d10;
   --success: oklch(78% 0.08 200deg);
   --warning: oklch(89% 0.1 75deg);
   --error: oklch(75% 0.15 25deg);
@@ -138,40 +145,45 @@
 
 [data-theme='dark'] {
   /* Les Bikeuses — palette sombre */
-  --background: #120f16;
-  --foreground: #f3edf4;
-  --card: #1a151f;
-  --card-foreground: #f3edf4;
-  --popover: #120f16;
-  --popover-foreground: #f3edf4;
-  --primary: #ff4d8b; /* magenta lumineux */
-  --primary-foreground: #1a0a12;
-  --secondary: #1f1926;
-  --secondary-foreground: #f3edf4;
-  --muted: #1f1926;
-  --muted-foreground: #a79dae;
-  --accent: #241a22; /* blush sombre */
-  --accent-foreground: #ff7aa8;
+  --background: #141317;
+  --foreground: #f2f0ec;
+  --card: #1b1a20;
+  --card-foreground: #f2f0ec;
+  --popover: #141317;
+  --popover-foreground: #f2f0ec;
+  --primary: #ff8a4c; /* orange lumineux */
+  --primary-foreground: #241007;
+  --secondary: #222127;
+  --secondary-foreground: #f2f0ec;
+  --muted: #222127;
+  --muted-foreground: #a29e97;
+  --accent: #2a1a11; /* pêche sombre */
+  --accent-foreground: #ff9e6b;
   --destructive: #e5484d;
   --destructive-foreground: #2a0a0a;
-  --border: #2a2430;
-  --input: #2a2430;
-  --ring: #ff4d8b;
-  --brand: #ff4d8b;
-  --brand-foreground: #1a0a12;
+  --border: #2e2c33;
+  --input: #2e2c33;
+  --ring: #ff8a4c;
+  --brand: #ff8a4c;
+  --brand-foreground: #241007;
+  --brand-bright: #ff9e6b;
+  --bitume: #0d0c10;
+  --sur-bitume: #f2f0ec;
+  --taupe-nuit: #a09b93;
+  --trait-nuit: #26231f;
   --chart-1: oklch(48.8% 0.243 264.376deg);
   --chart-2: oklch(69.6% 0.17 162.48deg);
   --chart-3: oklch(76.9% 0.188 70.08deg);
   --chart-4: oklch(62.7% 0.265 303.9deg);
   --chart-5: oklch(64.5% 0.246 16.439deg);
-  --sidebar: #1a151f;
-  --sidebar-foreground: #f3edf4;
-  --sidebar-primary: #ff4d8b;
-  --sidebar-primary-foreground: #1a0a12;
-  --sidebar-accent: #241a22;
-  --sidebar-accent-foreground: #ff7aa8;
-  --sidebar-border: #2a2430;
-  --sidebar-ring: #ff4d8b;
+  --sidebar: #1b1a20;
+  --sidebar-foreground: #f2f0ec;
+  --sidebar-primary: #ff8a4c;
+  --sidebar-primary-foreground: #241007;
+  --sidebar-accent: #2a1a11;
+  --sidebar-accent-foreground: #ff9e6b;
+  --sidebar-border: #2e2c33;
+  --sidebar-ring: #ff8a4c;
   --success: oklch(28% 0.1 200deg);
   --warning: oklch(35% 0.08 70deg);
   --error: oklch(45% 0.1 25deg);
@@ -188,6 +200,11 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
+  --color-brand-bright: var(--brand-bright);
+  --color-bitume: var(--bitume);
+  --color-sur-bitume: var(--sur-bitume);
+  --color-taupe-nuit: var(--taupe-nuit);
+  --color-trait-nuit: var(--trait-nuit);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -204,10 +221,10 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: var(--radius);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -226,7 +243,91 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground min-h-[100vh] flex flex-col;
+    @apply bg-background text-foreground font-sans min-h-[100vh] flex flex-col;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Primitives de la DA « fiche d'équipement »
+   Réutilisées telles quelles par les blocs — ne pas dupliquer en Tailwind.
+   ------------------------------------------------------------------ */
+/* Label technique : tout ce qui est donnée (CE, tailles, dates, réf.).
+   Déclaré en `@utility` et non en classe de composant, pour rester
+   applicable via `@apply` (cf. `.eyebrow`). */
+@utility mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+@layer components {
+  /* Sur-titre de section : filet court + label orange */
+  .eyebrow {
+    @apply mono-label text-primary flex items-center gap-[0.6rem];
+  }
+  .eyebrow::before {
+    content: '';
+    @apply block h-[2px] w-[22px] flex-none bg-current;
+  }
+
+  /* Fraunces avec l'axe WONK activé — réservé aux titres éditoriaux */
+  .wonk {
+    font-family: var(--font-display);
+    font-variation-settings:
+      'SOFT' 0,
+      'WONK' 1;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  /* Titre du héros High Impact — rendu depuis le rich text, donc stylé ici
+     plutôt qu'en variantes Tailwind arbitraires côté composant. */
+  .heros-titre h1 {
+    font-family: var(--font-display);
+    font-variation-settings:
+      'SOFT' 0,
+      'WONK' 1;
+    font-weight: 500;
+    font-size: clamp(2.6rem, 7vw, 4.75rem);
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    max-width: 13ch;
+    margin: 0;
+  }
+  .heros-titre em {
+    @apply text-primary;
+  }
+  .heros-titre p {
+    @apply mt-6 max-w-[42ch] text-muted-foreground;
+  }
+
+  /* Bandeau défilant sous le héros */
+  .bandeau-piste {
+    animation: defile 42s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bandeau-piste {
+      animation: none;
+    }
+  }
+
+  /* Filet « marquage au sol » — séparateur structurel entre sections */
+  .route {
+    @apply h-[2px] border-0 opacity-55;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--primary) 0 16px,
+      transparent 16px 30px
+    );
+  }
+}
+
+@keyframes defile {
+  to {
+    transform: translateX(-100%);
   }
 }
 

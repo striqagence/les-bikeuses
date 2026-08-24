@@ -1,12 +1,15 @@
 import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
-import { Fraunces, Manrope } from 'next/font/google'
+import { DM_Mono, Fraunces, Manrope } from 'next/font/google'
 import React from 'react'
 
-// Duo typographique Les Bikeuses : Fraunces (titres) × Manrope (texte / UI)
+// Trio typographique Les Bikeuses :
+// Fraunces (titres) × Manrope (texte / UI) × DM Mono (données techniques)
 const fraunces = Fraunces({
   subsets: ['latin'],
+  // SOFT et WONK portent le caractère éditorial des titres (cf. utilitaire `.wonk`)
+  axes: ['SOFT', 'WONK', 'opsz'],
   display: 'swap',
   variable: '--font-fraunces',
 })
@@ -14,6 +17,13 @@ const manrope = Manrope({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-manrope',
+})
+// Niveaux CE, matières, tailles, prix, références, dates.
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  display: 'swap',
+  variable: '--font-dm-mono',
 })
 
 import { AdminBar } from '@/components/AdminBar'
@@ -31,7 +41,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { isEnabled } = await draftMode()
 
   return (
-    <html className={cn(fraunces.variable, manrope.variable)} lang="fr" suppressHydrationWarning>
+    <html
+      className={cn(fraunces.variable, manrope.variable, dmMono.variable)}
+      lang="fr"
+      suppressHydrationWarning
+    >
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
