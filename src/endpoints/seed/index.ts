@@ -22,7 +22,15 @@ const collections: CollectionSlug[] = [
 
 const globals: GlobalSlug[] = ['header', 'footer']
 
-const categories = ['Technology', 'News', 'Finance', 'Design', 'Software', 'Engineering']
+// Catégories du blog Les Bikeuses. Le slug est explicite : « permis moto »
+// dérivé automatiquement donnerait un slug avec une espace.
+const categories = [
+  { title: 'Équipement', slug: 'equipement' },
+  { title: 'Technique', slug: 'technique' },
+  { title: 'Permis moto', slug: 'permis-moto' },
+  { title: 'Style', slug: 'style' },
+  { title: 'Divers', slug: 'divers' },
+]
 
 // Next.js revalidation errors are normal when seeding the database without a server running
 // i.e. running `yarn seed` locally instead of using the admin UI within an active app
@@ -130,10 +138,7 @@ export const seed = async ({
     categories.map((category) =>
       payload.create({
         collection: 'categories',
-        data: {
-          title: category,
-          slug: category,
-        },
+        data: category,
       }),
     ),
   ])
@@ -206,7 +211,12 @@ export const seed = async ({
     payload.create({
       collection: 'pages',
       depth: 0,
-      data: home({ heroImage: imageHomeDoc, metaImage: image2Doc }),
+      data: home({
+        heroImage: imageHomeDoc,
+        metaImage: image2Doc,
+        gantsImage: image1Doc,
+        casqueImage: image3Doc,
+      }),
     }),
     payload.create({
       collection: 'pages',
@@ -225,7 +235,28 @@ export const seed = async ({
           {
             link: {
               type: 'custom',
-              label: 'Posts',
+              label: 'Équipements',
+              url: '/posts',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Accessoires',
+              url: '/posts',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Vêtements',
+              url: '/posts',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Blog',
               url: '/posts',
             },
           },
@@ -249,24 +280,29 @@ export const seed = async ({
           {
             link: {
               type: 'custom',
+              label: 'Qui sommes-nous',
+              url: '/posts',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Politique de retour',
+              url: '/posts',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Mentions légales',
+              url: '/posts',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
               label: 'Admin',
               url: '/admin',
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Source Code',
-              newTab: true,
-              url: 'https://github.com/payloadcms/payload/tree/3.x/templates/website',
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Payload',
-              newTab: true,
-              url: 'https://payloadcms.com/',
             },
           },
         ],

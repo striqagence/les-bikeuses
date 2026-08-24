@@ -4,36 +4,28 @@ import type { Media } from '@/payload-types'
 type HomeArgs = {
   heroImage: Media
   metaImage: Media
+  gantsImage: Media
+  casqueImage: Media
 }
 
+// Page d'accueil Les Bikeuses, montée sur la DA « fiche d'équipement ».
+// Ordre des sections : héros → parcours → index du catalogue → débuter la moto
+// → journal. Le contenu est éditable dans l'admin une fois le seed passé.
 export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> = ({
   heroImage,
   metaImage,
+  gantsImage,
+  casqueImage,
 }) => {
   return {
     slug: 'home',
     _status: 'published',
+    title: 'Accueil',
     hero: {
       type: 'highImpact',
-      links: [
-        {
-          link: {
-            type: 'custom',
-            appearance: 'default',
-            label: 'All posts',
-            url: '/posts',
-          },
-        },
-        {
-          link: {
-            type: 'custom',
-            appearance: 'outline',
-            label: 'Contact',
-            url: '/contact',
-          },
-        },
-      ],
+      eyebrow: 'Équipement moto femme · sélection 2026',
       media: heroImage.id,
+      mediaSecondary: [{ image: gantsImage.id }, { image: casqueImage.id }],
       richText: {
         root: {
           type: 'root',
@@ -47,7 +39,17 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                   format: 0,
                   mode: 'normal',
                   style: '',
-                  text: 'Payload Website Template',
+                  text: 'Le style ne se négocie pas. ',
+                  version: 1,
+                },
+                {
+                  // format: 2 = italique → rendu <em>, donc en orange (cf. .heros-titre em)
+                  type: 'text',
+                  detail: 0,
+                  format: 2,
+                  mode: 'normal',
+                  style: '',
+                  text: 'La protection non plus.',
                   version: 1,
                 },
               ],
@@ -61,67 +63,12 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
               type: 'paragraph',
               children: [
                 {
-                  type: 'link',
-                  children: [
-                    {
-                      type: 'text',
-                      detail: 0,
-                      format: 0,
-                      mode: 'normal',
-                      style: '',
-                      text: 'Visit the admin dashboard',
-                      version: 1,
-                    },
-                  ],
-                  direction: 'ltr',
-                  fields: {
-                    linkType: 'custom',
-                    newTab: false,
-                    url: '/admin',
-                  },
-                  format: '',
-                  indent: 0,
-                  version: 3,
-                },
-                {
                   type: 'text',
                   detail: 0,
                   format: 0,
                   mode: 'normal',
                   style: '',
-                  text: " to begin managing this site's content. The code for this template is completely open-source and can be found ",
-                  version: 1,
-                },
-                {
-                  type: 'link',
-                  children: [
-                    {
-                      type: 'text',
-                      detail: 0,
-                      format: 0,
-                      mode: 'normal',
-                      style: '',
-                      text: 'on our Github',
-                      version: 1,
-                    },
-                  ],
-                  direction: 'ltr',
-                  fields: {
-                    linkType: 'custom',
-                    newTab: true,
-                    url: 'https://github.com/payloadcms/payload/tree/3.x/templates/website',
-                  },
-                  format: '',
-                  indent: 0,
-                  version: 3,
-                },
-                {
-                  type: 'text',
-                  detail: 0,
-                  format: 0,
-                  mode: 'normal',
-                  style: '',
-                  text: '. ',
+                  text: 'Blousons, gants, bottes et casques choisis un par un pour les morphologies féminines — homologation vérifiée, coupe vérifiée, avis de motardes à l’appui.',
                   version: 1,
                 },
               ],
@@ -138,538 +85,145 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
           version: 1,
         },
       },
+      links: [
+        {
+          link: {
+            type: 'custom',
+            appearance: 'default',
+            label: 'Voir la sélection',
+            url: '/posts',
+          },
+        },
+        {
+          link: {
+            type: 'custom',
+            appearance: 'outline',
+            label: 'Je débute la moto',
+            url: '/posts',
+          },
+        },
+      ],
+      stats: [
+        { value: '340+', label: 'Pièces testées' },
+        { value: '100 %', label: 'Homologué CE' },
+        { value: 'XS–4XL', label: 'Guide morpho' },
+      ],
+      marquee: [
+        { text: 'Homologation CE vérifiée' },
+        { text: 'Guide des tailles morpho' },
+        { text: 'Testé par des motardes' },
+        { text: 'Coques épaules & coudes incluses' },
+        { text: 'Livraison 48 h' },
+        { text: 'Retour gratuit 30 jours' },
+      ],
     },
     layout: [
       {
-        blockName: 'Content Block',
-        blockType: 'content',
-        columns: [
+        blockType: 'parcours',
+        eyebrow: 'Par où commencer',
+        title: 'Trois entrées, selon là où vous en êtes',
+        intro:
+          'Plutôt qu’un catalogue à parcourir, on vous emmène directement vers ce qui correspond à votre situation.',
+        entrees: [
           {
-            richText: {
-              root: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'heading',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Core features',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    tag: 'h2',
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                version: 1,
-              },
-            },
-            size: 'full',
+            title: 'Je passe mon permis',
+            text: 'Le kit minimum obligatoire, ce qu’il faut acheter tout de suite et ce qui peut attendre. Budget de départ : 400 à 600 €.',
+            link: { type: 'custom', label: 'L’équipement de base', url: '/posts' },
           },
           {
-            enableLink: false,
-            richText: {
-              root: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'heading',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Admin Dashboard',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    tag: 'h3',
-                    version: 1,
-                  },
-                  {
-                    type: 'paragraph',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: "Manage this site's pages and posts from the ",
-                        version: 1,
-                      },
-                      {
-                        type: 'link',
-                        children: [
-                          {
-                            type: 'text',
-                            detail: 0,
-                            format: 0,
-                            mode: 'normal',
-                            style: '',
-                            text: 'admin dashboard',
-                            version: 1,
-                          },
-                        ],
-                        direction: 'ltr',
-                        fields: {
-                          linkType: 'custom',
-                          newTab: false,
-                          url: '/admin',
-                        },
-                        format: '',
-                        indent: 0,
-                        version: 2,
-                      },
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: '.',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    textFormat: 0,
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                version: 1,
-              },
-            },
-            size: 'oneThird',
+            title: 'J’équipe ma saison',
+            text: 'Été ventilé, mi-saison, hiver étanche : la bonne pièce pour les kilomètres que vous faites vraiment.',
+            link: { type: 'custom', label: 'Choisir par saison', url: '/posts' },
           },
           {
-            enableLink: false,
-            richText: {
-              root: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'heading',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Preview',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    tag: 'h3',
-                    version: 1,
-                  },
-                  {
-                    type: 'paragraph',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Using versions, drafts, and preview, editors can review and share their changes before publishing them.',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    textFormat: 0,
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                version: 1,
-              },
-            },
-            size: 'oneThird',
-          },
-          {
-            enableLink: false,
-            richText: {
-              root: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'heading',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Page Builder',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    tag: 'h3',
-                    version: 1,
-                  },
-                  {
-                    type: 'paragraph',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Custom page builder allows you to create unique page, post, and project layouts for any type of content.',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    textFormat: 0,
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                version: 1,
-              },
-            },
-            size: 'oneThird',
-          },
-          {
-            enableLink: false,
-            richText: {
-              root: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'heading',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'SEO',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    tag: 'h3',
-                    version: 1,
-                  },
-                  {
-                    type: 'paragraph',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Editors have complete control over SEO data and site content directly from the ',
-                        version: 1,
-                      },
-                      {
-                        type: 'link',
-                        children: [
-                          {
-                            type: 'text',
-                            detail: 0,
-                            format: 0,
-                            mode: 'normal',
-                            style: '',
-                            text: 'admin dashboard',
-                            version: 1,
-                          },
-                        ],
-                        direction: 'ltr',
-                        fields: {
-                          linkType: 'custom',
-                          newTab: false,
-                          url: '/admin',
-                        },
-                        format: '',
-                        indent: 0,
-                        version: 2,
-                      },
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: '.',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    textFormat: 0,
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                version: 1,
-              },
-            },
-            size: 'oneThird',
-          },
-          {
-            enableLink: false,
-            richText: {
-              root: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'heading',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Dark Mode',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    tag: 'h3',
-                    version: 1,
-                  },
-                  {
-                    type: 'paragraph',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Users will experience this site in their preferred color scheme and each block can be inverted.',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    textFormat: 0,
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                version: 1,
-              },
-            },
-            size: 'oneThird',
+            title: 'Je cherche ma taille',
+            text: 'Poitrine, hanches, longueur de bras : le guide morpho pour arrêter de commander en trois tailles à la fois.',
+            link: { type: 'custom', label: 'Le guide morpho', url: '/posts' },
           },
         ],
       },
       {
-        blockName: 'Media Block',
-        blockType: 'mediaBlock',
-        media: metaImage.id,
-      },
-      {
-        blockName: 'Archive Block',
-        blockType: 'archive',
-        categories: [],
-        introContent: {
-          root: {
-            type: 'root',
-            children: [
-              {
-                type: 'heading',
-                children: [
-                  {
-                    type: 'text',
-                    detail: 0,
-                    format: 0,
-                    mode: 'normal',
-                    style: '',
-                    text: 'Recent posts',
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                tag: 'h3',
-                version: 1,
-              },
-              {
-                type: 'paragraph',
-                children: [
-                  {
-                    type: 'text',
-                    detail: 0,
-                    format: 0,
-                    mode: 'normal',
-                    style: '',
-                    text: 'The posts below are displayed in an "Archive" layout building block which is an extremely powerful way to display documents on a page. It can be auto-populated by collection or by category, or posts can be individually selected. Pagination controls will automatically appear if the number of results exceeds the number of items per page.',
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                textFormat: 0,
-                version: 1,
-              },
-            ],
-            direction: 'ltr',
-            format: '',
-            indent: 0,
-            version: 1,
+        blockType: 'indexCategories',
+        eyebrow: 'L’index',
+        title: 'Tout le catalogue, rayon par rayon',
+        items: [
+          { label: 'Blousons moto', meta: '84 réf.', link: { type: 'custom', url: '/posts' } },
+          { label: 'Casques', meta: '61 réf.', link: { type: 'custom', url: '/posts' } },
+          { label: 'Gants', meta: '57 réf.', link: { type: 'custom', url: '/posts' } },
+          { label: 'Pantalons & jeans', meta: '42 réf.', link: { type: 'custom', url: '/posts' } },
+          { label: 'Bottes', meta: '38 réf.', link: { type: 'custom', url: '/posts' } },
+          { label: 'Baskets moto', meta: '29 réf.', link: { type: 'custom', url: '/posts' } },
+          {
+            label: 'Accessoires & bagagerie',
+            meta: '73 réf.',
+            link: { type: 'custom', url: '/posts' },
           },
-        },
-        populateBy: 'collection',
-        relationTo: 'posts',
+          {
+            label: 'Vêtements & lifestyle',
+            meta: '46 réf.',
+            link: { type: 'custom', url: '/posts' },
+          },
+          {
+            label: 'Antivols & sécurité',
+            meta: '24 réf.',
+            link: { type: 'custom', url: '/posts' },
+          },
+          {
+            label: 'Bons plans du moment',
+            meta: 'Mise à jour quotidienne',
+            link: { type: 'custom', url: '/posts' },
+          },
+        ],
       },
       {
-        blockName: 'CTA',
-        blockType: 'cta',
+        blockType: 'debuter',
+        eyebrow: 'Débuter la moto',
+        title: 'Commencer la moto quand on est une femme,',
+        titleAccent: 'ce n’est pas compliqué.',
+        intro:
+          'C’est juste mal expliqué. On reprend depuis le début : le permis, la première machine, l’équipement qui protège vraiment, et les réflexes des premiers kilomètres.',
         links: [
           {
-            link: {
-              type: 'custom',
-              appearance: 'default',
-              label: 'All posts',
-              url: '/posts',
-            },
+            link: { type: 'custom', label: 'Ouvrir le guide complet', url: '/posts' },
           },
         ],
-        richText: {
-          root: {
-            type: 'root',
-            children: [
-              {
-                type: 'heading',
-                children: [
-                  {
-                    type: 'text',
-                    detail: 0,
-                    format: 0,
-                    mode: 'normal',
-                    style: '',
-                    text: 'This is a call to action',
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                tag: 'h3',
-                version: 1,
-              },
-              {
-                type: 'paragraph',
-                children: [
-                  {
-                    type: 'text',
-                    detail: 0,
-                    format: 0,
-                    mode: 'normal',
-                    style: '',
-                    text: 'This is a custom layout building block ',
-                    version: 1,
-                  },
-                  {
-                    type: 'link',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'configured in the admin dashboard',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    fields: {
-                      linkType: 'custom',
-                      newTab: false,
-                      url: '/admin',
-                    },
-                    format: '',
-                    indent: 0,
-                    version: 2,
-                  },
-                  {
-                    type: 'text',
-                    detail: 0,
-                    format: 0,
-                    mode: 'normal',
-                    style: '',
-                    text: '.',
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                textFormat: 0,
-                version: 1,
-              },
-            ],
-            direction: 'ltr',
-            format: '',
-            indent: 0,
-            version: 1,
+        etapes: [
+          {
+            title: 'Choisir son permis',
+            text: 'A1, A2, passerelle 125 : ce que chaque permis autorise, le coût réel et le temps à prévoir.',
           },
-        },
+          {
+            title: 'Trouver une première moto',
+            text: 'Hauteur de selle, poids à l’arrêt, puissance bridée : les critères qui comptent quand on fait 1 m 60.',
+          },
+          {
+            title: 'S’équiper sans se ruiner',
+            text: 'Le minimum légal, le minimum sensé, et l’ordre dans lequel investir sur deux saisons.',
+          },
+          {
+            title: 'Les 500 premiers kilomètres',
+            text: 'Manœuvres à froid, circulation dense, passagère : les situations à apprivoiser en premier.',
+          },
+        ],
+      },
+      {
+        blockType: 'journal',
+        eyebrow: 'Le journal',
+        title: 'Essais, conseils et routes à faire',
+        populateBy: 'collection',
+        limit: 5,
+        links: [
+          {
+            link: { type: 'custom', label: 'Tous les articles', url: '/posts' },
+          },
+        ],
       },
     ],
     meta: {
-      description: 'An open-source website built with Payload and Next.js.',
-      image: heroImage.id,
-      title: 'Payload Website Template',
+      title: 'Les Bikeuses — équipement moto pour femmes',
+      description:
+        'Blousons, gants, bottes et casques moto choisis pour les morphologies féminines. Homologation vérifiée, guide des tailles morpho, conseils pour débuter.',
+      image: metaImage.id,
     },
-    title: 'Home',
   }
 }
