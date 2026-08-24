@@ -87,77 +87,83 @@
 }
 
 :root {
-  --background: oklch(100% 0 0deg);
-  --foreground: oklch(14.5% 0 0deg);
-  --card: oklch(96.5% 0.005 265deg);
-  --card-foreground: oklch(14.5% 0 0deg);
-  --popover: oklch(100% 0 0deg);
-  --popover-foreground: oklch(14.5% 0 0deg);
-  --primary: oklch(20.5% 0 0deg);
-  --primary-foreground: oklch(98.5% 0 0deg);
-  --secondary: oklch(97% 0 0deg);
-  --secondary-foreground: oklch(20.5% 0 0deg);
-  --muted: oklch(97% 0 0deg);
-  --muted-foreground: oklch(55.6% 0 0deg);
-  --accent: oklch(97% 0 0deg);
-  --accent-foreground: oklch(20.5% 0 0deg);
-  --destructive: oklch(57.7% 0.245 27.325deg);
-  --destructive-foreground: oklch(57.7% 0.245 27.325deg);
-  --border: oklch(92.2% 0 0deg);
-  --input: oklch(92.2% 0 0deg);
-  --ring: oklch(70.8% 0 0deg);
+  /* Les Bikeuses — palette claire (base chic + magenta signature) */
+  --background: #fbf9fb; /* papier */
+  --foreground: #17141b; /* encre */
+  --card: #ffffff;
+  --card-foreground: #17141b;
+  --popover: #ffffff;
+  --popover-foreground: #17141b;
+  --primary: #e01b69; /* magenta signature */
+  --primary-foreground: #ffffff;
+  --secondary: #f3eef4; /* papier foncé */
+  --secondary-foreground: #17141b;
+  --muted: #f3eef4;
+  --muted-foreground: #6e6577; /* taupe */
+  --accent: #f7e8f0; /* blush */
+  --accent-foreground: #b01353; /* magenta foncé */
+  --destructive: #d92d20;
+  --destructive-foreground: #ffffff;
+  --border: #eae3ec; /* trait */
+  --input: #eae3ec;
+  --ring: #e01b69; /* focus magenta */
+  --brand: #e01b69;
+  --brand-foreground: #ffffff;
   --chart-1: oklch(64.6% 0.222 41.116deg);
   --chart-2: oklch(60% 0.118 184.704deg);
   --chart-3: oklch(39.8% 0.07 227.392deg);
   --chart-4: oklch(82.8% 0.189 84.429deg);
   --chart-5: oklch(76.9% 0.188 70.08deg);
   --radius: 0.625rem;
-  --sidebar: oklch(98.5% 0 0deg);
-  --sidebar-foreground: oklch(14.5% 0 0deg);
-  --sidebar-primary: oklch(20.5% 0 0deg);
-  --sidebar-primary-foreground: oklch(98.5% 0 0deg);
-  --sidebar-accent: oklch(97% 0 0deg);
-  --sidebar-accent-foreground: oklch(20.5% 0 0deg);
-  --sidebar-border: oklch(92.2% 0 0deg);
-  --sidebar-ring: oklch(70.8% 0 0deg);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #17141b;
+  --sidebar-primary: #e01b69;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f7e8f0;
+  --sidebar-accent-foreground: #b01353;
+  --sidebar-border: #eae3ec;
+  --sidebar-ring: #e01b69;
   --success: oklch(78% 0.08 200deg);
   --warning: oklch(89% 0.1 75deg);
   --error: oklch(75% 0.15 25deg);
 }
 
 [data-theme='dark'] {
-  --background: oklch(14.5% 0 0deg);
-  --foreground: oklch(98.5% 0 0deg);
-  --card: oklch(17% 0 0deg);
-  --card-foreground: oklch(98.5% 0 0deg);
-  --popover: oklch(14.5% 0 0deg);
-  --popover-foreground: oklch(98.5% 0 0deg);
-  --primary: oklch(98.5% 0 0deg);
-  --primary-foreground: oklch(20.5% 0 0deg);
-  --secondary: oklch(26.9% 0 0deg);
-  --secondary-foreground: oklch(98.5% 0 0deg);
-  --muted: oklch(26.9% 0 0deg);
-  --muted-foreground: oklch(70.8% 0 0deg);
-  --accent: oklch(26.9% 0 0deg);
-  --accent-foreground: oklch(98.5% 0 0deg);
-  --destructive: oklch(39.6% 0.141 25.723deg);
-  --destructive-foreground: oklch(63.7% 0.237 25.331deg);
-  --border: oklch(26.9% 0 0deg);
-  --input: oklch(26.9% 0 0deg);
-  --ring: oklch(43.9% 0 0deg);
+  /* Les Bikeuses — palette sombre */
+  --background: #120f16;
+  --foreground: #f3edf4;
+  --card: #1a151f;
+  --card-foreground: #f3edf4;
+  --popover: #120f16;
+  --popover-foreground: #f3edf4;
+  --primary: #ff4d8b; /* magenta lumineux */
+  --primary-foreground: #1a0a12;
+  --secondary: #1f1926;
+  --secondary-foreground: #f3edf4;
+  --muted: #1f1926;
+  --muted-foreground: #a79dae;
+  --accent: #241a22; /* blush sombre */
+  --accent-foreground: #ff7aa8;
+  --destructive: #e5484d;
+  --destructive-foreground: #2a0a0a;
+  --border: #2a2430;
+  --input: #2a2430;
+  --ring: #ff4d8b;
+  --brand: #ff4d8b;
+  --brand-foreground: #1a0a12;
   --chart-1: oklch(48.8% 0.243 264.376deg);
   --chart-2: oklch(69.6% 0.17 162.48deg);
   --chart-3: oklch(76.9% 0.188 70.08deg);
   --chart-4: oklch(62.7% 0.265 303.9deg);
   --chart-5: oklch(64.5% 0.246 16.439deg);
-  --sidebar: oklch(20.5% 0 0deg);
-  --sidebar-foreground: oklch(98.5% 0 0deg);
-  --sidebar-primary: oklch(48.8% 0.243 264.376deg);
-  --sidebar-primary-foreground: oklch(98.5% 0 0deg);
-  --sidebar-accent: oklch(26.9% 0 0deg);
-  --sidebar-accent-foreground: oklch(98.5% 0 0deg);
-  --sidebar-border: oklch(26.9% 0 0deg);
-  --sidebar-ring: oklch(43.9% 0 0deg);
+  --sidebar: #1a151f;
+  --sidebar-foreground: #f3edf4;
+  --sidebar-primary: #ff4d8b;
+  --sidebar-primary-foreground: #1a0a12;
+  --sidebar-accent: #241a22;
+  --sidebar-accent-foreground: #ff7aa8;
+  --sidebar-border: #2a2430;
+  --sidebar-ring: #ff4d8b;
   --success: oklch(28% 0.1 200deg);
   --warning: oklch(35% 0.08 70deg);
   --error: oklch(45% 0.1 25deg);
@@ -172,6 +178,8 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
