@@ -43,13 +43,31 @@ pnpm payload migrate:create <nom> # créer une migration après un changement de
 
 ## Direction artistique (validée)
 
-- Base chic **noir/blanc** + **magenta signature** (`#E01B69` clair /
-  `#FF4D8B` sombre). Tokens de couleur dans
-  `src/app/(frontend)/globals.css` (thème clair et sombre).
-- Typo : **Fraunces** (titres) × **Manrope** (texte), via `next/font`
-  (`src/app/(frontend)/layout.tsx`).
+Concept **« fiche d'équipement »** : l'équipement moto se lit comme une fiche
+technique (niveau CE, matière, saison, plage de tailles), et la DA fait de
+cette rigueur son parti pris. Tokens dans `src/app/(frontend)/globals.css`
+(thème clair et sombre).
+
+- **Accent orange**, en deux valeurs à ne pas confondre :
+  - `--primary` `#C43D10` (clair) / `#FF8A4C` (sombre) — texte, filets, liens.
+    Contraste 5.2:1 sur papier, seul niveau sûr pour les labels mono à 11 px.
+  - `--brand-bright` `#EE5B16` / `#FF9E6B` — aplats et fonds sombres
+    **uniquement** (3.6:1 sur papier, insuffisant pour du petit texte).
+- **Neutres froids** (papier `#F7F6F4`, encre asphalte `#16151A`) :
+  volontairement pas de papier crème, l'orange doit rester la seule source de
+  chaleur de la page.
+- `--radius: 0` — angles vifs assumés, y compris sur les composants shadcn.
+- Typo : **Fraunces** (titres, axes `SOFT`/`WONK`) × **Manrope** (texte/UI) ×
+  **DM Mono** (données techniques : niveaux CE, matières, tailles, prix,
+  dates), via `next/font` (`src/app/(frontend)/layout.tsx`).
+- Primitives réutilisables (globals.css) : `mono-label` (déclarée en
+  `@utility` pour rester applicable via `@apply`), `.eyebrow`, `.wonk`,
+  `.route` (filet « marquage au sol »), `.heros-titre`.
 - Logo officiel dans `public/logo-bikeuses.svg` (adaptatif, `currentColor`) et
   `public/logo-bikeuses-blanc.svg` ; composant `src/components/Logo/Logo.tsx`.
+
+Maquette de référence de la page d'accueil :
+https://claude.ai/code/artifact/daafa86f-80a5-4bd0-bf45-82fb6b9dfb45
 
 ## Structure
 
@@ -67,9 +85,16 @@ src/
 
 ## Prochaines étapes possibles
 
-- [ ] Page d'accueil de marque (hero « Façonnez votre style en toute sécurité »,
-      mise en avant produits) — via contenu admin ou composant sur-mesure.
-- [ ] Restyler hero + cartes produit aux couleurs de la direction artistique.
+- [x] Restyler le héros aux couleurs de la DA — `heros/HighImpact` est passé en
+      grille éditoriale deux colonnes (sur-titre, visuels secondaires, preuves
+      chiffrées, bandeau défilant).
+- [x] Blocs de la page d'accueil : `Parcours`, `IndexCategories`, `Debuter`,
+      `Journal` (`src/blocks/`), disponibles dans le constructeur de Pages.
+- [ ] **Saisir le contenu de la home** dans l'admin : les blocs existent, la
+      page d'accueil n'est pas encore montée avec. Le seed
+      (`src/endpoints/seed`) génère toujours l'ancienne home.
+- [ ] Restyler les cartes produit (bandeau de specs en mono : niveau CE,
+      matière, saison, plage de tailles).
 - [ ] Renseigner les variables S3 Supabase pour la persistance des médias.
 - [ ] Importer les produits depuis l'ancien WooCommerce (export CSV → Produits).
 - [ ] Phase e-commerce : panier, commandes, paiement (Stripe).
