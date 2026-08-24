@@ -7,23 +7,29 @@ interface Props {
   priority?: 'auto' | 'high' | 'low'
 }
 
+// Logo Les Bikeuses.
+// Rendu via un masque CSS : le logo prend la couleur du texte courant
+// (currentColor via `bg-current`), il s'adapte donc automatiquement au
+// thème — encre sur fond clair, blanc sur fond sombre / footer noir.
 export const Logo = (props: Props) => {
-  const { loading: loadingFromProps, priority: priorityFromProps, className } = props
-
-  const loading = loadingFromProps || 'lazy'
-  const priority = priorityFromProps || 'low'
+  const { className } = props
 
   return (
-    /* eslint-disable @next/next/no-img-element */
-    <img
-      alt="Payload Logo"
-      width={193}
-      height={34}
-      loading={loading}
-      fetchPriority={priority}
-      decoding="async"
-      className={clsx('max-w-[9.375rem] w-full h-[34px]', className)}
-      src="https://raw.githubusercontent.com/payloadcms/payload/3.x/packages/ui/src/assets/payload-logo-light.svg"
+    <span
+      role="img"
+      aria-label="Les Bikeuses"
+      className={clsx('block h-[34px] w-auto bg-current', className)}
+      style={{
+        aspectRatio: '566.929 / 198.425',
+        WebkitMaskImage: 'url(/logo-bikeuses-blanc.svg)',
+        maskImage: 'url(/logo-bikeuses-blanc.svg)',
+        WebkitMaskRepeat: 'no-repeat',
+        maskRepeat: 'no-repeat',
+        WebkitMaskPosition: 'left center',
+        maskPosition: 'left center',
+        WebkitMaskSize: 'contain',
+        maskSize: 'contain',
+      }}
     />
   )
 }
