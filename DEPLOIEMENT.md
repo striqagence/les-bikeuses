@@ -25,15 +25,34 @@ variable d'environnement à ajuster.
 1. Créer un projet Supabase (ou réutiliser le vôtre). Noter la **référence du
    projet** (`[REF_PROJET]`) et le **mot de passe** de la base.
 
-2. **Chaîne de connexion** — bouton **« Connect »** :
+2. **Chaînes de connexion** — bouton **« Connect »** :
    - ⚠️ La **connexion directe** (`db.[REF_PROJET].supabase.co`) est en **IPv6
      uniquement** → **inutilisable depuis Vercel** (IPv4). On ne l'utilise pas.
-   - ✅ Utiliser le **Session pooler** (IPv4), qui gère aussi bien les
-     **migrations** que le trafic du site. C'est la valeur à mettre dans
-     `DATABASE_URL`. Format :
-     `postgresql://postgres.[REF_PROJET]:[MDP]@aws-0-[REGION].pooler.supabase.com:5432/postgres`
-   - (Le *Transaction pooler*, port `6543`, est réservé à la très forte charge
-     et peut casser les migrations Payload — on ne l'utilise pas ici.)
+   - Il faut **deux** variables, qui ne diffèrent que par le port :
+
+   | Variable | Pooler | Port | Usage |
+   |---|---|---|---|
+   | `DATABASE_URL` | **Transaction** | `6543` | Le site |
+   | `DATABASE_URL_SESSION` | **Session** | `5432` | Les migrations, au build |
+
+   Format : `postgresql://postgres.[REF_PROJET]:[MDP]@aws-0-[REGION].pooler.supabase.com:[PORT]/postgres`
+
+   **Pourquoi deux.** Le mode session garde une connexion Postgres dédiée par
+   client, pour toute sa durée de vie. Sur Vercel, chaque instance monopolise
+   donc ses connexions : avec le plafond par défaut de **15 connexions pour
+   tout le projet**, trois instances concurrentes suffisent à saturer, et tout
+   ce qui touche la base tombe en `EMAXCONNSESSION` — y compris
+   `payload.auth()`, ce qui fait répondre `403` aux routes authentifiées sans
+   que l'erreur ressemble à un problème de base.
+
+   Le mode transaction rend la connexion au pool à la fin de chaque
+   transaction : des dizaines d'instances tiennent sur le même pool. En
+   revanche il ne garantit pas l'état de session dont les **migrations** ont
+   besoin (verrous consultatifs, `SET`) — d'où la seconde variable.
+
+   `src/payload.config.ts` bascule automatiquement sur `DATABASE_URL_SESSION`
+   quand la commande lancée est `payload migrate*`, et retombe sur
+   `DATABASE_URL` si elle n'est pas renseignée.
 
 3. **Stockage** — *Storage* → créer un bucket (ex. `media`, en **public**).
    Puis *Project Settings → Storage → S3 Connection* : relever l'**endpoint**
@@ -68,7 +87,8 @@ les tables sont créées / mises à jour automatiquement sur Supabase.
 
    | Variable | Valeur |
    |---|---|
-   | `DATABASE_URL` | La connexion **Session pooler** (IPv4, port 5432) |
+   | `DATABASE_URL` | **Transaction pooler** (IPv4, port 6543) — le site |
+   | `DATABASE_URL_SESSION` | **Session pooler** (IPv4, port 5432) — les migrations |
    | `PAYLOAD_SECRET` | Une valeur aléatoire (`openssl rand -base64 32`) |
    | `NEXT_PUBLIC_SERVER_URL` | L'URL de préprod (voir étape 4) |
    | `CRON_SECRET` | Une valeur aléatoire |
@@ -123,7 +143,7 @@ automatiquement (voir `src/utilities/getURL.ts`).
 
 Voir `.env.example` pour la liste complète et commentée. En bref :
 
-- **Base** : `DATABASE_URL`
+- **Base** : `DATABASE_URL` (transaction, 6543) + `DATABASE_URL_SESSION` (session, 5432)
 - **Sécurité** : `PAYLOAD_SECRET`, `CRON_SECRET`, `PREVIEW_SECRET`
 - **URL publique** : `NEXT_PUBLIC_SERVER_URL`
 - **Stockage médias** : `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`,

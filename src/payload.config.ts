@@ -19,6 +19,32 @@ import { getServerSideURL } from './utilities/getURL'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+/**
+ * Deux poolers Supabase, deux usages.
+ *
+ * Runtime (`DATABASE_URL`, Transaction pooler, port 6543) : le mode
+ * transaction rend la connexion au pool à la fin de chaque transaction, si
+ * bien que des dizaines d'instances Vercel se partagent le même petit pool.
+ * En mode session (port 5432), chaque instance monopolise ses connexions
+ * jusqu'à sa mort : à 15 connexions pour tout le projet, trois instances
+ * suffisaient à tout faire tomber en EMAXCONNSESSION.
+ *
+ * Migrations (`DATABASE_URL_SESSION`, Session pooler, port 5432) : elles ont
+ * besoin d'un état de session stable (verrous consultatifs, `SET`), que le
+ * mode transaction ne garantit pas. C'est la raison de la mise en garde de
+ * DEPLOIEMENT.md contre le port 6543 — on la respecte en isolant ce seul cas.
+ *
+ * Repli sur `DATABASE_URL` si la variable de session n'est pas renseignée :
+ * la configuration reste valide tant que les deux poolers ne sont pas séparés.
+ */
+const connexionPostgres = (): string | undefined => {
+  const enMigration = process.argv.some((arg) => arg === 'migrate' || arg.startsWith('migrate:'))
+
+  return enMigration
+    ? (process.env.DATABASE_URL_SESSION ?? process.env.DATABASE_URL)
+    : process.env.DATABASE_URL
+}
+
 export default buildConfig({
   admin: {
     components: {
@@ -60,17 +86,13 @@ export default buildConfig({
   editor: defaultLexical,
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL,
-      // Le Session pooler Supabase plafonne à 15 connexions pour tout le
-      // projet. node-postgres ouvre 10 connexions par défaut *par instance* :
-      // deux instances Vercel concurrentes suffisaient à saturer, et tout ce
-      // qui touche la base tombait alors en EMAXCONNSESSION — y compris
-      // `payload.auth()`, ce qui faisait répondre 403 à la route de seed.
-      //
-      // Pas de `max: 1` : Payload ouvre une transaction en écriture puis
-      // exécute d'autres requêtes dans la même requête HTTP, qui attendraient
+      connectionString: connexionPostgres(),
+      // Plafond volontairement bas : en mode transaction c'est le pooler qui
+      // absorbe la concurrence, pas le pool local. Pas de `max: 1` pour
+      // autant — Payload ouvre une transaction en écriture puis exécute
+      // d'autres requêtes dans la même requête HTTP, qui attendraient sinon
       // une connexion jamais libérée.
-      max: Number(process.env.DATABASE_POOL_MAX ?? 2),
+      max: Number(process.env.DATABASE_POOL_MAX ?? 5),
       idleTimeoutMillis: 10_000,
       connectionTimeoutMillis: 15_000,
     },

@@ -35,8 +35,13 @@ pnpm payload migrate:create <nom> # créer une migration après un changement de
 ## Base de données (Supabase)
 
 - La **connexion directe** Supabase est en **IPv6 uniquement** → inutilisable
-  depuis Vercel. Utiliser le **Session pooler** (IPv4, port 5432) pour
-  `DATABASE_URL`.
+  depuis Vercel. On passe par les poolers (IPv4), et il en faut **deux** :
+  `DATABASE_URL` sur le **Transaction pooler** (port 6543) pour le site, et
+  `DATABASE_URL_SESSION` sur le **Session pooler** (port 5432) pour les
+  migrations. Le mode session garde une connexion dédiée par instance Vercel
+  et sature les 15 connexions du projet (`EMAXCONNSESSION`) ; le mode
+  transaction les multiplexe mais ne convient pas aux migrations. Bascule
+  automatique dans `src/payload.config.ts`.
 - Variables d'environnement : voir `.env.example`. Guide complet :
   `DEPLOIEMENT.md`.
 - Le schéma est géré par migrations Payload (`src/migrations/`).
@@ -90,12 +95,14 @@ src/
       chiffrées, bandeau défilant).
 - [x] Blocs de la page d'accueil : `Parcours`, `IndexCategories`, `Debuter`,
       `Journal` (`src/blocks/`), disponibles dans le constructeur de Pages.
-- [ ] **Saisir le contenu de la home** dans l'admin : les blocs existent, la
-      page d'accueil n'est pas encore montée avec. Le seed
-      (`src/endpoints/seed`) génère toujours l'ancienne home.
-- [ ] Restyler les cartes produit (bandeau de specs en mono : niveau CE,
-      matière, saison, plage de tailles).
-- [ ] Renseigner les variables S3 Supabase pour la persistance des médias.
+- [x] Contenu de la home : le seed (`src/endpoints/seed`) monte la page
+      d'accueil de la maquette avec les textes repris de lesbikeuses.fr, et
+      importe les 8 articles du blog (`lesbikeuses-posts.json`).
+- [x] Variables S3 Supabase renseignées.
+- [ ] Repasser les liens du catalogue en relatif : ils pointent aujourd'hui
+      vers lesbikeuses.fr en absolu, faute de rayons sur le nouveau site.
+- [ ] Bloc « Sélection du moment » (cartes produit avec bandeau de specs en
+      mono : niveau CE, matière, saison, plage de tailles).
 - [ ] Importer les produits depuis l'ancien WooCommerce (export CSV → Produits).
 - [ ] Phase e-commerce : panier, commandes, paiement (Stripe).
 
