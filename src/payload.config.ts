@@ -70,7 +70,7 @@ export default buildConfig({
       // Pas de `max: 1` : Payload ouvre une transaction en écriture puis
       // exécute d'autres requêtes dans la même requête HTTP, qui attendraient
       // une connexion jamais libérée.
-      max: Number(process.env.DATABASE_POOL_MAX ?? 4),
+      max: Number(process.env.DATABASE_POOL_MAX ?? 2),
       idleTimeoutMillis: 10_000,
       connectionTimeoutMillis: 15_000,
     },
