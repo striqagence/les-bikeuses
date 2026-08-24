@@ -3,7 +3,10 @@ import { seed } from '@/endpoints/seed'
 import config from '@payload-config'
 import { headers } from 'next/headers'
 
-export const maxDuration = 60 // This function can run for a maximum of 60 seconds
+// Le seed télécharge une douzaine d'images (dont les visuels des 8 articles
+// repris de lesbikeuses.fr) et les réenvoie vers Supabase Storage : 60 s ne
+// suffisent pas. 300 s est le plafond Vercel par défaut.
+export const maxDuration = 300
 
 export async function POST(): Promise<Response> {
   const payload = await getPayload({ config })

@@ -61,6 +61,18 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL,
+      // Le Session pooler Supabase plafonne à 15 connexions pour tout le
+      // projet. node-postgres ouvre 10 connexions par défaut *par instance* :
+      // deux instances Vercel concurrentes suffisaient à saturer, et tout ce
+      // qui touche la base tombait alors en EMAXCONNSESSION — y compris
+      // `payload.auth()`, ce qui faisait répondre 403 à la route de seed.
+      //
+      // Pas de `max: 1` : Payload ouvre une transaction en écriture puis
+      // exécute d'autres requêtes dans la même requête HTTP, qui attendraient
+      // une connexion jamais libérée.
+      max: Number(process.env.DATABASE_POOL_MAX ?? 4),
+      idleTimeoutMillis: 10_000,
+      connectionTimeoutMillis: 15_000,
     },
   }),
   collections: [Pages, Posts, Products, Media, Categories, Users],

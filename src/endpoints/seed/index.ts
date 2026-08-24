@@ -1,12 +1,10 @@
 import type { CollectionSlug, GlobalSlug, Payload, PayloadRequest, File } from 'payload'
-import type { Post } from '@/payload-types'
+import type { Media, Post } from '@/payload-types'
 
 import { contactForm as contactFormData } from './contact-form'
 import { contact as contactPageData } from './contact-page'
 import { home } from './home'
 import { image1 } from './image-1'
-import { image2 } from './image-2'
-import { imageHero1 } from './image-hero-1'
 import { articleVersPost, articlesImportes } from './lesbikeuses-posts'
 
 const collections: CollectionSlug[] = [
@@ -92,51 +90,25 @@ export const seed = async ({
 
   payload.logger.info(`— Seeding media...`)
 
-  const [image1Buffer, image2Buffer, image3Buffer, hero1Buffer] = await Promise.all([
-    fetchFileByURL(
+  // Une seule image du template Payload est conservée : elle sert de repli
+  // quand un visuel d'article n'est plus joignable sur l'ancien site. Tous les
+  // autres visuels du site viennent désormais de lesbikeuses.fr.
+  const demoAuthor = await payload.create({
+    collection: 'users',
+    data: {
+      name: 'Demo Author',
+      email: 'demo-author@example.com',
+      password: 'password',
+    },
+  })
+
+  const image1Doc = await payload.create({
+    collection: 'media',
+    data: image1,
+    file: await fetchFileByURL(
       'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/3.x/templates/website/src/endpoints/seed/image-post1.webp',
     ),
-    fetchFileByURL(
-      'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/3.x/templates/website/src/endpoints/seed/image-post2.webp',
-    ),
-    fetchFileByURL(
-      'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/3.x/templates/website/src/endpoints/seed/image-post3.webp',
-    ),
-    fetchFileByURL(
-      'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/3.x/templates/website/src/endpoints/seed/image-hero1.webp',
-    ),
-  ])
-
-  const [demoAuthor, image1Doc, image2Doc, image3Doc, imageHomeDoc] = await Promise.all([
-    payload.create({
-      collection: 'users',
-      data: {
-        name: 'Demo Author',
-        email: 'demo-author@example.com',
-        password: 'password',
-      },
-    }),
-    payload.create({
-      collection: 'media',
-      data: image1,
-      file: image1Buffer,
-    }),
-    payload.create({
-      collection: 'media',
-      data: image2,
-      file: image2Buffer,
-    }),
-    payload.create({
-      collection: 'media',
-      data: image2,
-      file: image3Buffer,
-    }),
-    payload.create({
-      collection: 'media',
-      data: imageHero1,
-      file: hero1Buffer,
-    }),
-  ])
+  })
 
   const categoryDocs = await Promise.all(
     categories.map((category) =>
@@ -152,21 +124,26 @@ export const seed = async ({
   // Les images à la une viennent de l'ancien site. Si l'une n'est plus
   // joignable, on retombe sur une image déjà créée plutôt que d'interrompre
   // tout le seed pour un fichier manquant.
-  const heroImages = await Promise.all(
-    articlesImportes.map(async (article) => {
-      try {
-        const file = await fetchFileByURL(article.imageUrl)
-        return await payload.create({
+  //
+  // En série, et non en Promise.all : huit envois simultanés vers Supabase
+  // Storage réclamaient autant de connexions d'un coup, ce qui saturait le
+  // pool (15 connexions pour tout le projet).
+  const heroImages: Media[] = []
+  for (const article of articlesImportes) {
+    try {
+      const file = await fetchFileByURL(article.imageUrl)
+      heroImages.push(
+        await payload.create({
           collection: 'media',
           data: { alt: article.title },
           file,
-        })
-      } catch (err) {
-        payload.logger.warn(`Image indisponible pour « ${article.slug} », repli : ${err}`)
-        return image1Doc
-      }
-    }),
-  )
+        }),
+      )
+    } catch (err) {
+      payload.logger.warn(`Image indisponible pour « ${article.slug} », repli : ${err}`)
+      heroImages.push(image1Doc)
+    }
+  }
 
   // Créés en série pour que `createdAt` respecte l'ordre du tableau.
   const postDocs: Post[] = []
@@ -189,21 +166,20 @@ export const seed = async ({
   }
 
   // Articles liés : les deux suivants dans la liste, en boucle.
-  await Promise.all(
-    postDocs.map((post, index) =>
-      payload.update({
-        id: post.id,
-        collection: 'posts',
-        context: { disableRevalidate: true },
-        data: {
-          relatedPosts: [
-            postDocs[(index + 1) % postDocs.length].id,
-            postDocs[(index + 2) % postDocs.length].id,
-          ],
-        },
-      }),
-    ),
-  )
+  // En série, pour la même raison que les images.
+  for (const [index, post] of postDocs.entries()) {
+    await payload.update({
+      id: post.id,
+      collection: 'posts',
+      context: { disableRevalidate: true },
+      data: {
+        relatedPosts: [
+          postDocs[(index + 1) % postDocs.length].id,
+          postDocs[(index + 2) % postDocs.length].id,
+        ],
+      },
+    })
+  }
 
   payload.logger.info(`— Seeding contact form...`)
 
@@ -222,10 +198,10 @@ export const seed = async ({
       // Visuels du héros : de vraies photos de lesbikeuses.fr, déjà
       // téléchargées pour les articles, plutôt que les images du template.
       data: home({
-        heroImage: heroImages[1] ?? imageHomeDoc,
-        metaImage: heroImages[1] ?? image2Doc,
-        gantsImage: heroImages[0] ?? image1Doc,
-        casqueImage: heroImages[2] ?? image3Doc,
+        heroImage: heroImages[1],
+        metaImage: heroImages[1],
+        gantsImage: heroImages[0],
+        casqueImage: heroImages[2],
       }),
     }),
     payload.create({
