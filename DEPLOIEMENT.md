@@ -25,13 +25,15 @@ variable d'environnement à ajuster.
 1. Créer un projet Supabase (ou réutiliser le vôtre). Noter la **référence du
    projet** (`[REF_PROJET]`) et le **mot de passe** de la base.
 
-2. **Chaîne de connexion** — *Project Settings → Database → Connection string* :
-   - **Connexion directe** (port `5432`) → sert à **créer le schéma** et aux
-     migrations. Format :
-     `postgresql://postgres:[MDP]@db.[REF_PROJET].supabase.co:5432/postgres`
-   - **Transaction pooler** (port `6543`) → sert au **site en production**
-     (adapté au serverless de Vercel). Format :
-     `postgresql://postgres.[REF_PROJET]:[MDP]@aws-0-[REGION].pooler.supabase.com:6543/postgres`
+2. **Chaîne de connexion** — bouton **« Connect »** :
+   - ⚠️ La **connexion directe** (`db.[REF_PROJET].supabase.co`) est en **IPv6
+     uniquement** → **inutilisable depuis Vercel** (IPv4). On ne l'utilise pas.
+   - ✅ Utiliser le **Session pooler** (IPv4), qui gère aussi bien les
+     **migrations** que le trafic du site. C'est la valeur à mettre dans
+     `DATABASE_URL`. Format :
+     `postgresql://postgres.[REF_PROJET]:[MDP]@aws-0-[REGION].pooler.supabase.com:5432/postgres`
+   - (Le *Transaction pooler*, port `6543`, est réservé à la très forte charge
+     et peut casser les migrations Payload — on ne l'utilise pas ici.)
 
 3. **Stockage** — *Storage* → créer un bucket (ex. `media`, en **public**).
    Puis *Project Settings → Storage → S3 Connection* : relever l'**endpoint**
@@ -40,26 +42,16 @@ variable d'environnement à ajuster.
 
 ---
 
-## Étape 2 — Créer le schéma de la base (une seule fois)
+## Étape 2 — Le schéma de la base (automatique)
 
-Le schéma (les tables) doit exister avant le premier déploiement. Le plus
-simple :
+**Rien à faire manuellement.** Le schéma est géré par des **migrations
+Payload** (dossier `src/migrations/`, déjà committées). Le script `build`
+exécute `payload migrate` **avant** `next build` : à chaque déploiement Vercel,
+les tables sont créées / mises à jour automatiquement sur Supabase.
 
-```bash
-# En local, à la racine du projet :
-cp .env.example .env
-# Dans .env, mettre DATABASE_URL = la connexion DIRECTE (port 5432)
-pnpm install --ignore-workspace
-pnpm dev
-```
-
-Au démarrage, Payload crée automatiquement les tables dans Supabase (mode
-développement). Ouvrir http://localhost:3000/admin, **créer le compte admin**,
-et éventuellement cliquer sur **« seed »** pour des données de démonstration.
-On peut ensuite arrêter le serveur : le schéma est en place sur Supabase.
-
-> Pour une gestion « pro » des évolutions de schéma plus tard, on passera aux
-> migrations Payload (`pnpm payload migrate:create` / `migrate`).
+> Quand on ajoutera des champs ou collections plus tard, on générera une
+> nouvelle migration avec `pnpm payload migrate:create <nom>` (contre une base
+> Postgres), on la committe, et elle s'appliquera au prochain déploiement.
 
 ---
 
@@ -76,7 +68,7 @@ On peut ensuite arrêter le serveur : le schéma est en place sur Supabase.
 
    | Variable | Valeur |
    |---|---|
-   | `DATABASE_URL` | La connexion **Transaction pooler** (port 6543) |
+   | `DATABASE_URL` | La connexion **Session pooler** (IPv4, port 5432) |
    | `PAYLOAD_SECRET` | Une valeur aléatoire (`openssl rand -base64 32`) |
    | `NEXT_PUBLIC_SERVER_URL` | L'URL de préprod (voir étape 4) |
    | `CRON_SECRET` | Une valeur aléatoire |
