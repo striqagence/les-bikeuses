@@ -1,4 +1,5 @@
 import type { CollectionSlug, GlobalSlug, Payload, PayloadRequest, File } from 'payload'
+import type { Post } from '@/payload-types'
 
 import { contactForm as contactFormData } from './contact-form'
 import { contact as contactPageData } from './contact-page'
@@ -6,9 +7,7 @@ import { home } from './home'
 import { image1 } from './image-1'
 import { image2 } from './image-2'
 import { imageHero1 } from './image-hero-1'
-import { post1 } from './post-1'
-import { post2 } from './post-2'
-import { post3 } from './post-3'
+import { articleVersPost, articlesImportes } from './lesbikeuses-posts'
 
 const collections: CollectionSlug[] = [
   'categories',
@@ -22,10 +21,12 @@ const collections: CollectionSlug[] = [
 
 const globals: GlobalSlug[] = ['header', 'footer']
 
-// Catégories du blog Les Bikeuses. Le slug est explicite : « permis moto »
-// dérivé automatiquement donnerait un slug avec une espace.
+// Catégories du blog, reprises du menu « Blog » de lesbikeuses.fr.
+// Le slug est explicite : « Permis moto » dérivé automatiquement donnerait un
+// slug avec une espace. Les slugs doivent rester alignés sur le champ
+// `category` de lesbikeuses-posts.json.
 const categories = [
-  { title: 'Équipement', slug: 'equipement' },
+  { title: 'Équipements', slug: 'equipements' },
   { title: 'Technique', slug: 'technique' },
   { title: 'Permis moto', slug: 'permis-moto' },
   { title: 'Style', slug: 'style' },
@@ -135,67 +136,74 @@ export const seed = async ({
       data: imageHero1,
       file: hero1Buffer,
     }),
+  ])
+
+  const categoryDocs = await Promise.all(
     categories.map((category) =>
       payload.create({
         collection: 'categories',
         data: category,
       }),
     ),
-  ])
+  )
 
-  payload.logger.info(`— Seeding posts...`)
+  payload.logger.info(`— Seeding posts (${articlesImportes.length} articles importés)...`)
 
-  // Do not create posts with `Promise.all` because we want the posts to be created in order
-  // This way we can sort them by `createdAt` or `publishedAt` and they will be in the expected order
-  const post1Doc = await payload.create({
-    collection: 'posts',
-    depth: 0,
-    context: {
-      disableRevalidate: true,
-    },
-    data: post1({ heroImage: image1Doc, blockImage: image2Doc, author: demoAuthor }),
-  })
+  // Les images à la une viennent de l'ancien site. Si l'une n'est plus
+  // joignable, on retombe sur une image déjà créée plutôt que d'interrompre
+  // tout le seed pour un fichier manquant.
+  const heroImages = await Promise.all(
+    articlesImportes.map(async (article) => {
+      try {
+        const file = await fetchFileByURL(article.imageUrl)
+        return await payload.create({
+          collection: 'media',
+          data: { alt: article.title },
+          file,
+        })
+      } catch (err) {
+        payload.logger.warn(`Image indisponible pour « ${article.slug} », repli : ${err}`)
+        return image1Doc
+      }
+    }),
+  )
 
-  const post2Doc = await payload.create({
-    collection: 'posts',
-    depth: 0,
-    context: {
-      disableRevalidate: true,
-    },
-    data: post2({ heroImage: image2Doc, blockImage: image3Doc, author: demoAuthor }),
-  })
+  // Créés en série pour que `createdAt` respecte l'ordre du tableau.
+  const postDocs: Post[] = []
+  for (const [index, article] of articlesImportes.entries()) {
+    postDocs.push(
+      await payload.create({
+        collection: 'posts',
+        depth: 0,
+        context: {
+          disableRevalidate: true,
+        },
+        data: articleVersPost({
+          article,
+          heroImage: heroImages[index],
+          author: demoAuthor,
+          categories: categoryDocs,
+        }),
+      }),
+    )
+  }
 
-  const post3Doc = await payload.create({
-    collection: 'posts',
-    depth: 0,
-    context: {
-      disableRevalidate: true,
-    },
-    data: post3({ heroImage: image3Doc, blockImage: image1Doc, author: demoAuthor }),
-  })
-
-  // update each post with related posts
-  await payload.update({
-    id: post1Doc.id,
-    collection: 'posts',
-    data: {
-      relatedPosts: [post2Doc.id, post3Doc.id],
-    },
-  })
-  await payload.update({
-    id: post2Doc.id,
-    collection: 'posts',
-    data: {
-      relatedPosts: [post1Doc.id, post3Doc.id],
-    },
-  })
-  await payload.update({
-    id: post3Doc.id,
-    collection: 'posts',
-    data: {
-      relatedPosts: [post1Doc.id, post2Doc.id],
-    },
-  })
+  // Articles liés : les deux suivants dans la liste, en boucle.
+  await Promise.all(
+    postDocs.map((post, index) =>
+      payload.update({
+        id: post.id,
+        collection: 'posts',
+        context: { disableRevalidate: true },
+        data: {
+          relatedPosts: [
+            postDocs[(index + 1) % postDocs.length].id,
+            postDocs[(index + 2) % postDocs.length].id,
+          ],
+        },
+      }),
+    ),
+  )
 
   payload.logger.info(`— Seeding contact form...`)
 
@@ -211,11 +219,13 @@ export const seed = async ({
     payload.create({
       collection: 'pages',
       depth: 0,
+      // Visuels du héros : de vraies photos de lesbikeuses.fr, déjà
+      // téléchargées pour les articles, plutôt que les images du template.
       data: home({
-        heroImage: imageHomeDoc,
-        metaImage: image2Doc,
-        gantsImage: image1Doc,
-        casqueImage: image3Doc,
+        heroImage: heroImages[1] ?? imageHomeDoc,
+        metaImage: heroImages[1] ?? image2Doc,
+        gantsImage: heroImages[0] ?? image1Doc,
+        casqueImage: heroImages[2] ?? image3Doc,
       }),
     }),
     payload.create({
@@ -235,22 +245,41 @@ export const seed = async ({
           {
             link: {
               type: 'custom',
+              label: 'Soldes',
+              url: 'https://lesbikeuses.fr/soldes-2/',
+              newTab: true,
+            },
+          },
+          {
+            link: {
+              type: 'custom',
               label: 'Équipements',
-              url: '/posts',
+              url: 'https://lesbikeuses.fr/rubrique/blouson-moto/',
+              newTab: true,
             },
           },
           {
             link: {
               type: 'custom',
               label: 'Accessoires',
-              url: '/posts',
+              url: 'https://lesbikeuses.fr/rubrique/accessoires/',
+              newTab: true,
             },
           },
           {
             link: {
               type: 'custom',
               label: 'Vêtements',
-              url: '/posts',
+              url: 'https://lesbikeuses.fr/rubrique/vetements/',
+              newTab: true,
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Bons plans',
+              url: 'https://lesbikeuses.fr/rubrique/bons-plans/',
+              newTab: true,
             },
           },
           {
@@ -258,16 +287,6 @@ export const seed = async ({
               type: 'custom',
               label: 'Blog',
               url: '/posts',
-            },
-          },
-          {
-            link: {
-              type: 'reference',
-              label: 'Contact',
-              reference: {
-                relationTo: 'pages',
-                value: contactPage.id,
-              },
             },
           },
         ],
@@ -281,21 +300,40 @@ export const seed = async ({
             link: {
               type: 'custom',
               label: 'Qui sommes-nous',
-              url: '/posts',
+              url: 'https://lesbikeuses.fr/a-propos/',
+              newTab: true,
             },
           },
           {
             link: {
               type: 'custom',
               label: 'Politique de retour',
-              url: '/posts',
+              url: 'https://lesbikeuses.fr/politique-de-retour/',
+              newTab: true,
             },
           },
           {
             link: {
               type: 'custom',
-              label: 'Mentions légales',
-              url: '/posts',
+              label: 'Dictionnaire moto',
+              url: 'https://lesbikeuses.fr/dictionnaire-moto/',
+              newTab: true,
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'FAQ',
+              url: 'https://lesbikeuses.fr/faq/',
+              newTab: true,
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'CGVU',
+              url: 'https://lesbikeuses.fr/cgv/',
+              newTab: true,
             },
           },
           {
