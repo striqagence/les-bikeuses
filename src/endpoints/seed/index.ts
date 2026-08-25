@@ -6,7 +6,7 @@ import { contact as contactPageData } from './contact-page'
 import { home } from './home'
 import { image1 } from './image-1'
 import { articleVersPost, articlesImportes } from './lesbikeuses-posts'
-import { navigationEntete, navigationPied } from './navigation'
+import { navigationEntete, piedDePage } from './navigation'
 
 const collections: CollectionSlug[] = [
   'categories',
@@ -265,7 +265,7 @@ export const seed = async ({
 
   await payload.updateGlobal({
     slug: 'footer',
-    data: { navItems: navigationPied },
+    data: piedDePage,
   })
 
   payload.logger.info('Seeded database successfully!')

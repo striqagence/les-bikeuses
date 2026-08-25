@@ -2224,6 +2224,58 @@ export interface Header {
  */
 export interface Footer {
   id: number;
+  aPropos?: {
+    titre?: string | null;
+    /**
+     * Encadrer un fragment de **doubles astérisques** pour le mettre en orange.
+     */
+    texte?: string | null;
+  };
+  colonnes?:
+    | {
+        titre: string;
+        items?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  contact?: {
+    titre?: string | null;
+    /**
+     * Ex. « Notre service client vous répond 5J/7 ».
+     */
+    mention?: string | null;
+    telephone?: string | null;
+    email?: string | null;
+    horaires?: string | null;
+  };
+  /**
+   * Laisser vide tant que la boutique n’ouvre pas : afficher Visa ou PayPal sur un site qui ne vend pas laisse croire qu’on peut y payer.
+   */
+  paiements?:
+    | {
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
   navItems?:
     | {
         link: {
@@ -2299,6 +2351,47 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
+  aPropos?:
+    | T
+    | {
+        titre?: T;
+        texte?: T;
+      };
+  colonnes?:
+    | T
+    | {
+        titre?: T;
+        items?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  contact?:
+    | T
+    | {
+        titre?: T;
+        mention?: T;
+        telephone?: T;
+        email?: T;
+        horaires?: T;
+      };
+  paiements?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
   navItems?:
     | T
     | {
