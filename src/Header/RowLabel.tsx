@@ -6,8 +6,15 @@ export const RowLabel: React.FC<RowLabelProps> = () => {
   const data = useRowLabel<NonNullable<Header['navItems']>[number]>()
 
   const label = data?.data?.link?.label
-    ? `Nav item ${data.rowNumber !== undefined ? data.rowNumber + 1 : ''}: ${data?.data?.link?.label}`
-    : 'Row'
+  if (!label) return <div>Entrée</div>
 
-  return <div>{label}</div>
+  const nb = data?.data?.sousItems?.length ?? 0
+  const suffixe = nb ? ` — ${nb} sous-entrée${nb > 1 ? 's' : ''}` : ''
+
+  return (
+    <div>
+      {label}
+      {suffixe}
+    </div>
+  )
 }

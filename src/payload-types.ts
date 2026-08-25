@@ -239,6 +239,7 @@ export interface Page {
       | null;
   };
   layout: (
+    | SliderBlock
     | ParcoursBlock
     | IndexCategoriesBlock
     | DebuterBlock
@@ -485,6 +486,61 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SliderBlock".
+ */
+export interface SliderBlock {
+  slides?:
+    | {
+        /**
+         * Paysage large, 1600 × 900 minimum.
+         */
+        image: number | Media;
+        /**
+         * Quelle partie de la photo rester visible au recadrage.
+         */
+        positionImage?: ('center' | 'left' | 'right' | 'top' | 'bottom') | null;
+        /**
+         * À poser du côté le plus dégagé de la photo.
+         */
+        coteCarton?: ('gauche' | 'droite') | null;
+        eyebrow?: string | null;
+        titre: string;
+        /**
+         * Affichée en orange, à la suite du titre.
+         */
+        titreAccent?: string | null;
+        texte?: string | null;
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  defilementAuto?: boolean | null;
+  delai?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'slider';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1363,6 +1419,7 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        slider?: T | SliderBlockSelect<T>;
         parcours?: T | ParcoursBlockSelect<T>;
         indexCategories?: T | IndexCategoriesBlockSelect<T>;
         debuter?: T | DebuterBlockSelect<T>;
@@ -1386,6 +1443,42 @@ export interface PagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SliderBlock_select".
+ */
+export interface SliderBlockSelect<T extends boolean = true> {
+  slides?:
+    | T
+    | {
+        image?: T;
+        positionImage?: T;
+        coteCarton?: T;
+        eyebrow?: T;
+        titre?: T;
+        titreAccent?: T;
+        texte?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  defilementAuto?: T;
+  delai?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2056,6 +2149,21 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Header {
   id: number;
+  /**
+   * La bande sombre tout en haut du site.
+   */
+  annonce?: {
+    actif?: boolean | null;
+    /**
+     * Encadrer un fragment de **doubles astérisques** pour le mettre en orange.
+     */
+    texte?: string | null;
+    url?: string | null;
+  };
+  /**
+   * Affichée sous le logo dans la bannière. Disparaît quand l’en-tête se condense.
+   */
+  baseline?: string | null;
   navItems?:
     | {
         link: {
@@ -2073,6 +2181,37 @@ export interface Header {
           url?: string | null;
           label: string;
         };
+        /**
+         * Réservé à une entrée, deux au plus — sinon plus rien ne ressort.
+         */
+        accent?: boolean | null;
+        /**
+         * Laisser vide pour une entrée simple, sans déroulant.
+         */
+        sousItems?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              /**
+               * Ex. « 112 réf. ». Affichée en mono, alignée à droite.
+               */
+              meta?: string | null;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -2113,6 +2252,14 @@ export interface Footer {
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
+  annonce?:
+    | T
+    | {
+        actif?: T;
+        texte?: T;
+        url?: T;
+      };
+  baseline?: T;
   navItems?:
     | T
     | {
@@ -2124,6 +2271,22 @@ export interface HeaderSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
+            };
+        accent?: T;
+        sousItems?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              meta?: T;
+              id?: T;
             };
         id?: T;
       };

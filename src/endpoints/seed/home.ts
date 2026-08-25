@@ -6,6 +6,9 @@ type HomeArgs = {
   metaImage: Media
   gantsImage: Media
   casqueImage: Media
+  slideGroupe: Media
+  slidePortrait: Media
+  slideMoto: Media
 }
 
 /**
@@ -42,6 +45,9 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
   metaImage,
   gantsImage,
   casqueImage,
+  slideGroupe,
+  slidePortrait,
+  slideMoto,
 }) => {
   return {
     slug: 'home',
@@ -150,6 +156,77 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
       ],
     },
     layout: [
+      {
+        blockType: 'slider',
+        defilementAuto: true,
+        delai: 6,
+        // Le côté du carton est choisi photo par photo pour ne pas masquer le
+        // sujet : les quatre motardes occupent toute la largeur (cadrage
+        // décalé à droite, carton à gauche), la motarde du portrait est au
+        // centre-gauche et le réservoir Ducati remplit la gauche.
+        slides: [
+          {
+            image: slideGroupe.id,
+            positionImage: 'right',
+            coteCarton: 'gauche',
+            eyebrow: 'Soldes en cours',
+            titre: 'Jusqu’à',
+            titreAccent: '−50 % sur les blousons cuir',
+            texte:
+              '112 blousons au catalogue, homologation vérifiée et coupes pensées pour les morphologies féminines.',
+            links: [
+              {
+                link: {
+                  type: 'custom',
+                  label: 'Voir les soldes',
+                  url: `${SITE}/soldes-2/`,
+                  newTab: true,
+                },
+              },
+            ],
+          },
+          {
+            image: slidePortrait.id,
+            positionImage: 'center',
+            coteCarton: 'droite',
+            eyebrow: 'Équipement moto femme',
+            titre: 'Façonnez votre style',
+            titreAccent: 'en toute sécurité',
+            texte:
+              'Blousons, gants, bottes et casques choisis un par un. 477 produits, 35 marques.',
+            links: [
+              {
+                link: {
+                  type: 'custom',
+                  label: 'Découvrir la boutique',
+                  url: `${SITE}/shop/`,
+                  newTab: true,
+                },
+              },
+            ],
+          },
+          {
+            image: slideMoto.id,
+            positionImage: 'center',
+            coteCarton: 'droite',
+            eyebrow: 'Débuter la moto',
+            titre: 'Commencer la moto,',
+            titreAccent: 'ce n’est pas compliqué',
+            texte:
+              'C’est juste mal expliqué. Le permis, la première machine, l’équipement qui protège vraiment.',
+            links: [
+              {
+                link: {
+                  type: 'custom',
+                  label: 'Ouvrir le guide',
+                  url: `${SITE}/debuter-la-moto/`,
+                  newTab: true,
+                },
+              },
+            ],
+          },
+        ],
+      },
       {
         blockType: 'parcours',
         eyebrow: 'Les ressources',

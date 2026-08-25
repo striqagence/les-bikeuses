@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+import { cn } from '@/utilities/ui'
 import React from 'react'
 
 interface Props {
@@ -18,7 +18,7 @@ export const Logo = (props: Props) => {
     <span
       role="img"
       aria-label="Les Bikeuses"
-      className={clsx('block h-[34px] w-auto bg-current', className)}
+      className={cn('block h-[34px] w-auto bg-current', className)}
       style={{
         aspectRatio: '566.929 / 198.425',
         WebkitMaskImage: 'url(/logo-bikeuses-blanc.svg)',

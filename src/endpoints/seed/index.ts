@@ -6,6 +6,7 @@ import { contact as contactPageData } from './contact-page'
 import { home } from './home'
 import { image1 } from './image-1'
 import { articleVersPost, articlesImportes } from './lesbikeuses-posts'
+import { navigationEntete, navigationPied } from './navigation'
 
 const collections: CollectionSlug[] = [
   'categories',
@@ -119,6 +120,36 @@ export const seed = async ({
     ),
   )
 
+  // Visuels du slider, repris de lesbikeuses.fr. Choisis pour leur cadrage
+  // paysage : les deux autres bannières du site portent du texte incrusté,
+  // impossible d'y poser un carton par-dessus.
+  const VISUELS_SLIDER = [
+    ['banniere.jpg', 'Quatre motardes côte à côte sur leurs machines'],
+    ['bikeuse-woman-smiling-2.webp', 'Motarde souriante au guidon, casque jet et lunettes de soleil'],
+    ['moto-petit-gabarit.webp', 'Réservoir orange d’une Ducati Scrambler à la lumière du soir'],
+  ] as const
+
+  const CHEMINS_SLIDER: Record<string, string> = {
+    'banniere.jpg': '2022/09/banniere.jpg',
+    'bikeuse-woman-smiling-2.webp': '2022/05/bikeuse-woman-smiling-2.webp',
+    'moto-petit-gabarit.webp': '2022/05/moto-petit-gabarit.webp',
+  }
+
+  const slidesMedia: Media[] = []
+  for (const [fichier, alt] of VISUELS_SLIDER) {
+    try {
+      const file = await fetchFileByURL(
+        `https://lesbikeuses.fr/wp-content/uploads/${CHEMINS_SLIDER[fichier]}`,
+      )
+      slidesMedia.push(
+        await payload.create({ collection: 'media', data: { alt }, file }),
+      )
+    } catch (err) {
+      payload.logger.warn(`Visuel de slider indisponible (${fichier}), repli : ${err}`)
+      slidesMedia.push(image1Doc)
+    }
+  }
+
   payload.logger.info(`— Seeding posts (${articlesImportes.length} articles importés)...`)
 
   // Les images à la une viennent de l'ancien site. Si l'une n'est plus
@@ -202,6 +233,9 @@ export const seed = async ({
         metaImage: heroImages[1],
         gantsImage: heroImages[0],
         casqueImage: heroImages[2],
+        slideGroupe: slidesMedia[0],
+        slidePortrait: slidesMedia[1],
+        slideMoto: slidesMedia[2],
       }),
     }),
     payload.create({
@@ -213,116 +247,23 @@ export const seed = async ({
 
   payload.logger.info(`— Seeding globals...`)
 
-  await Promise.all([
-    payload.updateGlobal({
-      slug: 'header',
-      data: {
-        navItems: [
-          {
-            link: {
-              type: 'custom',
-              label: 'Soldes',
-              url: 'https://lesbikeuses.fr/soldes-2/',
-              newTab: true,
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Équipements',
-              url: 'https://lesbikeuses.fr/rubrique/blouson-moto/',
-              newTab: true,
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Accessoires',
-              url: 'https://lesbikeuses.fr/rubrique/accessoires/',
-              newTab: true,
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Vêtements',
-              url: 'https://lesbikeuses.fr/rubrique/vetements/',
-              newTab: true,
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Bons plans',
-              url: 'https://lesbikeuses.fr/rubrique/bons-plans/',
-              newTab: true,
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Blog',
-              url: '/posts',
-            },
-          },
-        ],
+  await payload.updateGlobal({
+    slug: 'header',
+    data: {
+      annonce: {
+        actif: true,
+        texte: 'Soldes en cours — jusqu’à **−50 %** sur les blousons cuir · Retours gratuits sous 30 jours',
+        url: 'https://lesbikeuses.fr/soldes-2/',
       },
-    }),
-    payload.updateGlobal({
-      slug: 'footer',
-      data: {
-        navItems: [
-          {
-            link: {
-              type: 'custom',
-              label: 'Qui sommes-nous',
-              url: 'https://lesbikeuses.fr/a-propos/',
-              newTab: true,
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Politique de retour',
-              url: 'https://lesbikeuses.fr/politique-de-retour/',
-              newTab: true,
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Dictionnaire moto',
-              url: 'https://lesbikeuses.fr/dictionnaire-moto/',
-              newTab: true,
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'FAQ',
-              url: 'https://lesbikeuses.fr/faq/',
-              newTab: true,
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'CGVU',
-              url: 'https://lesbikeuses.fr/cgv/',
-              newTab: true,
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Admin',
-              url: '/admin',
-            },
-          },
-        ],
-      },
-    }),
-  ])
+      baseline: 'LE site pour les femmes à moto',
+      navItems: navigationEntete,
+    },
+  })
+
+  await payload.updateGlobal({
+    slug: 'footer',
+    data: { navItems: navigationPied },
+  })
 
   payload.logger.info('Seeded database successfully!')
 }

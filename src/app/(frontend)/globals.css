@@ -225,6 +225,11 @@
   --radius-md: var(--radius);
   --radius-lg: var(--radius);
   --radius-xl: var(--radius);
+  /* Arrondis réservés à la navigation et au slider. Le reste de la page garde
+     les angles vifs de la DA : tout arrondir ramollirait le parti pris. */
+  --radius-pilule: 999px;
+  --radius-panneau: 18px;
+  --radius-slide: 22px;
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);

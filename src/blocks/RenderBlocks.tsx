@@ -11,6 +11,7 @@ import { IndexCategoriesBlock } from '@/blocks/IndexCategories/Component'
 import { JournalBlock } from '@/blocks/Journal/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { ParcoursBlock } from '@/blocks/Parcours/Component'
+import { SliderBlock } from '@/blocks/Slider/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -22,11 +23,12 @@ const blockComponents = {
   journal: JournalBlock,
   mediaBlock: MediaBlock,
   parcours: ParcoursBlock,
+  slider: SliderBlock,
 }
 
 // Les blocs de la DA gèrent leur propre rythme vertical, et certains sont pleine
 // largeur avec un fond : la marge générique `my-16` les décollerait du bord.
-const blocsAutonomes = new Set(['debuter', 'indexCategories', 'journal', 'parcours'])
+const blocsAutonomes = new Set(['debuter', 'indexCategories', 'journal', 'parcours', 'slider'])
 
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
