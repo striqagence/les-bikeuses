@@ -87,11 +87,14 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: connexionPostgres(),
-      // Plafond volontairement bas : en mode transaction c'est le pooler qui
-      // absorbe la concurrence, pas le pool local. Pas de `max: 1` pour
-      // autant — Payload ouvre une transaction en écriture puis exécute
-      // d'autres requêtes dans la même requête HTTP, qui attendraient sinon
-      // une connexion jamais libérée.
+      // Calibré sur le pool Supabase, porté à 40 le 2026-08-25 (l'instance
+      // Micro plafonne à 60 connexions, et Supabase alerte au-delà de 80 %).
+      // À 5 par instance, huit instances Vercel tiennent en parallèle.
+      //
+      // Ne pas descendre à 1 : la requête des pages ouvre plusieurs jointures
+      // latérales et réclame une seconde connexion, qui n'arriverait jamais.
+      // C'est ce qui a fait échouer un build en « timeout exceeded when
+      // trying to connect » alors que le pool n'était pourtant plus saturé.
       max: Number(process.env.DATABASE_POOL_MAX ?? 5),
       idleTimeoutMillis: 10_000,
       connectionTimeoutMillis: 15_000,
