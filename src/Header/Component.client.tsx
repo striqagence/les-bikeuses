@@ -208,7 +208,7 @@ const EntreeNav: React.FC<{
     <div className="group relative my-2 flex items-center">
       <CMSLink
         {...link}
-        className="inline-flex items-center gap-1.5 rounded-pilule px-4 py-2.5 text-sm font-bold whitespace-nowrap transition-colors group-hover:bg-accent group-hover:text-primary group-focus-within:bg-accent group-focus-within:text-primary"
+        className="inline-flex items-center gap-1.5 rounded-pilule px-3 py-2.5 text-[0.8125rem] font-bold tracking-[0.08em] whitespace-nowrap uppercase transition-colors group-hover:bg-accent group-hover:text-primary group-focus-within:bg-accent group-focus-within:text-primary xl:px-4"
       >
         {aSousMenu && (
           <ChevronDown className="size-2.5 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
@@ -277,7 +277,7 @@ const Tiroir: React.FC<{
                 <button
                   aria-expanded={ouvertIci}
                   className={cn(
-                    'flex w-full items-center justify-between py-4 text-left text-[1.0625rem] font-bold',
+                    'flex w-full items-center justify-between py-4 text-left text-base font-bold tracking-[0.06em] uppercase',
                     ouvertIci && 'text-primary',
                   )}
                   onClick={() => setDeplie(ouvertIci ? null : i)}
@@ -291,7 +291,7 @@ const Tiroir: React.FC<{
               ) : (
                 <CMSLink
                   {...link}
-                  className="block py-4 text-[1.0625rem] font-bold"
+                  className="block py-4 text-base font-bold tracking-[0.06em] uppercase"
                   onClick={fermer}
                 />
               )}
