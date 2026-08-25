@@ -19,10 +19,6 @@ const sous = (label: string, slug: string, refs?: number) => ({
  */
 export const navigationEntete: NonNullable<Header['navItems']> = [
   {
-    link: { type: 'custom', label: 'Soldes', url: `${SITE}/soldes-2/`, newTab: true },
-    accent: true,
-  },
-  {
     link: { type: 'custom', label: 'Équipements', url: rubrique('blouson-moto'), newTab: true },
     sousItems: [
       sous('Blousons moto', 'blouson-moto', 112),
