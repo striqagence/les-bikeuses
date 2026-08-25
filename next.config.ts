@@ -44,6 +44,25 @@ const nextConfig: NextConfig = {
 
     return webpackConfig
   },
+  // Le bucket Supabase est privé : les médias transitent donc par le proxy
+  // Payload `/api/media/file/...`, qui réveille une fonction et interroge la
+  // base à chaque image. Sans cache, une page d'accueil à huit visuels réclame
+  // huit connexions — de quoi saturer le pooler à elle seule.
+  //
+  // Payload suffixe déjà chaque URL de `?<updatedAt>` : la clé de cache change
+  // dès qu'un média est remplacé, un `s-maxage` long est donc sans risque.
+  // `max-age=0` garde le navigateur en revalidation, seul le CDN met en cache.
+  headers: async () => [
+    {
+      source: '/api/media/file/:path*',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400',
+        },
+      ],
+    },
+  ],
   reactStrictMode: true,
   redirects,
   turbopack: {
