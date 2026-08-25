@@ -169,18 +169,19 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
             image: slideGroupe.id,
             positionImage: 'right',
             coteCarton: 'gauche',
-            eyebrow: 'Soldes en cours',
-            titre: 'Jusqu’à',
-            titreAccent: '−50 % sur les blousons cuir',
+            // La diapositive Soldes est remplacée par le journal : c'est la
+            // seule section entièrement migrée, et elle mène quelque part.
+            eyebrow: 'Le journal',
+            titre: 'Essais, conseils et',
+            titreAccent: 'routes à faire',
             texte:
-              '112 blousons au catalogue, homologation vérifiée et coupes pensées pour les morphologies féminines.',
+              'Choisir sa première moto, son équipement, ses destinations : huit articles pour s’y retrouver.',
             links: [
               {
                 link: {
                   type: 'custom',
-                  label: 'Voir les soldes',
-                  url: `${SITE}/soldes-2/`,
-                  newTab: true,
+                  label: 'Lire le journal',
+                  url: '/posts',
                 },
               },
             ],

@@ -252,8 +252,11 @@ export const seed = async ({
     data: {
       annonce: {
         actif: true,
-        texte: 'Soldes en cours — jusqu’à **−50 %** sur les blousons cuir · Retours gratuits sous 30 jours',
-        url: 'https://lesbikeuses.fr/soldes-2/',
+        // Pas d'annonce commerciale tant que la boutique n'ouvre pas : afficher
+        // des soldes qui n'existent pas et renvoyer vers l'accueil tromperait
+        // le visiteur.
+        texte: 'Le nouveau site Les Bikeuses arrive — **la boutique ouvre bientôt**. Le journal est déjà en ligne.',
+        url: '/posts',
       },
       baseline: 'LE site pour les femmes à moto',
       navItems: navigationEntete,
