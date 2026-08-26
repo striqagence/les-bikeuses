@@ -19,31 +19,39 @@ export default async function Page() {
     depth: 1,
     limit: 12,
     overrideAccess: false,
+    sort: '-publishedAt',
     select: {
       title: true,
       slug: true,
       categories: true,
       meta: true,
+      publishedAt: true,
+      heroImage: true,
     },
   })
 
   return (
-    <div className="pt-24 pb-24">
+    <div className="pt-10 pb-24 md:pt-16">
       <PageClient />
-      <div className="container mb-16">
-        <div className="prose dark:prose-invert max-w-none">
-          <h1>Posts</h1>
-        </div>
-      </div>
 
-      <div className="container mb-8">
-        <PageRange
-          collection="posts"
-          currentPage={posts.page}
-          limit={12}
-          totalDocs={posts.totalDocs}
-        />
-      </div>
+      <header className="container mb-10 md:mb-14">
+        <p className="eyebrow">Le journal</p>
+        <h1 className="wonk mt-3 max-w-[18ch] text-4xl leading-[1.03] font-medium md:text-6xl">
+          Essais, conseils et routes à faire
+        </h1>
+        <p className="mt-5 max-w-[52ch] text-lg text-muted-foreground">
+          Choisir sa première moto, s’équiper pour la saison, préparer un long
+          trajet : ce qu’on aurait aimé lire en débutant.
+        </p>
+        <div className="mono-label mt-8 border-t border-border pt-4 text-muted-foreground">
+          <PageRange
+            collection="posts"
+            currentPage={posts.page}
+            limit={12}
+            totalDocs={posts.totalDocs}
+          />
+        </div>
+      </header>
 
       <CollectionArchive posts={posts.docs} />
 

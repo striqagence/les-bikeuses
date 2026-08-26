@@ -31,16 +31,18 @@ export default async function Page({ params: paramsPromise }: Args) {
     limit: 12,
     page: sanitizedPageNumber,
     overrideAccess: false,
+    sort: '-publishedAt',
   })
 
   return (
-    <div className="pt-24 pb-24">
+    <div className="pt-10 pb-24 md:pt-16">
       <PageClient />
-      <div className="container mb-16">
-        <div className="prose dark:prose-invert max-w-none">
-          <h1>Posts</h1>
-        </div>
-      </div>
+      <header className="container mb-10 md:mb-14">
+        <p className="eyebrow">Le journal</p>
+        <h1 className="wonk mt-3 text-4xl leading-[1.03] font-medium md:text-5xl">
+          Tous les articles
+        </h1>
+      </header>
 
       <div className="container mb-8">
         <PageRange
@@ -51,7 +53,7 @@ export default async function Page({ params: paramsPromise }: Args) {
         />
       </div>
 
-      <CollectionArchive posts={posts.docs} />
+      <CollectionArchive avecUne={false} posts={posts.docs} />
 
       <div className="container">
         {posts?.page && posts?.totalPages > 1 && (

@@ -5,27 +5,27 @@ import { Card, CardPostData } from '@/components/Card'
 
 export type Props = {
   posts: CardPostData[]
+  /** Passe le premier article en une, sur toute la largeur. */
+  avecUne?: boolean
 }
 
-export const CollectionArchive: React.FC<Props> = (props) => {
-  const { posts } = props
+export const CollectionArchive: React.FC<Props> = ({ posts, avecUne = true }) => {
+  const articles = (posts ?? []).filter((p): p is CardPostData => typeof p === 'object' && p !== null)
+  if (!articles.length) return null
+
+  // Une seule mise en avant, et seulement s'il reste de quoi remplir la grille
+  // en dessous : un article en une tout seul ferait une page très vide.
+  const enUne = avecUne && articles.length > 2 ? articles[0] : null
+  const grille = enUne ? articles.slice(1) : articles
 
   return (
-    <div className={cn('container')}>
-      <div>
-        <div className="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-12 gap-y-4 gap-x-4 lg:gap-y-8 lg:gap-x-8 xl:gap-x-8">
-          {posts?.map((result, index) => {
-            if (typeof result === 'object' && result !== null) {
-              return (
-                <div className="col-span-4" key={index}>
-                  <Card className="h-full" doc={result} relationTo="posts" showCategories />
-                </div>
-              )
-            }
+    <div className="container flex flex-col gap-6">
+      {enUne && <Card doc={enUne} relationTo="posts" showCategories variante="une" />}
 
-            return null
-          })}
-        </div>
+      <div className={cn('grid gap-6 sm:grid-cols-2 lg:grid-cols-3')}>
+        {grille.map((article, i) => (
+          <Card className="h-full" doc={article} key={i} relationTo="posts" showCategories />
+        ))}
       </div>
     </div>
   )
