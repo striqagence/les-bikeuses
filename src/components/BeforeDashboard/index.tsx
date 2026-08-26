@@ -1,6 +1,7 @@
 import { Banner } from '@payloadcms/ui/elements/Banner'
 import React from 'react'
 
+import { ImportButton } from './ImportButton'
 import { SeedButton } from './SeedButton'
 import './index.scss'
 
@@ -10,9 +11,20 @@ const BeforeDashboard: React.FC = () => {
   return (
     <div className={baseClass}>
       <Banner className={`${baseClass}__banner`} type="success">
-        <h4>Welcome to your dashboard!</h4>
+        <h4>Bienvenue sur le back-office Les Bikeuses</h4>
       </Banner>
-      Here&apos;s what to do next:
+
+      <p>
+        <strong>Reprise des articles de lesbikeuses.fr.</strong> L’import se fait par
+        lots et reprend là où il s’est arrêté : on peut l’interrompre et le relancer
+        sans rien dupliquer. Les articles déjà en base sont sautés, et les visuels sont
+        récupérés au passage.
+      </p>
+      <ImportButton />
+
+      <hr style={{ margin: '1.5rem 0', opacity: 0.2 }} />
+
+      Ensuite :
       <ul className={`${baseClass}__instructions`}>
         <li>
           <SeedButton />
