@@ -21,6 +21,7 @@ import type {
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/utilities/ui'
+import { ancre } from '@/utilities/sommaire'
 
 type NodeTypes =
   | DefaultNodeTypes
@@ -35,9 +36,39 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   return relationTo === 'posts' ? `/posts/${slug}` : `/${slug}`
 }
 
-const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
+const texteDuNoeud = (noeud: { text?: string; children?: unknown[] }): string =>
+  noeud.text ??
+  ((noeud.children ?? []) as { text?: string; children?: unknown[] }[])
+    .map(texteDuNoeud)
+    .join('')
+
+/**
+ * Les convertisseurs sont fabriqués à chaque rendu, et non partagés au niveau
+ * du module : le compteur de doublons doit repartir de zéro pour chaque
+ * article, sinon le deuxième article rendu hériterait des suffixes du premier.
+ *
+ * Les titres reçoivent une ancre calculée par la même fonction que le
+ * sommaire (`ancre`), avec la même règle de suffixe sur les doublons — sans
+ * quoi les liens du sommaire ne pointeraient sur rien.
+ */
+const fabriqueConverters = (): JSXConvertersFunction<NodeTypes> => {
+  const compteur = new Map<string, number>()
+
+  return ({ defaultConverters }) => ({
   ...defaultConverters,
   ...LinkJSXConverter({ internalDocToHref }),
+  heading: ({ node, nodesToJSX }) => {
+    const Balise = node.tag as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+    const enfants = nodesToJSX({ nodes: node.children })
+
+    if (Balise !== 'h2' && Balise !== 'h3') return <Balise>{enfants}</Balise>
+
+    const base = ancre(texteDuNoeud(node as never).trim())
+    const vu = compteur.get(base) ?? 0
+    compteur.set(base, vu + 1)
+
+    return <Balise id={vu === 0 ? base : `${base}-${vu + 1}`}>{enfants}</Balise>
+  },
   blocks: {
     banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
     mediaBlock: ({ node }) => (
@@ -53,7 +84,8 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
     code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
     cta: ({ node }) => <CallToActionBlock {...node.fields} />,
   },
-})
+  })
+}
 
 type Props = {
   data: DefaultTypedEditorState
@@ -65,7 +97,7 @@ export default function RichText(props: Props) {
   const { className, enableProse = true, enableGutter = true, ...rest } = props
   return (
     <ConvertRichText
-      converters={jsxConverters}
+      converters={fabriqueConverters()}
       className={cn(
         'payload-richtext',
         {

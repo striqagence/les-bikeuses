@@ -82,6 +82,26 @@ export const Posts: CollectionConfig<'posts'> = {
               relationTo: 'media',
             },
             {
+              name: 'essentiel',
+              type: 'array',
+              label: 'L’essentiel de cet article',
+              labels: { singular: 'Point', plural: 'Points' },
+              maxRows: 6,
+              admin: {
+                initCollapsed: true,
+                description:
+                  'Encart de synthèse en tête d’article. Travail éditorial : un résumé automatique donnerait de la bouillie. Encadrer un fragment de **doubles astérisques** pour le mettre en gras.',
+              },
+              fields: [
+                {
+                  name: 'texte',
+                  type: 'textarea',
+                  label: 'Point',
+                  required: true,
+                },
+              ],
+            },
+            {
               name: 'content',
               type: 'richText',
               editor: lexicalEditor({

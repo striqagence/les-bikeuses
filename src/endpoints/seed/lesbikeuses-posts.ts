@@ -33,6 +33,21 @@ export type ArticleImporte = {
 
 export const articlesImportes = donnees as unknown as ArticleImporte[]
 
+/**
+ * « L'essentiel » par article. C'est un travail de synthèse éditoriale, pas
+ * une extraction : seul l'article Permis A2 en a un, rédigé depuis son
+ * contenu réel et validé. Les autres restent à écrire dans l'admin.
+ */
+const ESSENTIELS: Record<string, string[]> = {
+  'permis-a2-quelle-moto-femme-choisir': [
+    'Le permis A2 plafonne à **35 kW (47,5 ch)**. Une moto plus puissante reste éligible si elle est bridée par un professionnel agréé, et si sa puissance d’origine n’excède pas le double.',
+    'Le code moto se passe avant tout : **35 bonnes réponses sur 40** sont exigées, soit 87,5 %.',
+    'Pour un gabarit féminin, les critères qui comptent sont la **hauteur de selle**, le **poids à l’arrêt** et la largeur du cadre — pas la puissance.',
+    'Quinze modèles A2 sont passés en revue, de la **KTM 390 Duke** (poids plume) à la **Yamaha MT-07**, avec le coût du bridage pour chacun.',
+    'Avant d’acheter : **faire un essai**, pieds au sol, à l’arrêt comme en manœuvre.',
+  ],
+}
+
 type Args = {
   article: ArticleImporte
   heroImage: Media
@@ -56,6 +71,7 @@ export const articleVersPost = ({
     categories: categorie ? [categorie.id] : [],
     publishedAt: article.publishedAt,
     heroImage: heroImage.id,
+    essentiel: (ESSENTIELS[article.slug] ?? []).map((texte) => ({ texte })),
     content: article.content,
     meta: {
       title: article.title,

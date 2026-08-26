@@ -11,6 +11,10 @@ import RichText from '@/components/RichText'
 import type { Post } from '@/payload-types'
 
 import { PostHero } from '@/heros/PostHero'
+import { Essentiel } from '@/components/Article/Essentiel'
+import { ProgressionLecture } from '@/components/Article/ProgressionLecture'
+import { Sommaire } from '@/components/Article/Sommaire'
+import { construireSommaire } from '@/utilities/sommaire'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
@@ -56,8 +60,11 @@ export default async function Post({ params: paramsPromise }: Args) {
 
   if (!post) return <PayloadRedirects url={url} />
 
+  const sommaire = construireSommaire(post.content)
+  const essentiel = post.essentiel ?? []
+
   return (
-    <article className="pt-16 pb-16">
+    <article className="pb-16">
       <PageClient />
 
       {/* Allows redirects for valid pages too */}
@@ -65,19 +72,33 @@ export default async function Post({ params: paramsPromise }: Args) {
 
       {draft && <LivePreviewListener />}
 
+      <ProgressionLecture />
       <PostHero post={post} />
 
-      <div className="flex flex-col items-center gap-4 pt-8">
-        <div className="container">
-          <RichText className="max-w-[48rem] mx-auto" data={post.content} enableGutter={false} />
-          {post.relatedPosts && post.relatedPosts.length > 0 && (
-            <RelatedPosts
-              className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
-              docs={post.relatedPosts.filter((post) => typeof post === 'object')}
-            />
-          )}
+      {/* Sommaire en marge sur grand écran, au-dessus du texte en dessous de lg */}
+      <div className="container grid items-start gap-8 py-10 md:py-14 lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-16">
+        {sommaire.length > 1 ? <Sommaire entrees={sommaire} /> : <div className="hidden lg:block" />}
+
+        <div className="max-w-[68ch]">
+          {essentiel.length > 0 && <Essentiel points={essentiel} />}
+          <RichText className="corps-article" data={post.content} enableGutter={false} />
         </div>
       </div>
+
+      {post.relatedPosts && post.relatedPosts.length > 0 && (
+        <>
+          <div className="container">
+            <hr className="route" />
+          </div>
+          <div className="container pt-10 md:pt-14">
+            <p className="eyebrow">À lire ensuite</p>
+            <h2 className="wonk mt-2 mb-8 text-3xl font-medium md:text-4xl">
+              Dans la même rubrique
+            </h2>
+            <RelatedPosts docs={post.relatedPosts.filter((post) => typeof post === 'object')} />
+          </div>
+        </>
+      )}
     </article>
   )
 }

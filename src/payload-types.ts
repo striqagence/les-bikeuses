@@ -276,6 +276,15 @@ export interface Post {
   id: number;
   title: string;
   heroImage?: (number | null) | Media;
+  /**
+   * Encart de synthèse en tête d’article. Travail éditorial : un résumé automatique donnerait de la bouillie. Encadrer un fragment de **doubles astérisques** pour le mettre en gras.
+   */
+  essentiel?:
+    | {
+        texte: string;
+        id?: string | null;
+      }[]
+    | null;
   content: {
     root: {
       type: string;
@@ -1684,6 +1693,12 @@ export interface FormBlockSelect<T extends boolean = true> {
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
   heroImage?: T;
+  essentiel?:
+    | T
+    | {
+        texte?: T;
+        id?: T;
+      };
   content?: T;
   relatedPosts?: T;
   categories?: T;

@@ -1,73 +1,96 @@
-import { formatDateTime } from 'src/utilities/formatDateTime'
+import Link from 'next/link'
 import React from 'react'
 
 import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
-import { formatAuthors } from '@/utilities/formatAuthors'
+import { dateCourte, dureeLecture } from '@/utilities/sommaire'
 
-export const PostHero: React.FC<{
-  post: Post
-}> = ({ post }) => {
-  const { categories, heroImage, populatedAuthors, publishedAt, title } = post
+/**
+ * Chapeau d'article.
+ *
+ * Le titre n'est plus posé en blanc sur la photo : sa lisibilité ne dépend
+ * donc plus du visuel chargé, qui illustre au lieu de servir de fond.
+ */
+export const PostHero: React.FC<{ post: Post }> = ({ post }) => {
+  const { categories, content, heroImage, meta, publishedAt, title } = post
 
-  const hasAuthors =
-    populatedAuthors && populatedAuthors.length > 0 && formatAuthors(populatedAuthors) !== ''
+  const rubrique = categories?.find((c) => typeof c === 'object')
+  const nomRubrique = typeof rubrique === 'object' ? rubrique.title : null
+  const date = dateCourte(publishedAt)
+  const duree = dureeLecture(content)
 
   return (
-    <div className="relative -mt-[10.4rem] flex items-end">
-      <div className="container z-10 relative lg:grid lg:grid-cols-[1fr_48rem_1fr] text-white pb-8">
-        <div className="col-start-1 col-span-1 md:col-start-2 md:col-span-2">
-          <div className="uppercase text-sm mb-6">
-            {categories?.map((category, index) => {
-              if (typeof category === 'object' && category !== null) {
-                const { title: categoryTitle } = category
-
-                const titleToUse = categoryTitle || 'Untitled category'
-
-                const isLast = index === categories.length - 1
-
-                return (
-                  <React.Fragment key={index}>
-                    {titleToUse}
-                    {!isLast && <React.Fragment>, &nbsp;</React.Fragment>}
-                  </React.Fragment>
-                )
-              }
-              return null
-            })}
-          </div>
-
-          <div className="">
-            <h1 className="mb-6 text-3xl md:text-5xl lg:text-6xl">{title}</h1>
-          </div>
-
-          <div className="flex flex-col md:flex-row gap-4 md:gap-16">
-            {hasAuthors && (
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm">Author</p>
-
-                  <p>{formatAuthors(populatedAuthors)}</p>
-                </div>
-              </div>
-            )}
-            {publishedAt && (
-              <div className="flex flex-col gap-1">
-                <p className="text-sm">Date Published</p>
-
-                <time dateTime={publishedAt}>{formatDateTime(publishedAt)}</time>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      <div className="min-h-[80vh] select-none">
-        {heroImage && typeof heroImage !== 'string' && (
-          <Media fill priority imgClassName="-z-10 object-cover" resource={heroImage} />
+    <header className="container pt-7 md:pt-12">
+      <nav aria-label="Fil d’Ariane" className="mono-label mb-7 flex flex-wrap items-center gap-2 text-muted-foreground">
+        <Link className="transition-colors hover:text-primary" href="/">
+          Accueil
+        </Link>
+        <span aria-hidden="true" className="opacity-50">
+          /
+        </span>
+        <Link className="transition-colors hover:text-primary" href="/posts">
+          Le journal
+        </Link>
+        {nomRubrique && (
+          <>
+            <span aria-hidden="true" className="opacity-50">
+              /
+            </span>
+            <span>{nomRubrique}</span>
+          </>
         )}
-        <div className="absolute pointer-events-none left-0 bottom-0 w-full h-1/2 bg-linear-to-t from-black to-transparent" />
-      </div>
-    </div>
+      </nav>
+
+      {nomRubrique && <p className="eyebrow mb-4">{nomRubrique}</p>}
+
+      <h1 className="wonk max-w-[20ch] text-4xl leading-[1.02] font-medium tracking-[-0.02em] md:text-6xl">
+        {title}
+      </h1>
+
+      {meta?.description && (
+        <p className="mt-6 max-w-[58ch] text-lg leading-relaxed text-muted-foreground">
+          {meta.description}
+        </p>
+      )}
+
+      <dl className="mono-label mt-8 flex flex-wrap gap-x-8 border-y border-border py-4 text-muted-foreground">
+        {date && (
+          <div className="flex items-baseline gap-2">
+            <dt>Publié le</dt>
+            <dd className="m-0 font-medium text-foreground">{date}</dd>
+          </div>
+        )}
+        <div className="flex items-baseline gap-2">
+          <dt>Lecture</dt>
+          <dd className="m-0 font-medium text-foreground">{duree} min</dd>
+        </div>
+        {nomRubrique && (
+          <div className="flex items-baseline gap-2">
+            <dt>Rubrique</dt>
+            <dd className="m-0 font-medium text-foreground">{nomRubrique}</dd>
+          </div>
+        )}
+      </dl>
+
+      {heroImage && typeof heroImage === 'object' && (
+        <figure className="m-0 mt-8">
+          <div className="aspect-video overflow-hidden rounded-slide bg-secondary">
+            <Media
+              className="h-full"
+              imgClassName="h-full w-full object-cover"
+              priority
+              resource={heroImage}
+              size="(max-width: 1024px) 100vw, 1240px"
+            />
+          </div>
+          {heroImage.alt && (
+            <figcaption className="mono-label mt-3 text-muted-foreground">
+              {heroImage.alt}
+            </figcaption>
+          )}
+        </figure>
+      )}
+    </header>
   )
 }
