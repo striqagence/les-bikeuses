@@ -15,17 +15,25 @@ import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
 
 import type {
   BannerBlock as BannerBlockProps,
+  CarrouselProduitsBlock as CarrouselProduitsBlockProps,
   CallToActionBlock as CTABlockProps,
   MediaBlock as MediaBlockProps,
 } from '@/payload-types'
 import { BannerBlock } from '@/blocks/Banner/Component'
+import { CarrouselProduitsBlock } from '@/blocks/CarrouselProduits/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/utilities/ui'
 import { ancre } from '@/utilities/sommaire'
 
 type NodeTypes =
   | DefaultNodeTypes
-  | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
+  | SerializedBlockNode<
+      | CTABlockProps
+      | MediaBlockProps
+      | BannerBlockProps
+      | CodeBlockProps
+      | CarrouselProduitsBlockProps
+    >
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   const { value, relationTo } = linkNode.fields.doc!
@@ -84,6 +92,7 @@ const fabriqueConverters = (): JSXConvertersFunction<NodeTypes> => {
     ),
     code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
     cta: ({ node }) => <CallToActionBlock {...node.fields} />,
+    carrouselProduits: ({ node }) => <CarrouselProduitsBlock {...node.fields} />,
   },
   })
 }

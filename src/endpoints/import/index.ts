@@ -7,6 +7,7 @@ import {
   listerSlugs,
   type ArticleExtrait,
   type NoeudImage,
+  type NoeudProduits,
 } from './extraction'
 
 export type Rapport = {
@@ -84,6 +85,7 @@ export const importerArticles = async ({
   // Les mêmes visuels reviennent d'un article à l'autre : on ne les envoie
   // qu'une fois par exécution.
   const cacheMedias = new Map<string, Media | null>()
+  const cacheProduits = new Map<number, number | null>()
 
   for (const slug of lot) {
     try {
@@ -101,7 +103,7 @@ export const importerArticles = async ({
         ? await recupererMedia(payload, cacheMedias, article.imageUne, article.titre)
         : null
 
-      const contenu = await construireContenu(payload, cacheMedias, article)
+      const contenu = await construireContenu(payload, cacheMedias, cacheProduits, article)
       const categories = await resoudreCategories(payload, cacheCategories, article.categories)
 
       const donnees = {
@@ -162,11 +164,28 @@ export const importerArticles = async ({
 const construireContenu = async (
   payload: Payload,
   cache: Map<string, Media | null>,
+  cacheProduits: Map<number, number | null>,
   article: ArticleExtrait,
 ) => {
   const enfants: Record<string, unknown>[] = []
 
   for (const bloc of article.blocs) {
+    if ((bloc as NoeudProduits).type === '__produits') {
+      const ids = await resoudreProduits(payload, cacheProduits, (bloc as NoeudProduits).produits)
+      // Un carrousel dont aucun produit n'est en base est omis : mieux vaut
+      // rien qu'un bandeau vide. Il réapparaîtra à la réimportation, une fois
+      // le catalogue en place.
+      if (ids.length) {
+        enfants.push({
+          type: 'block',
+          fields: { blockType: 'carrouselProduits', produits: ids },
+          format: '',
+          version: 2,
+        })
+      }
+      continue
+    }
+
     if ((bloc as NoeudImage).type === '__image') {
       const { url, alt } = bloc as NoeudImage
       const media = await recupererMedia(payload, cache, url, alt || article.titre)
@@ -282,4 +301,42 @@ const resoudreCategories = async (
 const trouverAuteur = async (payload: Payload): Promise<number | null> => {
   const users = await payload.find({ collection: 'users', depth: 0, limit: 1, pagination: false })
   return users.docs[0]?.id ?? null
+}
+
+/* ---------- produits des carrousels ---------- */
+
+/**
+ * Retrouve en base les produits cités par un carrousel.
+ *
+ * Recherche par identifiant WooCommerce d'abord, par slug ensuite : le slug
+ * peut avoir été modifié à l'import, l'identifiant non.
+ */
+const resoudreProduits = async (
+  payload: Payload,
+  cache: Map<number, number | null>,
+  cites: { wooId: number; slug: string }[],
+): Promise<number[]> => {
+  const ids: number[] = []
+
+  for (const { wooId, slug } of cites) {
+    if (cache.has(wooId)) {
+      const connu = cache.get(wooId)
+      if (connu) ids.push(connu)
+      continue
+    }
+
+    const trouve = await payload.find({
+      collection: 'products',
+      depth: 0,
+      limit: 1,
+      pagination: false,
+      where: { or: [{ wooId: { equals: wooId } }, { slug: { equals: slug } }] },
+    })
+
+    const id = trouve.docs[0]?.id ?? null
+    cache.set(wooId, id)
+    if (id) ids.push(id)
+  }
+
+  return ids
 }

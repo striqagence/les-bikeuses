@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import config from '@payload-config'
 
 import { importerArticles } from '@/endpoints/import'
+import { importerProduits } from '@/endpoints/import/produits'
 
 // L'import télécharge et réenvoie les visuels de chaque article : il faut de
 // la marge. Un lot est volontairement petit pour rester loin du plafond.
@@ -20,8 +21,15 @@ export async function POST(request: Request): Promise<Response> {
     // Plafonné à 12 : au-delà, un lot dépasse la durée maximale de la fonction.
     const taille = Number.isFinite(demande) ? Math.min(Math.max(demande, 1), 12) : 8
 
-    const req = await createLocalReq({ user }, payload)
     const forcer = url.searchParams.get('forcer') === '1'
+    const req = await createLocalReq({ user }, payload)
+
+    // `?quoi=produits` importe le catalogue WooCommerce ; par défaut, les
+    // articles. Les produits doivent passer en premier : un carrousel dont
+    // aucun produit n'est en base est omis à l'import de l'article.
+    if (url.searchParams.get('quoi') === 'produits') {
+      return Response.json(await importerProduits({ payload, req, taille }))
+    }
 
     const rapport = await importerArticles({ payload, req, taille, forcer })
 

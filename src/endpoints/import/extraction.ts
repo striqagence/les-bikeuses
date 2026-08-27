@@ -33,7 +33,13 @@ export type NoeudImage = {
   alt: string
 }
 
-export type BlocExtrait = Record<string, unknown> | NoeudImage
+/** Carrousel produits repéré dans le corps, résolu en bloc à l'import. */
+export type NoeudProduits = {
+  type: '__produits'
+  produits: { wooId: number; slug: string }[]
+}
+
+export type BlocExtrait = Record<string, unknown> | NoeudImage | NoeudProduits
 
 export type ArticleExtrait = {
   slug: string
@@ -232,6 +238,66 @@ export const extraireArticle = async (
     }
   }
 
+  // Fiches produits des carrousels WooCommerce. Repérées à part, avec leur
+  // position, puis réinsérées dans l'ordre du document : elles vivent dans des
+  // `div` que la boucle sur les blocs de texte ne parcourt pas.
+  //
+  // La classe suffit à les trouver : elle porte l'identifiant WooCommerce
+  // (`post-11321`). Le slug, cherché dans le lien voisin, n'est qu'un recours
+  // — exiger sa présence faisait manquer la moitié des fiches.
+  const fiches: { index: number; wooId: number; slug: string }[] = []
+  for (const f of corps.matchAll(/class="[^"]*\bproduct-small\b[^"]*\bpost-(\d+)\b[^"]*"/g)) {
+    const index = f.index ?? 0
+    const lien = corps
+      .slice(index, index + 2500)
+      .match(/href="https:\/\/lesbikeuses\.fr\/product\/([^"/]+)\//)
+    fiches.push({
+      index,
+      wooId: Number(f[1]),
+      slug: lien ? decodeURIComponent(lien[1]) : '',
+    })
+  }
+
+  // Les fiches d'un même carrousel sont séparées par le balisage de chaque
+  // carte : plusieurs kilo-octets, les `srcset` du lazy-load étant très longs.
+  // Un seuil trop bas éclatait un carrousel de neuf produits en neuf blocs
+  // d'un seul, en laissant passer les photos et les liens des cartes.
+  const ECART_MAX = 15000
+  const groupes: { debut: number; fin: number; produits: { wooId: number; slug: string }[] }[] = []
+  for (const fiche of fiches) {
+    const dernier = groupes[groupes.length - 1]
+    if (dernier && fiche.index - dernier.fin < ECART_MAX) {
+      dernier.fin = fiche.index
+      if (!dernier.produits.some((p) => p.wooId === fiche.wooId)) {
+        dernier.produits.push({ wooId: fiche.wooId, slug: fiche.slug })
+      }
+    } else {
+      groupes.push({
+        debut: fiche.index,
+        fin: fiche.index,
+        produits: [{ wooId: fiche.wooId, slug: fiche.slug }],
+      })
+    }
+  }
+  // Marge de fin modérée : le groupe est repéré par les balises d'ouverture
+  // des cartes, la dernière s'étend au-delà. Une marge large avalait les
+  // paragraphes de conclusion — le résidu de la dernière carte est écarté
+  // ensuite, sur le contenu et non sur la distance.
+  for (const g of groupes) g.fin += 3000
+
+  let curseurGroupes = 0
+  /** Insère les carrousels situés avant `limite` dans le document. */
+  const viderFiches = (limite: number) => {
+    while (curseurGroupes < groupes.length && groupes[curseurGroupes].debut < limite) {
+      blocs.push({ type: '__produits', produits: groupes[curseurGroupes].produits })
+      curseurGroupes += 1
+    }
+  }
+
+  /** Un bloc de texte situé dans un carrousel appartient à une fiche produit. */
+  const dansUnCarrousel = (index: number) =>
+    groupes.some((g) => index >= g.debut && index <= g.fin)
+
   // Les `<img>` isolés sont balayés au même titre que les blocs de texte :
   // beaucoup ne sont enveloppés dans aucun paragraphe.
   const re = /<(p|h2|h3|ul|figure)\b[^>]*>([\s\S]*?)<\/\1>|<img\b[^>]*>/gi
@@ -239,6 +305,13 @@ export const extraireArticle = async (
 
   while ((m = re.exec(corps))) {
     const [complet, balise, interieur] = m
+
+    if (dansUnCarrousel(m.index)) {
+      viderFiches(m.index)
+      continue
+    }
+
+    viderFiches(m.index)
 
     if (!balise) {
       empilerImages(complet)
@@ -276,6 +349,42 @@ export const extraireArticle = async (
 
     blocs.push(tag === 'p' ? paragraphe(enrichir(nettoye)) : titre(brut, tag as 'h2' | 'h3'))
   }
+
+  // Carrousels situés après le dernier bloc de texte.
+  viderFiches(corps.length)
+
+  // Résidu de la dernière carte d'un carrousel : sa photo et son lien
+  // tombent juste après la marge du groupe. On écarte ce qui suit
+  // immédiatement un carrousel et ne porte pas de texte — un vrai paragraphe
+  // de contenu en porte toujours.
+  // Texte hors liens : une carte produit ne laisse derrière elle que des
+  // liens (nom du produit, « ajouter au panier »), alors qu'un paragraphe de
+  // contenu porte toujours de la prose.
+  const texteHorsLiens = (bloc: BlocExtrait): number => {
+    const n = bloc as { children?: { type?: string; text?: string }[] }
+    return (n.children ?? [])
+      .filter((e) => e.type === 'text')
+      .map((e) => e.text ?? '')
+      .join('')
+      .trim().length
+  }
+
+  const nettoyes: BlocExtrait[] = []
+  for (const bloc of blocs) {
+    const precedent = nettoyes[nettoyes.length - 1]
+    const suitUnCarrousel =
+      (precedent as NoeudProduits | undefined)?.type === '__produits' ||
+      (nettoyes.length > 1 &&
+        (nettoyes[nettoyes.length - 2] as NoeudProduits | undefined)?.type === '__produits')
+
+    const type = (bloc as { type?: string }).type
+    const residu =
+      suitUnCarrousel && (type === '__image' || (type === 'paragraph' && texteHorsLiens(bloc) < 25))
+
+    if (!residu) nettoyes.push(bloc)
+  }
+  blocs.length = 0
+  blocs.push(...nettoyes)
 
   const categories = [...new Set([...html.matchAll(/rel="category tag">([^<]+)</g)].map((c) => decoder(c[1])))]
 

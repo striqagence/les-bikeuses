@@ -15,7 +15,14 @@ const BeforeDashboard: React.FC = () => {
       </Banner>
 
       <p>
-        <strong>Reprise des articles de lesbikeuses.fr.</strong> L’import se fait par
+        <strong>1. Le catalogue.</strong> Les articles citent des produits dans leurs
+        carrousels : importer le catalogue en premier, sinon ces carrousels sont
+        omis faute de produits à référencer.
+      </p>
+      <ImportButton quoi="produits" />
+
+      <p style={{ marginTop: '1.5rem' }}>
+        <strong>2. Les articles.</strong> Reprise depuis lesbikeuses.fr. L’import se fait par
         lots et reprend là où il s’est arrêté : on peut l’interrompre et le relancer
         sans rien dupliquer. Les articles déjà en base sont sautés, et les visuels sont
         récupérés au passage.

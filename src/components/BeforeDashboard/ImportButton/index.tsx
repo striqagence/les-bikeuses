@@ -19,7 +19,10 @@ type Rapport = {
  * d'une fonction. Chaque lot est autonome, l'opération reprend où elle en
  * était et peut être interrompue sans dégât.
  */
-export const ImportButton: React.FC<{ forcer?: boolean }> = ({ forcer = false }) => {
+export const ImportButton: React.FC<{ forcer?: boolean; quoi?: 'articles' | 'produits' }> = ({
+  forcer = false,
+  quoi = 'articles',
+}) => {
   const [enCours, setEnCours] = useState(false)
   const [etat, setEtat] = useState<string | null>(null)
   const stop = useRef(false)
@@ -38,10 +41,14 @@ export const ImportButton: React.FC<{ forcer?: boolean }> = ({ forcer = false })
 
     try {
       for (;;) {
-        const reponse = await fetch(`/next/import?taille=8${forcer ? '&forcer=1' : ''}`, {
-          method: 'POST',
-          credentials: 'include',
-        })
+        const reponse = await fetch(
+          `/next/import?taille=${quoi === 'produits' ? 12 : 8}` +
+            `${forcer ? '&forcer=1' : ''}${quoi === 'produits' ? '&quoi=produits' : ''}`,
+          {
+            method: 'POST',
+            credentials: 'include',
+          },
+        )
         if (!reponse.ok) throw new Error(`Le serveur a répondu ${reponse.status}`)
 
         const rapport: Rapport = await reponse.json()
@@ -49,7 +56,7 @@ export const ImportButton: React.FC<{ forcer?: boolean }> = ({ forcer = false })
         ignores += rapport.ignores.length
 
         setEtat(
-          `${rapport.dejaPresents + rapport.importes.length} / ${rapport.total} articles — ` +
+          `${rapport.dejaPresents + rapport.importes.length} / ${rapport.total} ${quoi} — ` +
             `${rapport.restants} restants` +
             (ignores ? ` · ${ignores} ignoré${ignores > 1 ? 's' : ''}` : ''),
         )
@@ -64,7 +71,7 @@ export const ImportButton: React.FC<{ forcer?: boolean }> = ({ forcer = false })
         // qui fait foi pour la progression.
       }
 
-      toast.success(`Import terminé — ${importes} article${importes > 1 ? 's' : ''} ajouté${importes > 1 ? 's' : ''}.`)
+      toast.success(`Import terminé — ${importes} ${quoi === 'produits' ? 'produit' : 'article'}${importes > 1 ? 's' : ''} traité${importes > 1 ? 's' : ''}.`)
     } catch (err) {
       toast.error(`Import interrompu : ${err instanceof Error ? err.message : 'erreur inconnue'}`)
     } finally {
@@ -77,9 +84,11 @@ export const ImportButton: React.FC<{ forcer?: boolean }> = ({ forcer = false })
       <button className="btn btn--style-secondary" onClick={lancer} type="button">
         {enCours
           ? 'Arrêter'
-          : forcer
-            ? 'Tout réimporter (met à jour l’existant)'
-            : 'Importer les articles de lesbikeuses.fr'}
+          : quoi === 'produits'
+            ? 'Importer le catalogue produits'
+            : forcer
+              ? 'Tout réimporter (met à jour l’existant)'
+              : 'Importer les articles de lesbikeuses.fr'}
       </button>
       {etat && (
         <p style={{ marginTop: '.5rem', opacity: 0.75, fontSize: '.85rem' }}>{etat}</p>

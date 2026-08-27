@@ -1,0 +1,240 @@
+import type { Payload, PayloadRequest } from 'payload'
+import type { Category, Media, Product } from '@/payload-types'
+
+import { decoder } from './extraction'
+
+export type RapportProduits = {
+  total: number
+  dejaPresents: number
+  importes: string[]
+  ignores: { slug: string; raison: string }[]
+  restants: number
+}
+
+type ProduitWoo = {
+  id: number
+  name: string
+  slug: string
+  permalink: string
+  sku?: string
+  short_description?: string
+  prices?: { price?: string; currency_minor_unit?: number }
+  images?: { src: string; alt?: string }[]
+  categories?: { name: string }[]
+}
+
+const ardoise = (t: string): string =>
+  t
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+
+const PAR_PAGE = 100
+
+/**
+ * Import du catalogue WooCommerce.
+ *
+ * L'API Store de lesbikeuses.fr est ouverte, contrairement à `wp/v2` : les
+ * produits viennent donc de données structurées, pas d'un raclage de HTML.
+ *
+ * Par lots, comme les articles : cinq cents produits et leurs visuels
+ * dépassent la durée maximale d'une fonction.
+ */
+export const importerProduits = async ({
+  payload,
+  req,
+  taille = 20,
+}: {
+  payload: Payload
+  req: PayloadRequest
+  taille?: number
+}): Promise<RapportProduits> => {
+  const tous = await listerProduits()
+
+  const existants = await payload.find({
+    collection: 'products',
+    depth: 0,
+    limit: 2000,
+    pagination: false,
+    select: { slug: true },
+  })
+  const dejaLa = new Set(existants.docs.map((d) => d.slug).filter(Boolean) as string[])
+
+  const aFaire = tous.filter((p) => !dejaLa.has(p.slug))
+  const lot = aFaire.slice(0, taille)
+
+  const rapport: RapportProduits = {
+    total: tous.length,
+    dejaPresents: dejaLa.size,
+    importes: [],
+    ignores: [],
+    restants: Math.max(0, aFaire.length - lot.length),
+  }
+
+  if (!lot.length) return rapport
+
+  const cacheCategories = new Map<string, number>()
+  const cacheMedias = new Map<string, Media | null>()
+
+  for (const woo of lot) {
+    try {
+      // Un seul visuel par produit : celui qu'affichent les carrousels. Les
+      // galeries complètes multiplieraient par trois ou quatre le volume
+      // envoyé sur Supabase Storage pour un usage qui n'existe pas encore.
+      const principale = woo.images?.[0]
+      const image = principale
+        ? await recupererMedia(payload, cacheMedias, principale.src, principale.alt || woo.name)
+        : null
+
+      const categories = await resoudreCategories(
+        payload,
+        cacheCategories,
+        (woo.categories ?? []).map((c) => decoder(c.name)),
+      )
+
+      await payload.create({
+        collection: 'products',
+        depth: 0,
+        req,
+        data: {
+          title: decoder(woo.name),
+          slug: woo.slug,
+          wooId: woo.id,
+          sourceUrl: woo.permalink,
+          ...(woo.sku ? { reference: woo.sku } : {}),
+          ...(prixEnEuros(woo) !== null ? { price: prixEnEuros(woo)! } : {}),
+          ...(woo.short_description
+            ? { shortDescription: texteBrut(woo.short_description).slice(0, 500) }
+            : {}),
+          ...(image ? { gallery: [{ image: image.id }] } : {}),
+          category: categories,
+        } as Partial<Product> as never,
+      })
+
+      rapport.importes.push(woo.slug)
+    } catch (err) {
+      payload.logger.error({ err }, `Produit non importé : ${woo.slug}`)
+      rapport.ignores.push({
+        slug: woo.slug,
+        raison: err instanceof Error ? err.message : 'erreur inconnue',
+      })
+    }
+  }
+
+  return rapport
+}
+
+/** L'API Store renvoie les prix en centimes, sous forme de chaîne. */
+const prixEnEuros = (woo: ProduitWoo): number | null => {
+  const brut = woo.prices?.price
+  if (!brut) return null
+  const centimes = Number(brut)
+  if (!Number.isFinite(centimes)) return null
+  const unite = woo.prices?.currency_minor_unit ?? 2
+  return centimes / 10 ** unite
+}
+
+const texteBrut = (html: string): string =>
+  decoder(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim()
+
+const listerProduits = async (): Promise<ProduitWoo[]> => {
+  const tous: ProduitWoo[] = []
+
+  for (let page = 1; page <= 20; page++) {
+    const r = await fetch(
+      `https://lesbikeuses.fr/wp-json/wc/store/v1/products?per_page=${PAR_PAGE}&page=${page}`,
+    )
+    if (!r.ok) break
+
+    const lot = (await r.json()) as ProduitWoo[]
+    if (!lot.length) break
+
+    tous.push(...lot)
+    if (lot.length < PAR_PAGE) break
+  }
+
+  return tous
+}
+
+const recupererMedia = async (
+  payload: Payload,
+  cache: Map<string, Media | null>,
+  url: string,
+  alt: string,
+): Promise<Media | null> => {
+  if (cache.has(url)) return cache.get(url) ?? null
+
+  try {
+    const nom = decodeURIComponent(url.split('/').pop() ?? '').split('?')[0] || 'produit.jpg'
+
+    const connu = await payload.find({
+      collection: 'media',
+      depth: 0,
+      limit: 1,
+      pagination: false,
+      where: { filename: { equals: nom } },
+    })
+    if (connu.docs[0]) {
+      cache.set(url, connu.docs[0])
+      return connu.docs[0]
+    }
+
+    const r = await fetch(url)
+    if (!r.ok) throw new Error(`HTTP ${r.status}`)
+    const data = Buffer.from(await r.arrayBuffer())
+
+    const media = await payload.create({
+      collection: 'media',
+      data: { alt: alt.slice(0, 200) },
+      file: {
+        name: nom,
+        data,
+        mimetype: `image/${(nom.split('.').pop() ?? 'jpeg').toLowerCase()}`,
+        size: data.byteLength,
+      },
+    })
+
+    cache.set(url, media)
+    return media
+  } catch (err) {
+    payload.logger.warn(`Visuel produit indisponible (${url}) : ${err}`)
+    cache.set(url, null)
+    return null
+  }
+}
+
+const resoudreCategories = async (
+  payload: Payload,
+  cache: Map<string, number>,
+  noms: string[],
+): Promise<number[]> => {
+  const ids: number[] = []
+
+  for (const nom of noms) {
+    const slug = ardoise(nom)
+    if (!slug || cache.has(slug)) {
+      if (slug && cache.has(slug)) ids.push(cache.get(slug)!)
+      continue
+    }
+
+    const existante = await payload.find({
+      collection: 'categories',
+      depth: 0,
+      limit: 1,
+      pagination: false,
+      where: { slug: { equals: slug } },
+    })
+
+    const doc: Category =
+      existante.docs[0] ??
+      (await payload.create({ collection: 'categories', data: { title: nom, slug } }))
+
+    cache.set(slug, doc.id)
+    ids.push(doc.id)
+  }
+
+  return ids
+}

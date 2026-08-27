@@ -3,6 +3,7 @@ import * as migration_20260824_115956_ajout_blocs_da from './20260824_115956_ajo
 import * as migration_20260825_111621_entete_et_slider from './20260825_111621_entete_et_slider';
 import * as migration_20260825_142134_pied_de_page from './20260825_142134_pied_de_page';
 import * as migration_20260826_125509_essentiel_article from './20260826_125509_essentiel_article';
+import * as migration_20260827_120740_carrousels_produits from './20260827_120740_carrousels_produits';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20260826_125509_essentiel_article.up,
     down: migration_20260826_125509_essentiel_article.down,
-    name: '20260826_125509_essentiel_article'
+    name: '20260826_125509_essentiel_article',
+  },
+  {
+    up: migration_20260827_120740_carrousels_produits.up,
+    down: migration_20260827_120740_carrousels_produits.down,
+    name: '20260827_120740_carrousels_produits'
   },
 ];

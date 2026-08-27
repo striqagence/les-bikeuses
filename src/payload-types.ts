@@ -1061,6 +1061,14 @@ export interface Form {
 export interface Product {
   id: number;
   title: string;
+  /**
+   * Renseigné à l’import. Sert à retrouver le produit référencé par les carrousels des articles.
+   */
+  wooId?: number | null;
+  /**
+   * Tant que la boutique n’est pas ouverte ici, les carrousels renvoient vers cette adresse.
+   */
+  sourceUrl?: string | null;
   reference?: string | null;
   /**
    * Prix affiché à titre indicatif. La vente en ligne sera activée plus tard.
@@ -1729,6 +1737,8 @@ export interface PostsSelect<T extends boolean = true> {
  */
 export interface ProductsSelect<T extends boolean = true> {
   title?: T;
+  wooId?: T;
+  sourceUrl?: T;
   reference?: T;
   price?: T;
   shortDescription?: T;
@@ -2492,6 +2502,23 @@ export interface CodeBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'code';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarrouselProduitsBlock".
+ */
+export interface CarrouselProduitsBlock {
+  /**
+   * Facultatif. Ex. « Notre sélection ».
+   */
+  titre?: string | null;
+  /**
+   * Affichés dans cet ordre.
+   */
+  produits: (number | Product)[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'carrouselProduits';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

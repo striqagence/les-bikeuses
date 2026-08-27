@@ -34,6 +34,34 @@ export const Products: CollectionConfig = {
       type: 'row',
       fields: [
         {
+          name: 'wooId',
+          label: 'Identifiant WooCommerce',
+          type: 'number',
+          index: true,
+          admin: {
+            width: '50%',
+            readOnly: true,
+            description:
+              'Renseigné à l’import. Sert à retrouver le produit référencé par les carrousels des articles.',
+          },
+        },
+        {
+          name: 'sourceUrl',
+          label: 'Fiche sur lesbikeuses.fr',
+          type: 'text',
+          admin: {
+            width: '50%',
+            readOnly: true,
+            description:
+              'Tant que la boutique n’est pas ouverte ici, les carrousels renvoient vers cette adresse.',
+          },
+        },
+      ],
+    },
+    {
+      type: 'row',
+      fields: [
+        {
           name: 'reference',
           label: 'Référence (SKU)',
           type: 'text',
