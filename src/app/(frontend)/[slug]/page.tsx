@@ -8,34 +8,43 @@ import React, { cache } from 'react'
 import { homeStatic } from '@/endpoints/seed/home-static'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { VueArticle } from '@/components/Article/VueArticle'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
+/**
+ * Pages et articles partagent cette route : les articles vivent à la racine,
+ * comme sur lesbikeuses.fr, et non sous un préfixe.
+ */
 export async function generateStaticParams() {
   try {
     const payload = await getPayload({ config: configPromise })
-    const pages = await payload.find({
-      collection: 'pages',
-      draft: false,
-      limit: 1000,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        slug: true,
-      },
-    })
 
-    const params = pages.docs
-      ?.filter((doc) => {
-        return doc.slug !== 'home'
-      })
-      .map(({ slug }) => {
-        return { slug }
-      })
+    const [pages, posts] = await Promise.all([
+      payload.find({
+        collection: 'pages',
+        draft: false,
+        limit: 1000,
+        overrideAccess: false,
+        pagination: false,
+        select: { slug: true },
+      }),
+      payload.find({
+        collection: 'posts',
+        draft: false,
+        limit: 1000,
+        overrideAccess: false,
+        pagination: false,
+        select: { slug: true },
+      }),
+    ])
 
-    return params
+    return [...pages.docs, ...posts.docs]
+      .map(({ slug }) => slug)
+      .filter((slug): slug is string => Boolean(slug) && slug !== 'home')
+      .map((slug) => ({ slug }))
   } catch {
     // Base non joignable / non initialisée au build : pages générées à la demande.
     return []
@@ -65,7 +74,22 @@ export default async function Page({ params: paramsPromise }: Args) {
     page = homeStatic
   }
 
+  // Pas de page à ce slug : c'est peut-être un article. Les pages passent en
+  // premier — en cas d'homonymie, la page l'emporte.
   if (!page) {
+    const post = await queryPostBySlug({ slug: decodedSlug })
+
+    if (post) {
+      return (
+        <article className="pb-16">
+          <PageClient />
+          <PayloadRedirects disableNotFound url={url} />
+          {draft && <LivePreviewListener />}
+          <VueArticle post={post} />
+        </article>
+      )
+    }
+
     return <PayloadRedirects url={url} />
   }
 
@@ -89,11 +113,10 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const { slug = 'home' } = await paramsPromise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
-  const page = await queryPageBySlug({
-    slug: decodedSlug,
-  })
+  const page = await queryPageBySlug({ slug: decodedSlug })
+  const doc = page ?? (await queryPostBySlug({ slug: decodedSlug }))
 
-  return generateMeta({ doc: page })
+  return generateMeta({ doc })
 }
 
 const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
@@ -112,6 +135,23 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
         equals: slug,
       },
     },
+  })
+
+  return result.docs?.[0] || null
+})
+
+const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
+  const { isEnabled: draft } = await draftMode()
+
+  const payload = await getPayload({ config: configPromise })
+
+  const result = await payload.find({
+    collection: 'posts',
+    draft,
+    limit: 1,
+    overrideAccess: draft,
+    pagination: false,
+    where: { slug: { equals: slug } },
   })
 
   return result.docs?.[0] || null

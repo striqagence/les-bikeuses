@@ -121,7 +121,7 @@ const Une: React.FC<{ post: Post }> = ({ post }) => {
   const image = post.meta?.image ?? post.heroImage
 
   return (
-    <Link className="group flex flex-col gap-4" href={`/posts/${post.slug}`}>
+    <Link className="group flex flex-col gap-4" href={`/${post.slug}`}>
       {image && typeof image === 'object' && (
         <div className="aspect-video overflow-hidden border border-border bg-secondary">
           <Media
@@ -147,7 +147,7 @@ const Une: React.FC<{ post: Post }> = ({ post }) => {
 const Breve: React.FC<{ post: Post }> = ({ post }) => (
   <Link
     className="group flex flex-col gap-1.5 border-t border-border py-5 last:border-b"
-    href={`/posts/${post.slug}`}
+    href={`/${post.slug}`}
   >
     <Meta post={post} />
     <h4 className="font-sans text-base leading-snug font-bold transition-colors group-hover:text-primary">

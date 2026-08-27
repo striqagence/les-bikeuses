@@ -36,7 +36,8 @@ export const Card: React.FC<{
 
   const image = metaImage ?? heroImage
   const titre = titreProp || title
-  const href = `/${relationTo}/${slug}`
+  // Les articles vivent à la racine : pas de préfixe dans l'URL.
+  const href = `/${slug}`
   const une = variante === 'une'
 
   const rubrique = categories?.find((c) => typeof c === 'object')

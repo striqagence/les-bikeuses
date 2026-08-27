@@ -27,5 +27,16 @@ export const redirects: NextConfig['redirects'] = async () => {
     permanent: false,
   }))
 
-  return [internetExplorerRedirect, ...soldes]
+  // Les articles vivaient sous /posts/<slug> jusqu'au 2026-08-27, et l'ancien
+  // site les expose déjà à la racine. On rattrape l'ancien schéma interne.
+  //
+  // `:slug` ne prend qu'un segment : /posts (la liste) et /posts/page/2 (la
+  // pagination) ne sont donc pas concernés. `page` est exclu explicitement.
+  const anciensArticles = {
+    source: '/posts/:slug((?!page$)[^/]+)',
+    destination: '/:slug',
+    permanent: false,
+  }
+
+  return [internetExplorerRedirect, ...soldes, anciensArticles]
 }
