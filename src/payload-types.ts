@@ -1075,6 +1075,24 @@ export interface Product {
    */
   price?: number | null;
   /**
+   * Reprise de WooCommerce à l’import. Sert de facette dans le catalogue.
+   */
+  marque?: string | null;
+  /**
+   * Reprises de WooCommerce à l’import.
+   */
+  tailles?: string[] | null;
+  homologation?: ('ce-aa' | 'ce-a' | 'ce-b' | 'ce-kp' | 'ece-2206' | 'aucune') | null;
+  saison?: ('ete' | 'mi-saison' | 'hiver' | 'toutes-saisons') | null;
+  /**
+   * Ex. « Cuir de chèvre », « Textile ».
+   */
+  matiere?: string | null;
+  /**
+   * Ex. « Épaules et coudes ».
+   */
+  protections?: string | null;
+  /**
    * Courte phrase de présentation affichée sur les listes de produits.
    */
   shortDescription?: string | null;
@@ -1741,6 +1759,12 @@ export interface ProductsSelect<T extends boolean = true> {
   sourceUrl?: T;
   reference?: T;
   price?: T;
+  marque?: T;
+  tailles?: T;
+  homologation?: T;
+  saison?: T;
+  matiere?: T;
+  protections?: T;
   shortDescription?: T;
   description?: T;
   gallery?:

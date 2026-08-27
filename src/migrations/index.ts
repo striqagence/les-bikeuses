@@ -4,6 +4,7 @@ import * as migration_20260825_111621_entete_et_slider from './20260825_111621_e
 import * as migration_20260825_142134_pied_de_page from './20260825_142134_pied_de_page';
 import * as migration_20260826_125509_essentiel_article from './20260826_125509_essentiel_article';
 import * as migration_20260827_120740_carrousels_produits from './20260827_120740_carrousels_produits';
+import * as migration_20260827_131338_catalogue from './20260827_131338_catalogue';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20260827_120740_carrousels_produits.up,
     down: migration_20260827_120740_carrousels_produits.down,
-    name: '20260827_120740_carrousels_produits'
+    name: '20260827_120740_carrousels_produits',
+  },
+  {
+    up: migration_20260827_131338_catalogue.up,
+    down: migration_20260827_131338_catalogue.down,
+    name: '20260827_131338_catalogue'
   },
 ];

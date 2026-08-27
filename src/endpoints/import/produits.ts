@@ -21,6 +21,8 @@ type ProduitWoo = {
   prices?: { price?: string; currency_minor_unit?: number }
   images?: { src: string; alt?: string }[]
   categories?: { name: string }[]
+  brands?: { name: string }[]
+  attributes?: { name: string; terms?: { name: string }[] }[]
 }
 
 const ardoise = (t: string): string =>
@@ -105,6 +107,8 @@ export const importerProduits = async ({
           wooId: woo.id,
           sourceUrl: woo.permalink,
           ...(woo.sku ? { reference: woo.sku } : {}),
+          ...(woo.brands?.[0]?.name ? { marque: decoder(woo.brands[0].name) } : {}),
+          ...(taillesDe(woo).length ? { tailles: taillesDe(woo) } : {}),
           ...(prixEnEuros(woo) !== null ? { price: prixEnEuros(woo)! } : {}),
           ...(woo.short_description
             ? { shortDescription: texteBrut(woo.short_description).slice(0, 500) }
@@ -126,6 +130,10 @@ export const importerProduits = async ({
 
   return rapport
 }
+
+/** Tailles déclarées comme attribut WooCommerce. */
+const taillesDe = (woo: ProduitWoo): string[] =>
+  woo.attributes?.find((a) => /taille/i.test(a.name))?.terms?.map((t) => decoder(t.name)) ?? []
 
 /** L'API Store renvoie les prix en centimes, sous forme de chaîne. */
 const prixEnEuros = (woo: ProduitWoo): number | null => {

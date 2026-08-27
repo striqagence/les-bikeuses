@@ -80,6 +80,86 @@ export const Products: CollectionConfig = {
       ],
     },
     {
+      name: 'marque',
+      label: 'Marque',
+      type: 'text',
+      index: true,
+      admin: {
+        description: 'Reprise de WooCommerce à l’import. Sert de facette dans le catalogue.',
+      },
+    },
+    {
+      name: 'tailles',
+      label: 'Tailles disponibles',
+      type: 'text',
+      hasMany: true,
+      index: true,
+      admin: {
+        description: 'Reprises de WooCommerce à l’import.',
+      },
+    },
+    {
+      type: 'collapsible',
+      label: 'Caractéristiques techniques',
+      admin: {
+        initCollapsed: true,
+        description:
+          'Absentes de WooCommerce : à saisir ici. Une caractéristique laissée vide ne crée pas de facette dans le catalogue.',
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'homologation',
+              label: 'Homologation',
+              type: 'select',
+              index: true,
+              options: [
+                { label: 'CE niveau AA', value: 'ce-aa' },
+                { label: 'CE niveau A', value: 'ce-a' },
+                { label: 'CE niveau B', value: 'ce-b' },
+                { label: 'CE (gants) KP', value: 'ce-kp' },
+                { label: 'ECE 22.06 (casques)', value: 'ece-2206' },
+                { label: 'Non homologué', value: 'aucune' },
+              ],
+              admin: { width: '50%' },
+            },
+            {
+              name: 'saison',
+              label: 'Saison',
+              type: 'select',
+              index: true,
+              options: [
+                { label: 'Été', value: 'ete' },
+                { label: 'Mi-saison', value: 'mi-saison' },
+                { label: 'Hiver', value: 'hiver' },
+                { label: 'Toutes saisons', value: 'toutes-saisons' },
+              ],
+              admin: { width: '50%' },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'matiere',
+              label: 'Matière',
+              type: 'text',
+              admin: { width: '50%', description: 'Ex. « Cuir de chèvre », « Textile ».' },
+            },
+            {
+              name: 'protections',
+              label: 'Protections',
+              type: 'text',
+              admin: { width: '50%', description: 'Ex. « Épaules et coudes ».' },
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'shortDescription',
       label: 'Accroche',
       type: 'textarea',
