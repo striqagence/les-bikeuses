@@ -22,6 +22,13 @@ const BeforeDashboard: React.FC = () => {
       </p>
       <ImportButton />
 
+      <p style={{ marginTop: '1rem' }}>
+        Les huit premiers articles avaient été posés par le seed depuis un export figé,
+        antérieur à la reprise des images et des liens. Le bouton ci-dessous les remet à
+        jour — il repasse sur tous les articles, comptez une dizaine de minutes.
+      </p>
+      <ImportButton forcer />
+
       <hr style={{ margin: '1.5rem 0', opacity: 0.2 }} />
 
       Ensuite :

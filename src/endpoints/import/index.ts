@@ -38,10 +38,19 @@ export const importerArticles = async ({
   payload,
   req,
   taille = 8,
+  forcer = false,
 }: {
   payload: Payload
   req: PayloadRequest
   taille?: number
+  /**
+   * Reprend aussi les articles déjà en base, en les mettant à jour.
+   *
+   * Nécessaire pour les huit articles posés par le seed : ils viennent d'un
+   * export figé, antérieur à la reprise des images et des liens, et le mode
+   * normal les saute puisqu'ils existent.
+   */
+  forcer?: boolean
 }): Promise<Rapport> => {
   const slugs = await listerSlugs()
 
@@ -52,9 +61,11 @@ export const importerArticles = async ({
     pagination: false,
     select: { slug: true },
   })
-  const dejaLa = new Set(existants.docs.map((d) => d.slug).filter(Boolean) as string[])
+  const dejaLa = new Map(
+    existants.docs.filter((d) => d.slug).map((d) => [d.slug as string, d.id]),
+  )
 
-  const aFaire = slugs.filter((s) => !dejaLa.has(s))
+  const aFaire = forcer ? slugs : slugs.filter((s) => !dejaLa.has(s))
   const lot = aFaire.slice(0, taille)
 
   const rapport: Rapport = {
@@ -93,27 +104,46 @@ export const importerArticles = async ({
       const contenu = await construireContenu(payload, cacheMedias, article)
       const categories = await resoudreCategories(payload, cacheCategories, article.categories)
 
-      await payload.create({
-        collection: 'posts',
-        depth: 0,
-        req,
-        context: { disableRevalidate: true },
-        data: {
-          slug,
-          _status: 'published',
+      const donnees = {
+        slug,
+        _status: 'published' as const,
+        title: article.titre,
+        authors: auteur ? [auteur] : [],
+        categories,
+        publishedAt: article.publieLe ?? new Date().toISOString(),
+        ...(imageUne ? { heroImage: imageUne.id } : {}),
+        content: contenu,
+        meta: {
           title: article.titre,
-          authors: auteur ? [auteur] : [],
-          categories,
-          publishedAt: article.publieLe ?? new Date().toISOString(),
-          ...(imageUne ? { heroImage: imageUne.id } : {}),
-          content: contenu,
-          meta: {
-            title: article.titre,
-            description: article.extrait,
-            ...(imageUne ? { image: imageUne.id } : {}),
-          },
+          description: article.extrait,
+          ...(imageUne ? { image: imageUne.id } : {}),
         },
-      })
+      }
+
+      const existant = dejaLa.get(slug)
+
+      if (existant) {
+        // Mise à jour plutôt que suppression/recréation : l'identifiant est
+        // conservé, donc les articles liés qui pointent dessus ne se cassent
+        // pas. `essentiel` n'est pas touché — c'est de l'éditorial saisi ici,
+        // absent de la source.
+        await payload.update({
+          collection: 'posts',
+          id: existant,
+          depth: 0,
+          req,
+          context: { disableRevalidate: true },
+          data: donnees,
+        })
+      } else {
+        await payload.create({
+          collection: 'posts',
+          depth: 0,
+          req,
+          context: { disableRevalidate: true },
+          data: donnees,
+        })
+      }
 
       rapport.importes.push(slug)
     } catch (err) {

@@ -21,7 +21,9 @@ export async function POST(request: Request): Promise<Response> {
     const taille = Number.isFinite(demande) ? Math.min(Math.max(demande, 1), 12) : 8
 
     const req = await createLocalReq({ user }, payload)
-    const rapport = await importerArticles({ payload, req, taille })
+    const forcer = url.searchParams.get('forcer') === '1'
+
+    const rapport = await importerArticles({ payload, req, taille, forcer })
 
     return Response.json(rapport)
   } catch (e) {

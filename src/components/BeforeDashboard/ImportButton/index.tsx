@@ -19,7 +19,7 @@ type Rapport = {
  * d'une fonction. Chaque lot est autonome, l'opération reprend où elle en
  * était et peut être interrompue sans dégât.
  */
-export const ImportButton: React.FC = () => {
+export const ImportButton: React.FC<{ forcer?: boolean }> = ({ forcer = false }) => {
   const [enCours, setEnCours] = useState(false)
   const [etat, setEtat] = useState<string | null>(null)
   const stop = useRef(false)
@@ -38,7 +38,7 @@ export const ImportButton: React.FC = () => {
 
     try {
       for (;;) {
-        const reponse = await fetch('/next/import?taille=8', {
+        const reponse = await fetch(`/next/import?taille=8${forcer ? '&forcer=1' : ''}`, {
           method: 'POST',
           credentials: 'include',
         })
@@ -60,6 +60,8 @@ export const ImportButton: React.FC = () => {
         if (!rapport.importes.length) break
         if (rapport.restants === 0) break
         if (stop.current) break
+        // En mode « forcer », `dejaPresents` ne diminue pas : c'est `restants`
+        // qui fait foi pour la progression.
       }
 
       toast.success(`Import terminé — ${importes} article${importes > 1 ? 's' : ''} ajouté${importes > 1 ? 's' : ''}.`)
@@ -73,7 +75,11 @@ export const ImportButton: React.FC = () => {
   return (
     <div style={{ marginTop: '1rem' }}>
       <button className="btn btn--style-secondary" onClick={lancer} type="button">
-        {enCours ? 'Arrêter l’import' : 'Importer les articles de lesbikeuses.fr'}
+        {enCours
+          ? 'Arrêter'
+          : forcer
+            ? 'Tout réimporter (met à jour l’existant)'
+            : 'Importer les articles de lesbikeuses.fr'}
       </button>
       {etat && (
         <p style={{ marginTop: '.5rem', opacity: 0.75, fontSize: '.85rem' }}>{etat}</p>
