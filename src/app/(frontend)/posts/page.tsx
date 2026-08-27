@@ -17,7 +17,7 @@ export default async function Page() {
   const posts = await payload.find({
     collection: 'posts',
     depth: 1,
-    limit: 12,
+    limit: 24,
     overrideAccess: false,
     sort: '-publishedAt',
     select: {
@@ -47,7 +47,7 @@ export default async function Page() {
           <PageRange
             collection="posts"
             currentPage={posts.page}
-            limit={12}
+            limit={24}
             totalDocs={posts.totalDocs}
           />
         </div>

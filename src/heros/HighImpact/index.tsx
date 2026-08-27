@@ -71,6 +71,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                 priority
                 resource={media}
                 size="(max-width: 768px) 100vw, 45vw"
+                variante="medium"
               />
             </div>
             {visuelsSecondaires.map((item, i) => (
@@ -83,6 +84,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                   imgClassName="h-full w-full object-cover"
                   resource={item.image}
                   size="(max-width: 768px) 50vw, 22vw"
+                  variante="small"
                 />
               </div>
             ))}

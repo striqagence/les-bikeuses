@@ -99,6 +99,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                   priority={i === 0}
                   resource={image}
                   size="(max-width: 768px) 100vw, 1240px"
+                  variante="large"
                 />
               )}
 

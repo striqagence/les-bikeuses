@@ -17,6 +17,13 @@ export interface Props {
   ref?: Ref<HTMLImageElement | HTMLVideoElement | null>
   resource?: MediaType | string | number | null // for Payload media
   size?: string // for NextImage only
+  /**
+   * Nom d'une taille générée par Payload (thumbnail, small, medium, large,
+   * xlarge…). Sert de source à la place du fichier d'origine, qui peut peser
+   * plusieurs mégaoctets.
+   */
+  variante?: string
+  quality?: number
   src?: StaticImageData // for static media
   videoClassName?: string
 }

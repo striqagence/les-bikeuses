@@ -23,7 +23,9 @@ const nextConfig: NextConfig = {
         pathname: '/api/media/file/**',
       },
     ],
-    qualities: [100],
+    // 75 est le défaut de Next et le bon compromis. La configuration forçait
+    // 100 : chaque image pesait deux à trois fois plus pour un gain invisible.
+    qualities: [75],
     remotePatterns: [
       ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
         const url = new URL(item)

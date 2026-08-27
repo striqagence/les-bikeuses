@@ -28,7 +28,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   const posts = await payload.find({
     collection: 'posts',
     depth: 1,
-    limit: 12,
+    limit: 24,
     page: sanitizedPageNumber,
     overrideAccess: false,
     sort: '-publishedAt',
@@ -48,7 +48,7 @@ export default async function Page({ params: paramsPromise }: Args) {
         <PageRange
           collection="posts"
           currentPage={posts.page}
-          limit={12}
+          limit={24}
           totalDocs={posts.totalDocs}
         />
       </div>

@@ -63,6 +63,7 @@ export const Card: React.FC<{
             imgClassName="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             resource={image}
             size={une ? '(max-width: 768px) 100vw, 50vw' : '(max-width: 768px) 100vw, 33vw'}
+            variante={une ? 'medium' : 'small'}
           />
         ) : (
           <div className="mono-label grid h-full place-items-center text-muted-foreground">

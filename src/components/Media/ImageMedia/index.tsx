@@ -56,6 +56,8 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     size: sizeFromProps,
     src: srcFromProps,
     loading: loadingFromProps,
+    variante,
+    quality = 75,
   } = props
 
   let width: number | undefined
@@ -66,13 +68,21 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   if (!src && resource && typeof resource === 'object') {
     const { alt: altFromResource, height: fullHeight, url, width: fullWidth } = resource
 
-    width = fullWidth!
-    height = fullHeight!
+    // Une déclinaison générée par Payload plutôt que le fichier d'origine, qui
+    // peut peser plusieurs mégaoctets : sans cela l'optimiseur Next doit
+    // télécharger et retraiter l'original à chaque taille demandée, ce qui
+    // rendait le chargement du journal très lent.
+    const declinaison = variante
+      ? (resource.sizes as Record<string, { url?: string | null; width?: number | null; height?: number | null }> | undefined)?.[variante]
+      : undefined
+
+    width = declinaison?.width ?? fullWidth!
+    height = declinaison?.height ?? fullHeight!
     alt = altFromResource || ''
 
     const cacheTag = resource.updatedAt
 
-    src = getMediaUrl(url, cacheTag)
+    src = getMediaUrl(declinaison?.url ?? url, cacheTag)
   }
 
   const loading = loadingFromProps || (!priority ? 'lazy' : undefined)
@@ -94,7 +104,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         placeholder="blur"
         blurDataURL={placeholderBlur}
         priority={priority}
-        quality={100}
+        quality={quality}
         loading={loading}
         sizes={sizes}
         src={src}

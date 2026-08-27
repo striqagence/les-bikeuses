@@ -129,6 +129,7 @@ const Une: React.FC<{ post: Post }> = ({ post }) => {
             imgClassName="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             resource={image}
             size="60vw"
+            variante="medium"
           />
         </div>
       )}

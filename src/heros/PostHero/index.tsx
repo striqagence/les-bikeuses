@@ -82,6 +82,7 @@ export const PostHero: React.FC<{ post: Post }> = ({ post }) => {
               priority
               resource={heroImage}
               size="(max-width: 1024px) 100vw, 1240px"
+              variante="large"
             />
           </div>
           {heroImage.alt && (
