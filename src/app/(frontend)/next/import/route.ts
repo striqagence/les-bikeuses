@@ -31,7 +31,13 @@ export async function POST(request: Request): Promise<Response> {
       return Response.json(await importerProduits({ payload, req, taille }))
     }
 
-    const rapport = await importerArticles({ payload, req, taille, forcer })
+    const rapport = await importerArticles({
+      payload,
+      req,
+      taille,
+      forcer,
+      avant: url.searchParams.get('avant') ?? undefined,
+    })
 
     return Response.json(rapport)
   } catch (e) {

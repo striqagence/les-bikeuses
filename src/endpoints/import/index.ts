@@ -40,6 +40,7 @@ export const importerArticles = async ({
   req,
   taille = 8,
   forcer = false,
+  avant,
 }: {
   payload: Payload
   req: PayloadRequest
@@ -52,6 +53,17 @@ export const importerArticles = async ({
    * normal les saute puisqu'ils existent.
    */
   forcer?: boolean
+  /**
+   * En mode forcer, borne de reprise : seuls les articles modifiés avant cet
+   * instant sont retraités.
+   *
+   * Sans elle, `aFaire` contenait les 202 slugs et le lot prenait toujours les
+   * huit premiers — rien ne marquait ce qui venait d'être fait, et la boucle
+   * tournait indéfiniment sur les mêmes articles sans jamais atteindre les
+   * suivants. Chaque article traité voit son `updatedAt` avancer et sort donc
+   * de l'ensemble à traiter.
+   */
+  avant?: string
 }): Promise<Rapport> => {
   const slugs = await listerSlugs()
 
@@ -60,13 +72,24 @@ export const importerArticles = async ({
     depth: 0,
     limit: 1000,
     pagination: false,
-    select: { slug: true },
+    select: { slug: true, updatedAt: true },
   })
   const dejaLa = new Map(
     existants.docs.filter((d) => d.slug).map((d) => [d.slug as string, d.id]),
   )
+  const misAJour = new Map(
+    existants.docs.filter((d) => d.slug).map((d) => [d.slug as string, d.updatedAt]),
+  )
 
-  const aFaire = forcer ? slugs : slugs.filter((s) => !dejaLa.has(s))
+  const borne = avant ? Date.parse(avant) : Number.POSITIVE_INFINITY
+
+  const aFaire = forcer
+    ? slugs.filter((s) => {
+        const quand = misAJour.get(s)
+        // Jamais importé, ou pas encore retraité depuis le début de la reprise.
+        return !quand || Date.parse(quand) < borne
+      })
+    : slugs.filter((s) => !dejaLa.has(s))
   const lot = aFaire.slice(0, taille)
 
   const rapport: Rapport = {

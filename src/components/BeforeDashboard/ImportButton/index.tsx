@@ -36,6 +36,9 @@ export const ImportButton: React.FC<{ forcer?: boolean; quoi?: 'articles' | 'pro
 
     stop.current = false
     setEnCours(true)
+    // Borne fixée une fois pour toutes au départ : un article retraité voit
+    // son `updatedAt` la dépasser et sort de l'ensemble à reprendre.
+    const depart = new Date().toISOString()
     let importes = 0
     let ignores = 0
 
@@ -43,7 +46,8 @@ export const ImportButton: React.FC<{ forcer?: boolean; quoi?: 'articles' | 'pro
       for (;;) {
         const reponse = await fetch(
           `/next/import?taille=${quoi === 'produits' ? 12 : 8}` +
-            `${forcer ? '&forcer=1' : ''}${quoi === 'produits' ? '&quoi=produits' : ''}`,
+            `${forcer ? `&forcer=1&avant=${encodeURIComponent(depart)}` : ''}` +
+            `${quoi === 'produits' ? '&quoi=produits' : ''}`,
           {
             method: 'POST',
             credentials: 'include',
