@@ -95,8 +95,11 @@ export default buildConfig({
       // latérales et réclame une seconde connexion, qui n'arriverait jamais.
       // C'est ce qui a fait échouer un build en « timeout exceeded when
       // trying to connect » alors que le pool n'était pourtant plus saturé.
-      max: Number(process.env.DATABASE_POOL_MAX ?? 5),
-      idleTimeoutMillis: 10_000,
+      max: Number(process.env.DATABASE_POOL_MAX ?? 3),
+      // Restitution rapide : en mode session, une connexion inactive reste
+      // accaparée par son instance. Dix secondes suffisaient à saturer les 40
+      // du projet dès que plusieurs instances tournaient en parallèle.
+      idleTimeoutMillis: 3_000,
       connectionTimeoutMillis: 15_000,
     },
   }),
