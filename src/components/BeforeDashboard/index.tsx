@@ -2,6 +2,7 @@ import { Banner } from '@payloadcms/ui/elements/Banner'
 import React from 'react'
 
 import { ImportButton } from './ImportButton'
+import { NavigationButton } from './NavigationButton'
 import { SeedButton } from './SeedButton'
 import './index.scss'
 
@@ -35,6 +36,14 @@ const BeforeDashboard: React.FC = () => {
         jour — il repasse sur tous les articles, comptez une dizaine de minutes.
       </p>
       <ImportButton forcer />
+
+      <p style={{ marginTop: '1.5rem' }}>
+        <strong>3. La navigation.</strong> Une fois le catalogue importé, fait pointer
+        « Équipements », « Accessoires » et « Vêtements » vers les rayons de ce site au
+        lieu de l’ancien. Ne touche qu’au menu et au pied de page — contrairement au
+        seed, qui viderait les collections.
+      </p>
+      <NavigationButton />
 
       <hr style={{ margin: '1.5rem 0', opacity: 0.2 }} />
 
