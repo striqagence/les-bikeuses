@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import configPromise from '@payload-config'
+import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
 import React, { cache } from 'react'
@@ -10,7 +11,12 @@ import type { Product } from '@/payload-types'
 import { CarteProduit } from '@/components/Boutique/CarteProduit'
 import { Facettes, Jetons, type Facette } from '@/components/Boutique/Facettes'
 
-export const revalidate = 600
+// La page lit `searchParams` : Next la rend donc dynamiquement à chaque
+// visite, et `revalidate` ne s'y applique pas. Les deux requêtes qui ne
+// dépendent pas des filtres sont mises en cache à la main — sans quoi chaque
+// affichage rechargeait la catégorie et jusqu'à mille produits, de quoi
+// saturer le pool Postgres à lui seul.
+const DUREE_CACHE = 600
 
 const PAR_PAGE = 24
 
@@ -55,18 +61,11 @@ export default async function Rubrique({ params: p, searchParams: sp }: Args) {
 
   const payload = await getPayload({ config: configPromise })
 
-  // Deux requêtes : l'une pour les facettes, sur tout le rayon ; l'autre pour
-  // la page affichée, filtrée. Calculer les facettes sur le résultat filtré
-  // ferait disparaître les options non retenues, et on ne pourrait plus
-  // élargir sa recherche.
-  const tout = await payload.find({
-    collection: 'products',
-    depth: 0,
-    limit: 1000,
-    pagination: false,
-    where: { category: { in: [rubrique.id] } },
-    select: { marque: true, tailles: true, homologation: true, saison: true },
-  })
+  // Les facettes sont calculées sur tout le rayon, pas sur le résultat
+  // filtré : sinon les options non retenues disparaissent et on ne peut plus
+  // élargir sa recherche. Cette requête ne dépendant pas des filtres, elle est
+  // mise en cache.
+  const tout = await chargerFacettes(rubrique.id)
 
   const marques = liste(params.marque)
   const tailles = liste(params.taille)
@@ -96,18 +95,18 @@ export default async function Rubrique({ params: p, searchParams: sp }: Args) {
     {
       cle: 'marque',
       titre: 'Marque',
-      valeurs: compter(tout.docs, (d) => (d.marque ? [d.marque] : [])),
+      valeurs: compter(tout, (d) => (d.marque ? [d.marque] : [])),
     },
     {
       cle: 'taille',
       titre: 'Taille',
       pastilles: true,
-      valeurs: compter(tout.docs, (d) => d.tailles ?? [], ordreTailles),
+      valeurs: compter(tout, (d) => d.tailles ?? [], ordreTailles),
     },
     {
       cle: 'homologation',
       titre: 'Homologation',
-      valeurs: compter(tout.docs, (d) => (d.homologation ? [d.homologation] : [])).map((v) => ({
+      valeurs: compter(tout, (d) => (d.homologation ? [d.homologation] : [])).map((v) => ({
         ...v,
         libelle: HOMOLOGATIONS[v.valeur] ?? v.valeur,
       })),
@@ -115,7 +114,7 @@ export default async function Rubrique({ params: p, searchParams: sp }: Args) {
     {
       cle: 'saison',
       titre: 'Saison',
-      valeurs: compter(tout.docs, (d) => (d.saison ? [d.saison] : [])).map((v) => ({
+      valeurs: compter(tout, (d) => (d.saison ? [d.saison] : [])).map((v) => ({
         ...v,
         libelle: SAISONS[v.valeur] ?? v.valeur,
       })),
@@ -134,7 +133,7 @@ export default async function Rubrique({ params: p, searchParams: sp }: Args) {
           </h1>
         </div>
         <p className="mono-label text-muted-foreground">
-          {tout.docs.length} référence{tout.docs.length > 1 ? 's' : ''}
+          {tout.length} référence{tout.length > 1 ? 's' : ''}
         </p>
       </header>
 
@@ -193,17 +192,42 @@ const ordreTailles = (a: string, b: string) => {
   return a.localeCompare(b, 'fr', { numeric: true })
 }
 
-const queryRubrique = cache(async ({ slug }: { slug: string }) => {
-  const payload = await getPayload({ config: configPromise })
-  const r = await payload.find({
-    collection: 'categories',
-    depth: 0,
-    limit: 1,
-    pagination: false,
-    where: { slug: { equals: slug } },
-  })
-  return r.docs[0] ?? null
-})
+/** Rayon par slug. `cache` dédoublonne dans un rendu, `unstable_cache` entre les rendus. */
+const queryRubrique = cache(
+  unstable_cache(
+    async ({ slug }: { slug: string }) => {
+      const payload = await getPayload({ config: configPromise })
+      const r = await payload.find({
+        collection: 'categories',
+        depth: 0,
+        limit: 1,
+        pagination: false,
+        where: { slug: { equals: slug } },
+      })
+      return r.docs[0] ?? null
+    },
+    ['rubrique-par-slug'],
+    { revalidate: DUREE_CACHE },
+  ),
+)
+
+/** Champs à facettes de tout le rayon, indépendants des filtres. */
+const chargerFacettes = unstable_cache(
+  async (rayonId: number): Promise<Partial<Product>[]> => {
+    const payload = await getPayload({ config: configPromise })
+    const r = await payload.find({
+      collection: 'products',
+      depth: 0,
+      limit: 1000,
+      pagination: false,
+      where: { category: { in: [rayonId] } },
+      select: { marque: true, tailles: true, homologation: true, saison: true },
+    })
+    return r.docs
+  },
+  ['facettes-rayon'],
+  { revalidate: DUREE_CACHE },
+)
 
 export async function generateMetadata({ params: p }: Args): Promise<Metadata> {
   const { slug } = await p
