@@ -64,11 +64,19 @@ export const importerProduits = async ({
     depth: 0,
     limit: 2000,
     pagination: false,
-    select: { slug: true },
+    select: { slug: true, gallery: true },
   })
-  const dejaLa = new Set(existants.docs.map((d) => d.slug).filter(Boolean) as string[])
+  const dejaLa = new Map(existants.docs.filter((d) => d.slug).map((d) => [d.slug as string, d.id]))
 
-  const aFaire = tous.filter((p) => !dejaLa.has(p.slug))
+  // Un produit déjà en base mais sans visuel est repris : son image avait
+  // échoué à l'envoi, le plus souvent parce que son nom de fichier portait un
+  // accent, refusé par Supabase Storage. Reprendre sur ce critère évite de
+  // rejouer les 477 produits pour n'en corriger que quelques-uns.
+  const sansVisuel = new Set(
+    existants.docs.filter((d) => !d.gallery?.length).map((d) => d.slug as string),
+  )
+
+  const aFaire = tous.filter((p) => !dejaLa.has(p.slug) || sansVisuel.has(p.slug))
   const lot = aFaire.slice(0, taille)
 
   const rapport: RapportProduits = {
@@ -100,26 +108,37 @@ export const importerProduits = async ({
         (woo.categories ?? []).map((c) => decoder(c.name)),
       )
 
-      await payload.create({
-        collection: 'products',
-        depth: 0,
-        req,
-        data: {
-          title: decoder(woo.name),
-          slug: woo.slug,
-          wooId: woo.id,
-          sourceUrl: woo.permalink,
-          ...(woo.sku ? { reference: woo.sku } : {}),
-          ...(woo.brands?.[0]?.name ? { marque: decoder(woo.brands[0].name) } : {}),
-          ...(taillesDe(woo).length ? { tailles: taillesDe(woo) } : {}),
-          ...(prixEnEuros(woo) !== null ? { price: prixEnEuros(woo)! } : {}),
-          ...(woo.short_description
-            ? { shortDescription: texteBrut(woo.short_description).slice(0, 500) }
-            : {}),
-          ...(image ? { gallery: [{ image: image.id }] } : {}),
-          category: categories,
-        } as Partial<Product> as never,
-      })
+      const donnees = {
+        title: decoder(woo.name),
+        slug: woo.slug,
+        wooId: woo.id,
+        sourceUrl: woo.permalink,
+        ...(woo.sku ? { reference: woo.sku } : {}),
+        ...(woo.brands?.[0]?.name ? { marque: decoder(woo.brands[0].name) } : {}),
+        ...(taillesDe(woo).length ? { tailles: taillesDe(woo) } : {}),
+        ...(prixEnEuros(woo) !== null ? { price: prixEnEuros(woo)! } : {}),
+        ...(woo.short_description
+          ? { shortDescription: texteBrut(woo.short_description).slice(0, 500) }
+          : {}),
+        ...(image ? { gallery: [{ image: image.id }] } : {}),
+        category: categories,
+      } as Partial<Product>
+
+      const existant = dejaLa.get(woo.slug)
+
+      if (existant) {
+        // Mise à jour : l'identifiant est conservé, donc les carrousels des
+        // articles qui référencent ce produit ne se cassent pas.
+        await payload.update({
+          collection: 'products',
+          id: existant,
+          depth: 0,
+          req,
+          data: donnees as never,
+        })
+      } else {
+        await payload.create({ collection: 'products', depth: 0, req, data: donnees as never })
+      }
 
       rapport.importes.push(woo.slug)
     } catch (err) {
@@ -149,7 +168,9 @@ const prixEnEuros = (woo: ProduitWoo): number | null => {
 }
 
 const texteBrut = (html: string): string =>
-  decoder(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim()
+  decoder(html.replace(/<[^>]+>/g, ' '))
+    .replace(/\s+/g, ' ')
+    .trim()
 
 const listerProduits = async (): Promise<ProduitWoo[]> => {
   const tous: ProduitWoo[] = []
@@ -169,7 +190,6 @@ const listerProduits = async (): Promise<ProduitWoo[]> => {
 
   return tous
 }
-
 
 const resoudreCategories = async (
   payload: Payload,
