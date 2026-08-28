@@ -64,19 +64,32 @@ export const importerProduits = async ({
     depth: 0,
     limit: 2000,
     pagination: false,
-    select: { slug: true, gallery: true },
+    select: { slug: true, gallery: true, marque: true },
   })
   const dejaLa = new Map(existants.docs.filter((d) => d.slug).map((d) => [d.slug as string, d.id]))
 
-  // Un produit déjà en base mais sans visuel est repris : son image avait
-  // échoué à l'envoi, le plus souvent parce que son nom de fichier portait un
-  // accent, refusé par Supabase Storage. Reprendre sur ce critère évite de
-  // rejouer les 477 produits pour n'en corriger que quelques-uns.
+  // Un produit déjà en base est repris s'il lui manque quelque chose que la
+  // source possède. Reprendre sur ces critères évite de rejouer les 477
+  // produits pour n'en corriger que quelques-uns.
   const sansVisuel = new Set(
     existants.docs.filter((d) => !d.gallery?.length).map((d) => d.slug as string),
   )
+  const sansMarque = new Set(
+    existants.docs.filter((d) => !d.marque).map((d) => d.slug as string),
+  )
 
-  const aFaire = tous.filter((p) => !dejaLa.has(p.slug) || sansVisuel.has(p.slug))
+  const aFaire = tous.filter((p) => {
+    if (!dejaLa.has(p.slug)) return true
+    // Visuel manquant : l'envoi avait échoué, le plus souvent sur un nom de
+    // fichier accentué, refusé par Supabase Storage.
+    if (sansVisuel.has(p.slug)) return true
+    // Marque manquante alors que la source en déclare une : le champ a été
+    // ajouté après l'import du catalogue. La condition porte sur la source,
+    // donc un produit sans marque chez WooCommerce n'est jamais repris en
+    // boucle.
+    if (p.brands?.[0]?.name && sansMarque.has(p.slug)) return true
+    return false
+  })
   const lot = aFaire.slice(0, taille)
 
   const rapport: RapportProduits = {
