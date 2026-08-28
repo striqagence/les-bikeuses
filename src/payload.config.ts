@@ -37,13 +37,14 @@ const dirname = path.dirname(filename)
  * Repli sur `DATABASE_URL` si la variable de session n'est pas renseignée :
  * la configuration reste valide tant que les deux poolers ne sont pas séparés.
  */
-const connexionPostgres = (): string | undefined => {
-  const enMigration = process.argv.some((arg) => arg === 'migrate' || arg.startsWith('migrate:'))
+const enMigration = process.argv.some(
+  (arg) => arg === 'migrate' || arg.startsWith('migrate:'),
+)
 
-  return enMigration
+const connexionPostgres = (): string | undefined =>
+  enMigration
     ? (process.env.DATABASE_URL_SESSION ?? process.env.DATABASE_URL)
     : process.env.DATABASE_URL
-}
 
 export default buildConfig({
   admin: {
@@ -100,7 +101,12 @@ export default buildConfig({
       // accaparée par son instance. Dix secondes suffisaient à saturer les 40
       // du projet dès que plusieurs instances tournaient en parallèle.
       idleTimeoutMillis: 3_000,
-      connectionTimeoutMillis: 15_000,
+      // Les migrations attendent plus longtemps qu'une requête du site : elles
+      // tournent au build, pendant que les instances en service détiennent
+      // encore leurs connexions. Échouer au bout de quinze secondes faisait
+      // tomber le déploiement entier alors qu'une connexion se libérait
+      // quelques secondes plus tard.
+      connectionTimeoutMillis: enMigration ? 90_000 : 15_000,
     },
   }),
   collections: [Pages, Posts, Products, Media, Categories, Users],
