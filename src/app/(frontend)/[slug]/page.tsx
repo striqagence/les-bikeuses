@@ -18,6 +18,16 @@ import { LivePreviewListener } from '@/components/LivePreviewListener'
  * Pages et articles partagent cette route : les articles vivent à la racine,
  * comme sur lesbikeuses.fr, et non sous un préfixe.
  */
+/**
+ * Pages et articles se régénèrent au plus toutes les dix minutes.
+ *
+ * Sans cette directive, la route était prérendue au build et figée : les
+ * imports en masse désactivent les hooks de revalidation — sinon deux cents
+ * purges partiraient d'un coup — si bien que les articles réimportés
+ * continuaient d'afficher leur ancienne version indéfiniment.
+ */
+export const revalidate = 600
+
 export async function generateStaticParams() {
   try {
     const payload = await getPayload({ config: configPromise })
