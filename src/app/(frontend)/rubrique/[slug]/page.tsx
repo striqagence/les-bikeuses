@@ -10,6 +10,7 @@ import type { Product } from '@/payload-types'
 
 import { CarteProduit } from '@/components/Boutique/CarteProduit'
 import { Facettes, Jetons, type Facette } from '@/components/Boutique/Facettes'
+import { PaginationRayon } from '@/components/Boutique/PaginationRayon'
 
 // La page lit `searchParams` : Next la rend donc dynamiquement à chaque
 // visite, et `revalidate` ne s'y applique pas. Les deux requêtes qui ne
@@ -151,11 +152,14 @@ export default async function Rubrique({ params: p, searchParams: sp }: Args) {
           </div>
 
           {produits.docs.length ? (
-            <div className="grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-4">
-              {produits.docs.map((produit) => (
-                <CarteProduit key={produit.id} produit={produit as Product} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-4">
+                {produits.docs.map((produit) => (
+                  <CarteProduit key={produit.id} produit={produit as Product} />
+                ))}
+              </div>
+              <PaginationRayon page={produits.page ?? 1} total={produits.totalPages} />
+            </>
           ) : (
             <p className="py-16 text-center text-muted-foreground">
               Aucun produit ne correspond à ces filtres. Retirez-en un pour élargir.
