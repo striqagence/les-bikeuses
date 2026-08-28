@@ -23,8 +23,7 @@ type ProduitWoo = {
   short_description?: string
   prices?: { price?: string; currency_minor_unit?: number }
   images?: { src: string; alt?: string }[]
-  categories?: { name: string }[]
-  brands?: { name: string }[]
+  categories?: { id: number; name: string }[]
   attributes?: { name: string; terms?: { name: string }[] }[]
 }
 
@@ -38,6 +37,34 @@ const ardoise = (t: string): string =>
     .slice(0, 60)
 
 const PAR_PAGE = 100
+
+/** Identifiant de la catégorie « MARQUES », dont les enfants sont les marques. */
+const PARENT_MARQUES = 202
+
+/**
+ * Marques du catalogue, par identifiant de catégorie.
+ *
+ * La taxonomie `brands` de WooCommerce n'est pas utilisée sur ce site : elle
+ * renvoie un tableau vide pour les 477 produits. Les marques sont des
+ * catégories filles de « MARQUES » — 98 % des produits en portent une.
+ */
+const chargerMarques = async (): Promise<Map<number, string>> => {
+  const r = await fetch(
+    'https://lesbikeuses.fr/wp-json/wc/store/v1/products/categories?per_page=100',
+  )
+  if (!r.ok) return new Map()
+
+  const cats = (await r.json()) as { id: number; name: string; parent: number }[]
+  return new Map(
+    cats.filter((c) => c.parent === PARENT_MARQUES).map((c) => [c.id, decoder(c.name)]),
+  )
+}
+
+/** Marque d'un produit, déduite de ses catégories. */
+const marqueDe = (woo: ProduitWoo, marques: Map<number, string>): string | null => {
+  const trouvee = (woo.categories ?? []).find((c) => marques.has(c.id))
+  return trouvee ? (marques.get(trouvee.id) ?? null) : null
+}
 
 /**
  * Import du catalogue WooCommerce.
@@ -58,6 +85,7 @@ export const importerProduits = async ({
   taille?: number
 }): Promise<RapportProduits> => {
   const tous = await listerProduits()
+  const marques = await chargerMarques()
 
   const existants = await payload.find({
     collection: 'products',
@@ -87,7 +115,7 @@ export const importerProduits = async ({
     // ajouté après l'import du catalogue. La condition porte sur la source,
     // donc un produit sans marque chez WooCommerce n'est jamais repris en
     // boucle.
-    if (p.brands?.[0]?.name && sansMarque.has(p.slug)) return true
+    if (marqueDe(p, marques) && sansMarque.has(p.slug)) return true
     return false
   })
   const lot = aFaire.slice(0, taille)
@@ -127,7 +155,7 @@ export const importerProduits = async ({
         wooId: woo.id,
         sourceUrl: woo.permalink,
         ...(woo.sku ? { reference: woo.sku } : {}),
-        ...(woo.brands?.[0]?.name ? { marque: decoder(woo.brands[0].name) } : {}),
+        ...(marqueDe(woo, marques) ? { marque: marqueDe(woo, marques)! } : {}),
         ...(taillesDe(woo).length ? { tailles: taillesDe(woo) } : {}),
         ...(prixEnEuros(woo) !== null ? { price: prixEnEuros(woo)! } : {}),
         ...(woo.short_description
