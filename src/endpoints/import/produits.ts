@@ -1,5 +1,8 @@
 import type { Payload, PayloadRequest } from 'payload'
+
 import type { Category, Media, Product } from '@/payload-types'
+
+import { recupererMedia } from './medias'
 
 import { decoder } from './extraction'
 
@@ -167,52 +170,6 @@ const listerProduits = async (): Promise<ProduitWoo[]> => {
   return tous
 }
 
-const recupererMedia = async (
-  payload: Payload,
-  cache: Map<string, Media | null>,
-  url: string,
-  alt: string,
-): Promise<Media | null> => {
-  if (cache.has(url)) return cache.get(url) ?? null
-
-  try {
-    const nom = decodeURIComponent(url.split('/').pop() ?? '').split('?')[0] || 'produit.jpg'
-
-    const connu = await payload.find({
-      collection: 'media',
-      depth: 0,
-      limit: 1,
-      pagination: false,
-      where: { filename: { equals: nom } },
-    })
-    if (connu.docs[0]) {
-      cache.set(url, connu.docs[0])
-      return connu.docs[0]
-    }
-
-    const r = await fetch(url)
-    if (!r.ok) throw new Error(`HTTP ${r.status}`)
-    const data = Buffer.from(await r.arrayBuffer())
-
-    const media = await payload.create({
-      collection: 'media',
-      data: { alt: alt.slice(0, 200) },
-      file: {
-        name: nom,
-        data,
-        mimetype: `image/${(nom.split('.').pop() ?? 'jpeg').toLowerCase()}`,
-        size: data.byteLength,
-      },
-    })
-
-    cache.set(url, media)
-    return media
-  } catch (err) {
-    payload.logger.warn(`Visuel produit indisponible (${url}) : ${err}`)
-    cache.set(url, null)
-    return null
-  }
-}
 
 const resoudreCategories = async (
   payload: Payload,
