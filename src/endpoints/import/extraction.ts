@@ -184,9 +184,10 @@ const PRIX = /^\s*\d+([.,]\d+)?\s*(€|euros?)\s*$/i
 /**
  * Lit un article et en extrait le contenu.
  *
- * `catalogue` contient les noms de rayons et de marques WooCommerce : les
- * articles embarquent des carrousels produits dont les intitulés se
- * retrouveraient sinon dans le corps sous forme de paragraphes.
+ * `catalogue` réunit les noms de rayons et de marques WooCommerce et les
+ * titres des produits en base : les articles embarquent des carrousels dont
+ * les intitulés se retrouveraient sinon dans le corps sous forme de
+ * paragraphes isolés.
  */
 export const extraireArticle = async (
   slug: string,

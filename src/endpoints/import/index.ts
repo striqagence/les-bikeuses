@@ -102,7 +102,11 @@ export const importerArticles = async ({
 
   if (!lot.length) return rapport
 
-  const catalogue = await chargerCatalogue()
+  // Le jeu de filtrage réunit les rayons et marques WooCommerce et les titres
+  // des produits en base. Les noms de rayons ne suffisaient pas : les cartes
+  // des carrousels laissent derrière elles le titre complet du produit, en
+  // paragraphe isolé — « Blouson moto femme Targa Helstons » sur une ligne.
+  const catalogue = new Set([...(await chargerCatalogue()), ...(await titresProduits(payload))])
   const auteur = await trouverAuteur(payload)
   const cacheCategories = new Map<string, number>()
   // Les mêmes visuels reviennent d'un article à l'autre : on ne les envoie
@@ -362,4 +366,19 @@ const resoudreProduits = async (
   }
 
   return ids
+}
+
+/** Titres des produits en base, normalisés, pour écarter les restes de cartes. */
+const titresProduits = async (payload: Payload): Promise<string[]> => {
+  const produits = await payload.find({
+    collection: 'products',
+    depth: 0,
+    limit: 2000,
+    pagination: false,
+    select: { title: true },
+  })
+
+  return produits.docs
+    .map((p) => p.title?.toLowerCase().replace(/\s+/g, ' ').trim())
+    .filter((t): t is string => Boolean(t))
 }
