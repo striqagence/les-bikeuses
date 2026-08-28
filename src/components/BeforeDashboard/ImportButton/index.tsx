@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from '@payloadcms/ui'
 
 type Rapport = {
@@ -25,6 +25,11 @@ export const ImportButton: React.FC<{ forcer?: boolean; quoi?: 'articles' | 'pro
 }) => {
   const [enCours, setEnCours] = useState(false)
   const [etat, setEtat] = useState<string | null>(null)
+  const [repriseEnCours, setRepriseEnCours] = useState(false)
+
+  useEffect(() => {
+    if (forcer) setRepriseEnCours(Boolean(localStorage.getItem('lesbikeuses:borne-reimport')))
+  }, [forcer, enCours])
   const stop = useRef(false)
 
   const lancer = useCallback(async () => {
@@ -36,9 +41,23 @@ export const ImportButton: React.FC<{ forcer?: boolean; quoi?: 'articles' | 'pro
 
     stop.current = false
     setEnCours(true)
-    // Borne fixée une fois pour toutes au départ : un article retraité voit
-    // son `updatedAt` la dépasser et sort de l'ensemble à reprendre.
-    const depart = new Date().toISOString()
+
+    // Borne de la passe en cours : un article retraité voit son `updatedAt` la
+    // dépasser et sort de l'ensemble à reprendre.
+    //
+    // Conservée entre deux sessions du navigateur : sans cela, une passe
+    // interrompue repartait du début de la liste et retraitait tout ce qui
+    // venait d'être fait. Elle est effacée quand la passe arrive au bout, si
+    // bien qu'un clic ultérieur en ouvre une nouvelle.
+    const CLE = 'lesbikeuses:borne-reimport'
+    const depart = forcer
+      ? (localStorage.getItem(CLE) ?? new Date().toISOString())
+      : new Date().toISOString()
+    if (forcer) localStorage.setItem(CLE, depart)
+
+    const terminer = () => {
+      if (forcer) localStorage.removeItem(CLE)
+    }
     let importes = 0
     let ignores = 0
 
@@ -68,8 +87,16 @@ export const ImportButton: React.FC<{ forcer?: boolean; quoi?: 'articles' | 'pro
         // Aucun article traité et rien en attente : c'est terminé. Aucun
         // article traité mais des restants : ils échouent tous, on s'arrête
         // plutôt que de boucler indéfiniment.
-        if (!rapport.importes.length) break
-        if (rapport.restants === 0) break
+        if (!rapport.importes.length) {
+          terminer()
+          break
+        }
+        if (rapport.restants === 0) {
+          terminer()
+          break
+        }
+        // Interruption volontaire : la borne est conservée, le prochain clic
+        // reprendra la passe au lieu de la recommencer.
         if (stop.current) break
         // En mode « forcer », `dejaPresents` ne diminue pas : c'est `restants`
         // qui fait foi pour la progression.
@@ -81,10 +108,16 @@ export const ImportButton: React.FC<{ forcer?: boolean; quoi?: 'articles' | 'pro
     } finally {
       setEnCours(false)
     }
-  }, [enCours])
+  }, [enCours, forcer, quoi])
 
   return (
     <div style={{ marginTop: '1rem' }}>
+      {forcer && repriseEnCours && !enCours && (
+        <p style={{ marginBottom: '.5rem', fontSize: '.85rem', opacity: 0.8 }}>
+          Une reprise a été interrompue. Le prochain clic la poursuit au lieu de la
+          recommencer.
+        </p>
+      )}
       <button className="btn btn--style-secondary" onClick={lancer} type="button">
         {enCours
           ? 'Arrêter'
