@@ -14,9 +14,9 @@ const SITE = 'https://lesbikeuses.fr'
  * site par une page vide.
  */
 
-type Entree = { libelle: string; slug: string }
+export type Entree = { libelle: string; slug: string }
 
-const EQUIPEMENTS: Entree[] = [
+export const EQUIPEMENTS: Entree[] = [
   { libelle: 'Blousons moto', slug: 'blousons-moto' },
   { libelle: 'Gants', slug: 'gants' },
   { libelle: 'Casques', slug: 'casques' },
@@ -26,7 +26,7 @@ const EQUIPEMENTS: Entree[] = [
   { libelle: 'Sous-vêtements', slug: 'sous-vetements-moto' },
 ]
 
-const ACCESSOIRES: Entree[] = [
+export const ACCESSOIRES: Entree[] = [
   { libelle: 'Bagagerie', slug: 'bagagerie' },
   { libelle: 'Confort', slug: 'confort' },
   { libelle: 'Entretien moto', slug: 'entretien-moto' },
@@ -36,12 +36,20 @@ const ACCESSOIRES: Entree[] = [
   { libelle: 'Antivol', slug: 'antivol' },
 ]
 
-const VETEMENTS: Entree[] = [
+export const VETEMENTS: Entree[] = [
   { libelle: 'T-shirts', slug: 't-shirts' },
   { libelle: 'Maroquinerie', slug: 'maroquinerie' },
   { libelle: 'Sweat-shirts', slug: 'sweat-shirt' },
   { libelle: 'Casquettes', slug: 'casquettes' },
 ]
+
+/**
+ * Rayons de la boutique, dans l'ordre du menu.
+ *
+ * Un produit appartient à plusieurs catégories — sa marque en est une. Cette
+ * liste dit lesquelles sont des rayons, et sert donc aussi à ranger un avis.
+ */
+export const RAYONS: Entree[] = [...EQUIPEMENTS, ...ACCESSOIRES, ...VETEMENTS]
 
 export type RapportNavigation = {
   posees: string[]

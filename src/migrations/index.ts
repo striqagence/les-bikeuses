@@ -10,6 +10,7 @@ import * as migration_20260831_140000_pages_ressources from './20260831_140000_p
 import * as migration_20260831_150000_avis_clients from './20260831_150000_avis_clients';
 import * as migration_20260831_150100_fonds_decran from './20260831_150100_fonds_decran';
 import * as migration_20260831_150200_avis_et_fonds from './20260831_150200_avis_et_fonds';
+import * as migration_20260831_160000_rayon_des_avis from './20260831_160000_rayon_des_avis';
 export const migrations = [
   {
     up: migration_20260824_092635_initial.up,
@@ -70,5 +71,10 @@ export const migrations = [
     up: migration_20260831_150200_avis_et_fonds.up,
     down: migration_20260831_150200_avis_et_fonds.down,
     name: '20260831_150200_avis_et_fonds',
+  },
+  {
+    up: migration_20260831_160000_rayon_des_avis.up,
+    down: migration_20260831_160000_rayon_des_avis.down,
+    name: '20260831_160000_rayon_des_avis',
   },
 ];

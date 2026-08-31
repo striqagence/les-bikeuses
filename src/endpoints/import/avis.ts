@@ -1,5 +1,9 @@
 import type { Payload, PayloadRequest } from 'payload'
 
+import type { Category } from '@/payload-types'
+
+import { RAYONS } from '../navigation'
+
 const STORE = 'https://lesbikeuses.fr/wp-json/wc/store/v1'
 
 /**
@@ -22,7 +26,7 @@ type AvisWoo = {
   verified?: boolean
 }
 
-export type RapportAvis = { crees: number; ignores: number; total: number }
+export type RapportAvis = { crees: number; rayons: number; ignores: number; total: number }
 
 const decoder = (s: string): string =>
   s
@@ -57,22 +61,28 @@ export const importerAvis = async (
   payload: Payload,
   { req }: { req?: PayloadRequest } = {},
 ): Promise<RapportAvis> => {
-  const rapport: RapportAvis = { crees: 0, ignores: 0, total: 0 }
+  const rapport: RapportAvis = { crees: 0, rayons: 0, ignores: 0, total: 0 }
   const contexte = req ? { req } : {}
 
-  // Les avis déjà repris, pour rendre l'import rejouable sans doublon.
+  // Les avis déjà repris, pour rendre l'import rejouable sans doublon. Leur
+  // rayon est relu au passage : il se déduit du catalogue, qui bouge, et un
+  // avis rangé nulle part échappe aux filtres de la page.
   const connus = await payload.find({
     ...contexte,
     collection: 'avis',
     depth: 0,
     limit: 2000,
     pagination: false,
-    select: { wooId: true },
+    select: { wooId: true, rayon: true },
   })
-  const dejaLa = new Set(connus.docs.map((d) => d.wooId as number))
+  const dejaLa = new Map(
+    connus.docs.map((d) => [d.wooId as number, { id: d.id, rayon: d.rayon ?? null }]),
+  )
 
-  // Le rayon d'un avis vient de son produit : on charge la correspondance une
-  // fois plutôt que d'interroger la base par avis.
+  // Le rayon d'un avis vient de son produit. Un produit relève de plusieurs
+  // catégories — sa marque en est une — : seules celles qui figurent au menu
+  // sont des rayons, et c'est la première d'entre elles qui est retenue.
+  const rangDuRayon = new Map(RAYONS.map((r, i) => [r.slug, i]))
   const produits = await payload.find({
     ...contexte,
     collection: 'products',
@@ -81,11 +91,17 @@ export const importerAvis = async (
     pagination: false,
     select: { slug: true, category: true },
   })
+
   const rayonParSlug = new Map<string, string>()
   for (const p of produits.docs) {
-    const cat = p.category
-    const titre = typeof cat === 'object' && cat ? (cat as { title?: string }).title : undefined
-    if (p.slug && titre) rayonParSlug.set(p.slug, titre)
+    if (!p.slug) continue
+
+    const rayons = (Array.isArray(p.category) ? p.category : [p.category])
+      .filter((c): c is Category => typeof c === 'object' && c !== null)
+      .filter((c) => typeof c.slug === 'string' && rangDuRayon.has(c.slug))
+      .sort((a, b) => rangDuRayon.get(a.slug!)! - rangDuRayon.get(b.slug!)!)
+
+    if (rayons[0]?.title) rayonParSlug.set(p.slug, rayons[0].title)
   }
 
   for (let page = 1; page <= 20; page++) {
@@ -100,12 +116,25 @@ export const importerAvis = async (
     rapport.total += lot.length
 
     for (const a of lot) {
-      if (dejaLa.has(a.id)) {
-        rapport.ignores++
+      const slug = slugDe(a.product_permalink)
+      const rayon = (slug && rayonParSlug.get(slug)) || null
+
+      const connu = dejaLa.get(a.id)
+      if (connu) {
+        if (connu.rayon !== rayon) {
+          await payload.update({
+            ...contexte,
+            collection: 'avis',
+            id: connu.id,
+            data: { rayon },
+            context: { disableRevalidate: true },
+          })
+          rapport.rayons++
+        } else {
+          rapport.ignores++
+        }
         continue
       }
-
-      const slug = slugDe(a.product_permalink)
 
       await payload.create({
         ...contexte,
@@ -119,12 +148,11 @@ export const importerAvis = async (
           verifie: Boolean(a.verified),
           produitNom: a.product_name ? decoder(a.product_name) : undefined,
           produitSlug: slug ?? undefined,
-          rayon: (slug && rayonParSlug.get(slug)) || undefined,
+          rayon,
         },
         context: { disableRevalidate: true },
       })
 
-      dejaLa.add(a.id)
       rapport.crees++
     }
 
