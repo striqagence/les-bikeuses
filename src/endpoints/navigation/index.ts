@@ -161,17 +161,46 @@ export const basculerNavigation = async (
 
   await payload.updateGlobal({ slug: 'header', data: { navItems } as never, ...contexte })
 
-  // Le pied de page : seule la colonne « Boutique » bascule en interne.
+  // Pages ressources déjà reprises ici : leurs liens basculent en interne.
+  const pages = await payload.find({
+    collection: 'pages',
+    depth: 0,
+    limit: 200,
+    pagination: false,
+    select: { slug: true },
+  })
+  const pagesLocales = new Set(pages.docs.map((d) => d.slug).filter(Boolean) as string[])
+
+  /** Chemin interne si la page existe ici, adresse d'origine sinon. */
+  const versPage = (slug: string) =>
+    pagesLocales.has(slug)
+      ? { type: 'custom' as const, url: `/${slug}` }
+      : { type: 'custom' as const, url: `${SITE}/${slug}/`, newTab: true }
+
   const footer = await payload.findGlobal({ slug: 'footer', depth: 0 })
   const colonnes = (footer?.colonnes ?? []).map((colonne) => {
     if (colonne.titre === 'Ressources') {
       return {
         ...colonne,
-        items: (colonne.items ?? []).map((item) =>
-          /dictionnaire/i.test(item.link?.label ?? '')
-            ? { ...item, link: { ...item.link, type: 'custom' as const, url: '/dictionnaire-moto', newTab: false } }
-            : item,
-        ),
+        items: [
+          { link: { type: 'custom' as const, label: 'Débuter la moto', url: `${SITE}/debuter-la-moto/`, newTab: true } },
+          { link: { type: 'custom' as const, label: 'Dictionnaire moto', url: '/dictionnaire-moto' } },
+          { link: { label: 'Foire aux questions', ...versPage('faq') } },
+          { link: { label: 'Fonds d’écran gratuits', ...versPage('fond-decran-et-wallpaper') } },
+          { link: { label: 'Avis des clients', ...versPage('avis-des-clients') } },
+        ],
+      }
+    }
+
+    if (colonne.titre === 'La marque') {
+      return {
+        ...colonne,
+        items: [
+          { link: { label: 'Qui sommes-nous', ...versPage('a-propos') } },
+          { link: { type: 'custom' as const, label: 'Le journal', url: '/posts' } },
+          { link: { label: 'Politique de retour', ...versPage('politique-de-retour') } },
+          { link: { type: 'custom' as const, label: 'Nous contacter', url: `${SITE}/contact/`, newTab: true } },
+        ],
       }
     }
 
@@ -192,7 +221,18 @@ export const basculerNavigation = async (
     return { ...colonne, items }
   })
 
-  await payload.updateGlobal({ slug: 'footer', data: { colonnes } as never, ...contexte })
+  const navItemsPied = [
+    { link: { label: 'CGVU', ...versPage('cgv') } },
+    { link: { label: 'Mentions légales', ...versPage('mentions-legales') } },
+    { link: { label: 'RGPD', ...versPage('politique-de-confidentialite-rgpd') } },
+    { link: { type: 'custom' as const, label: 'Admin', url: '/admin' } },
+  ]
+
+  await payload.updateGlobal({
+    slug: 'footer',
+    data: { colonnes, navItems: navItemsPied } as never,
+    ...contexte,
+  })
 
   return rapport
 }

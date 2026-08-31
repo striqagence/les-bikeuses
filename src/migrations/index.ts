@@ -6,6 +6,7 @@ import * as migration_20260826_125509_essentiel_article from './20260826_125509_
 import * as migration_20260827_120740_carrousels_produits from './20260827_120740_carrousels_produits';
 import * as migration_20260827_131338_catalogue from './20260827_131338_catalogue';
 import * as migration_20260831_090000_navigation_interne from './20260831_090000_navigation_interne';
+import * as migration_20260831_140000_pages_ressources from './20260831_140000_pages_ressources';
 
 export const migrations = [
   {
@@ -47,5 +48,10 @@ export const migrations = [
     up: migration_20260831_090000_navigation_interne.up,
     down: migration_20260831_090000_navigation_interne.down,
     name: '20260831_090000_navigation_interne'
+  },
+  {
+    up: migration_20260831_140000_pages_ressources.up,
+    down: migration_20260831_140000_pages_ressources.down,
+    name: '20260831_140000_pages_ressources'
   },
 ];
