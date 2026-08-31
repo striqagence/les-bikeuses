@@ -133,6 +133,9 @@ export const basculerNavigation = async (payload: Payload): Promise<RapportNavig
       ? [{ link: { type: 'custom', label: 'Bons plans', url: '/rubrique/bons-plans' } }]
       : []),
     {
+      link: { type: 'custom', label: 'Dictionnaire moto', url: '/dictionnaire-moto' },
+    },
+    {
       // Pas d'équivalent ici : le guide vit toujours sur l'ancien site.
       link: {
         type: 'custom',
@@ -148,6 +151,17 @@ export const basculerNavigation = async (payload: Payload): Promise<RapportNavig
   // Le pied de page : seule la colonne « Boutique » bascule en interne.
   const footer = await payload.findGlobal({ slug: 'footer', depth: 0 })
   const colonnes = (footer?.colonnes ?? []).map((colonne) => {
+    if (colonne.titre === 'Ressources') {
+      return {
+        ...colonne,
+        items: (colonne.items ?? []).map((item) =>
+          /dictionnaire/i.test(item.link?.label ?? '')
+            ? { ...item, link: { ...item.link, type: 'custom' as const, url: '/dictionnaire-moto', newTab: false } }
+            : item,
+        ),
+      }
+    }
+
     if (colonne.titre !== 'Boutique') return colonne
 
     const items = [
