@@ -13,6 +13,14 @@ export type Facette = {
   valeurs: { valeur: string; libelle: string; nb: number }[]
   /** Rendu en pastilles plutôt qu'en cases à cocher. */
   pastilles?: boolean
+  /**
+   * Conserve la facette même si elle n'a qu'une valeur.
+   *
+   * Une facette à valeur unique est en général inutile — tous les produits la
+   * partagent. Mais « compatible permis A2 » est un interrupteur : une seule
+   * valeur, que la moitié des modèles seulement possède.
+   */
+  interrupteur?: boolean
 }
 
 /**
@@ -26,7 +34,7 @@ export const Facettes: React.FC<{ facettes: Facette[] }> = ({ facettes }) => {
   const chemin = usePathname()
   const params = useSearchParams()
 
-  const utiles = facettes.filter((f) => f.valeurs.length > 1)
+  const utiles = facettes.filter((f) => f.valeurs.length > (f.interrupteur ? 0 : 1))
   if (!utiles.length) return null
 
   /** URL avec la valeur ajoutée ou retirée, la pagination remise à zéro. */

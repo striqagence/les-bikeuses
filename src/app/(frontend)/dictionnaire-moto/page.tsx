@@ -25,9 +25,15 @@ const MARQUEUR = 'Motos'
  * elle que l'ancien site utilisait déjà pour classer ses motos, sans jamais
  * l'exposer autrement que par une liste de marques.
  */
-const GROUPES: { cle: string; titre: string; valeurs: string[]; pastilles?: boolean }[] = [
-  { cle: 'permis', titre: 'Permis', valeurs: ['Compatible permis A2'] },
-  { cle: 'gabarit', titre: 'Gabarit', valeurs: ['Petit gabarit'] },
+const GROUPES: {
+  cle: string
+  titre: string
+  valeurs: string[]
+  pastilles?: boolean
+  interrupteur?: boolean
+}[] = [
+  { cle: 'permis', titre: 'Permis', valeurs: ['Compatible permis A2'], interrupteur: true },
+  { cle: 'gabarit', titre: 'Gabarit', valeurs: ['Petit gabarit'], interrupteur: true },
   { cle: 'cylindree', titre: 'Cylindrée', valeurs: ['125cc', '250cc - 600cc', 'Plus de 600cc'] },
   { cle: 'poids', titre: 'Poids', valeurs: ['130kg - 190kg', '190kg - 225kg', 'Plus de 225kg'] },
   {
@@ -92,6 +98,7 @@ export default async function Dictionnaire({ searchParams: sp }: Args) {
       cle: g.cle,
       titre: g.titre,
       pastilles: g.pastilles,
+      interrupteur: g.interrupteur,
       valeurs: g.valeurs
         .map((valeur) => ({ valeur, libelle: valeur, nb: compter(valeur, g.cle) }))
         .filter((v) => v.nb > 0),
