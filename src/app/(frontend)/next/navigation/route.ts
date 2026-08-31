@@ -1,4 +1,4 @@
-import { getPayload } from 'payload'
+import { createLocalReq, getPayload } from 'payload'
 import { headers } from 'next/headers'
 import config from '@payload-config'
 
@@ -13,7 +13,8 @@ export async function POST(): Promise<Response> {
   if (!user) return new Response('Action forbidden.', { status: 403 })
 
   try {
-    return Response.json(await basculerNavigation(payload))
+    const req = await createLocalReq({ user }, payload)
+    return Response.json(await basculerNavigation(payload, { req }))
   } catch (e) {
     payload.logger.error({ err: e, message: 'Bascule de navigation en échec' })
     return new Response('Erreur pendant la bascule.', { status: 500 })

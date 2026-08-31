@@ -7,7 +7,9 @@ import * as migration_20260827_120740_carrousels_produits from './20260827_12074
 import * as migration_20260827_131338_catalogue from './20260827_131338_catalogue';
 import * as migration_20260831_090000_navigation_interne from './20260831_090000_navigation_interne';
 import * as migration_20260831_140000_pages_ressources from './20260831_140000_pages_ressources';
-
+import * as migration_20260831_150000_avis_clients from './20260831_150000_avis_clients';
+import * as migration_20260831_150100_fonds_decran from './20260831_150100_fonds_decran';
+import * as migration_20260831_150200_avis_et_fonds from './20260831_150200_avis_et_fonds';
 export const migrations = [
   {
     up: migration_20260824_092635_initial.up,
@@ -42,16 +44,31 @@ export const migrations = [
   {
     up: migration_20260827_131338_catalogue.up,
     down: migration_20260827_131338_catalogue.down,
-    name: '20260827_131338_catalogue'
+    name: '20260827_131338_catalogue',
   },
   {
     up: migration_20260831_090000_navigation_interne.up,
     down: migration_20260831_090000_navigation_interne.down,
-    name: '20260831_090000_navigation_interne'
+    name: '20260831_090000_navigation_interne',
   },
   {
     up: migration_20260831_140000_pages_ressources.up,
     down: migration_20260831_140000_pages_ressources.down,
-    name: '20260831_140000_pages_ressources'
+    name: '20260831_140000_pages_ressources',
+  },
+  {
+    up: migration_20260831_150000_avis_clients.up,
+    down: migration_20260831_150000_avis_clients.down,
+    name: '20260831_150000_avis_clients',
+  },
+  {
+    up: migration_20260831_150100_fonds_decran.up,
+    down: migration_20260831_150100_fonds_decran.down,
+    name: '20260831_150100_fonds_decran',
+  },
+  {
+    up: migration_20260831_150200_avis_et_fonds.up,
+    down: migration_20260831_150200_avis_et_fonds.down,
+    name: '20260831_150200_avis_et_fonds',
   },
 ];

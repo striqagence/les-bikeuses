@@ -1,4 +1,4 @@
-import type { Payload } from 'payload'
+import type { Payload, PayloadRequest } from 'payload'
 
 const SITE = 'https://lesbikeuses.fr'
 
@@ -58,13 +58,28 @@ export const basculerNavigation = async (
    * « static generation store missing » et fait tomber le déploiement — et de
    * toute façon un build produit des caches neufs.
    */
-  { revalider = true }: { revalider?: boolean } = {},
+  {
+    revalider = true,
+    req,
+  }: {
+    revalider?: boolean
+    /**
+     * Requête à joindre, indispensable depuis une migration.
+     *
+     * Les migrations tournent dans une transaction : sans la transmettre, les
+     * lectures se font hors transaction et ne voient pas ce que la migration
+     * vient d'écrire. C'est ainsi que la bascule a manqué les pages ressources
+     * créées quelques lignes plus haut.
+     */
+    req?: PayloadRequest
+  } = {},
 ): Promise<RapportNavigation> => {
-  const contexte = { context: { disableRevalidate: !revalider } }
+  const contexte = { context: { disableRevalidate: !revalider }, ...(req ? { req } : {}) }
 
   const rapport: RapportNavigation = { posees: [], omises: [] }
 
   const categories = await payload.find({
+    ...(req ? { req } : {}),
     collection: 'categories',
     depth: 0,
     limit: 500,
@@ -75,7 +90,13 @@ export const basculerNavigation = async (
 
   /** Compte les produits d'un rayon, pour la mention affichée au survol. */
   const compter = async (id: number) =>
-    (await payload.count({ collection: 'products', where: { category: { in: [id] } } })).totalDocs
+    (
+      await payload.count({
+        ...(req ? { req } : {}),
+        collection: 'products',
+        where: { category: { in: [id] } },
+      })
+    ).totalDocs
 
   const sousEntrees = async (entrees: Entree[]) => {
     const sorties: { link: Record<string, unknown>; meta?: string }[] = []
@@ -163,6 +184,7 @@ export const basculerNavigation = async (
 
   // Pages ressources déjà reprises ici : leurs liens basculent en interne.
   const pages = await payload.find({
+    ...(req ? { req } : {}),
     collection: 'pages',
     depth: 0,
     limit: 200,
@@ -171,13 +193,19 @@ export const basculerNavigation = async (
   })
   const pagesLocales = new Set(pages.docs.map((d) => d.slug).filter(Boolean) as string[])
 
+  // Reprises par un gabarit dédié plutôt que par la collection des pages :
+  // elles sont bien ici, mais aucune fiche ne porte leur slug.
+  for (const slug of ['dictionnaire-moto', 'avis-des-clients', 'fond-decran-et-wallpaper']) {
+    pagesLocales.add(slug)
+  }
+
   /** Chemin interne si la page existe ici, adresse d'origine sinon. */
   const versPage = (slug: string) =>
     pagesLocales.has(slug)
       ? { type: 'custom' as const, url: `/${slug}` }
       : { type: 'custom' as const, url: `${SITE}/${slug}/`, newTab: true }
 
-  const footer = await payload.findGlobal({ slug: 'footer', depth: 0 })
+  const footer = await payload.findGlobal({ slug: 'footer', depth: 0, ...(req ? { req } : {}) })
   const colonnes = (footer?.colonnes ?? []).map((colonne) => {
     if (colonne.titre === 'Ressources') {
       return {

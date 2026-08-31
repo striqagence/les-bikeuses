@@ -30,6 +30,25 @@ export const Media: CollectionConfig = {
       //required: true,
     },
     {
+      // Marque un visuel comme fond d'écran téléchargeable.
+      //
+      // Le marqueur vit sur le média plutôt que dans une page : la galerie
+      // reste alimentée depuis la médiathèque, et ajouter un fond d'écran ne
+      // demande plus de toucher à la mise en page.
+      name: 'fondDecran',
+      label: 'Fond d’écran proposé au téléchargement',
+      type: 'select',
+      index: true,
+      options: [
+        { label: 'Smartphone', value: 'smartphone' },
+        { label: 'Ordinateur', value: 'ordinateur' },
+      ],
+      admin: {
+        description:
+          'Renseigné : le visuel apparaît dans la galerie de la page « Fond d’écran & wallpaper ».',
+      },
+    },
+    {
       name: 'caption',
       type: 'richText',
       editor: lexicalEditor({

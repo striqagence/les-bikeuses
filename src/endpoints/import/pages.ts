@@ -12,13 +12,16 @@ export type RapportPages = {
  *
  * Contrairement aux articles, ces pages utilisent le constructeur Flatsome :
  * pas de `entry-content`, le contenu vit entre `<main>` et `</main>`.
+ *
+ * Deux pages n'y figurent pas : « Avis des clients » et « Fonds d'écran »
+ * n'étaient du texte ni l'une ni l'autre — un greffon d'avis pour la première,
+ * une galerie pour la seconde. Les reprendre ainsi n'aurait sauvé que le
+ * chapeau. Elles ont leur propre gabarit et leur propre import.
  */
 const PAGES: { slug: string; titre: string }[] = [
   { slug: 'a-propos', titre: 'Qui sommes-nous' },
   { slug: 'faq', titre: 'Foire aux questions' },
   { slug: 'politique-de-retour', titre: 'Politique de retour' },
-  { slug: 'avis-des-clients', titre: 'Avis des clients' },
-  { slug: 'fond-decran-et-wallpaper', titre: 'Fonds d’écran gratuits' },
   { slug: 'cgv', titre: 'Conditions générales de vente' },
   { slug: 'mentions-legales', titre: 'Mentions légales' },
   { slug: 'politique-de-confidentialite-rgpd', titre: 'Politique de confidentialité' },

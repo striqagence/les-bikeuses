@@ -70,6 +70,7 @@ export interface Config {
     pages: Page;
     posts: Post;
     products: Product;
+    avis: Avi;
     media: Media;
     categories: Category;
     users: User;
@@ -93,6 +94,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    avis: AvisSelect<false> | AvisSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -334,6 +336,10 @@ export interface Post {
 export interface Media {
   id: number;
   alt?: string | null;
+  /**
+   * Renseigné : le visuel apparaît dans la galerie de la page « Fond d’écran & wallpaper ».
+   */
+  fondDecran?: ('smartphone' | 'ordinateur') | null;
   caption?: {
     root: {
       type: string;
@@ -1128,6 +1134,39 @@ export interface Product {
   createdAt: string;
 }
 /**
+ * Repris de l’ancienne boutique. Modifier un avis reviendrait à réécrire la parole d’une cliente : seule la mise en avant est éditable.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "avis".
+ */
+export interface Avi {
+  id: number;
+  wooId: number;
+  auteur: string;
+  note: number;
+  /**
+   * Vide pour une note laissée sans commentaire — la majorité des avis.
+   */
+  texte?: string | null;
+  publieLe: string;
+  verifie?: boolean | null;
+  produitNom?: string | null;
+  /**
+   * Le lien n’est posé que si la fiche existe encore ici.
+   */
+  produitSlug?: string | null;
+  /**
+   * Déduit du produit : sert de filtre sur la page des avis.
+   */
+  rayon?: string | null;
+  /**
+   * Remonte l’avis en tête de la page « Avis des clients ».
+   */
+  enAvant?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -1328,6 +1367,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'products';
         value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'avis';
+        value: number | Avi;
       } | null)
     | ({
         relationTo: 'media';
@@ -1782,10 +1825,29 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "avis_select".
+ */
+export interface AvisSelect<T extends boolean = true> {
+  wooId?: T;
+  auteur?: T;
+  note?: T;
+  texte?: T;
+  publieLe?: T;
+  verifie?: T;
+  produitNom?: T;
+  produitSlug?: T;
+  rayon?: T;
+  enAvant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  fondDecran?: T;
   caption?: T;
   folder?: T;
   updatedAt?: T;
