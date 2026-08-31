@@ -48,7 +48,20 @@ export type RapportNavigation = {
   omises: string[]
 }
 
-export const basculerNavigation = async (payload: Payload): Promise<RapportNavigation> => {
+export const basculerNavigation = async (
+  payload: Payload,
+  /**
+   * Purge les caches après écriture.
+   *
+   * À couper hors requête HTTP : les hooks appellent `revalidateTag`, qui
+   * n'existe que dans un rendu Next. Depuis une migration, l'appel échoue sur
+   * « static generation store missing » et fait tomber le déploiement — et de
+   * toute façon un build produit des caches neufs.
+   */
+  { revalider = true }: { revalider?: boolean } = {},
+): Promise<RapportNavigation> => {
+  const contexte = { context: { disableRevalidate: !revalider } }
+
   const rapport: RapportNavigation = { posees: [], omises: [] }
 
   const categories = await payload.find({
@@ -146,7 +159,7 @@ export const basculerNavigation = async (payload: Payload): Promise<RapportNavig
     },
   ]
 
-  await payload.updateGlobal({ slug: 'header', data: { navItems } as never })
+  await payload.updateGlobal({ slug: 'header', data: { navItems } as never, ...contexte })
 
   // Le pied de page : seule la colonne « Boutique » bascule en interne.
   const footer = await payload.findGlobal({ slug: 'footer', depth: 0 })
@@ -179,7 +192,7 @@ export const basculerNavigation = async (payload: Payload): Promise<RapportNavig
     return { ...colonne, items }
   })
 
-  await payload.updateGlobal({ slug: 'footer', data: { colonnes } as never })
+  await payload.updateGlobal({ slug: 'footer', data: { colonnes } as never, ...contexte })
 
   return rapport
 }

@@ -13,7 +13,8 @@ import { basculerNavigation } from '../endpoints/navigation'
  * elle n'écrasera pas les retouches faites ensuite à la main.
  */
 export async function up({ payload }: MigrateUpArgs): Promise<void> {
-  const rapport = await basculerNavigation(payload)
+  // Hors requête HTTP : pas de revalidation, elle échouerait.
+  const rapport = await basculerNavigation(payload, { revalider: false })
 
   payload.logger.info(
     `Navigation : ${rapport.posees.length} entrée(s) posée(s)` +
