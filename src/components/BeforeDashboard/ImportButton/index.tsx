@@ -19,7 +19,10 @@ type Rapport = {
  * d'une fonction. Chaque lot est autonome, l'opération reprend où elle en
  * était et peut être interrompue sans dégât.
  */
-export const ImportButton: React.FC<{ forcer?: boolean; quoi?: 'articles' | 'produits' }> = ({
+export const ImportButton: React.FC<{
+  forcer?: boolean
+  quoi?: 'articles' | 'produits' | 'galeries'
+}> = ({
   forcer = false,
   quoi = 'articles',
 }) => {
@@ -64,9 +67,9 @@ export const ImportButton: React.FC<{ forcer?: boolean; quoi?: 'articles' | 'pro
     try {
       for (;;) {
         const reponse = await fetch(
-          `/next/import?taille=${quoi === 'produits' ? 12 : 8}` +
+          `/next/import?taille=${quoi === 'produits' ? 12 : quoi === 'galeries' ? 6 : 8}` +
             `${forcer ? `&forcer=1&avant=${encodeURIComponent(depart)}` : ''}` +
-            `${quoi === 'produits' ? '&quoi=produits' : ''}`,
+            `${quoi === 'articles' ? '' : `&quoi=${quoi}`}`,
           {
             method: 'POST',
             credentials: 'include',
@@ -102,7 +105,10 @@ export const ImportButton: React.FC<{ forcer?: boolean; quoi?: 'articles' | 'pro
         // qui fait foi pour la progression.
       }
 
-      toast.success(`Import terminé — ${importes} ${quoi === 'produits' ? 'produit' : 'article'}${importes > 1 ? 's' : ''} traité${importes > 1 ? 's' : ''}.`)
+      const nom = quoi === 'produits' ? 'produit' : quoi === 'galeries' ? 'galerie' : 'article'
+      toast.success(
+        `Import terminé — ${importes} ${nom}${importes > 1 ? 's' : ''} traité${importes > 1 ? 'es' : 'e'}.`,
+      )
     } catch (err) {
       toast.error(`Import interrompu : ${err instanceof Error ? err.message : 'erreur inconnue'}`)
     } finally {

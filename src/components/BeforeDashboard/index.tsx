@@ -22,6 +22,14 @@ const BeforeDashboard: React.FC = () => {
       </p>
       <ImportButton quoi="produits" />
 
+      <p style={{ marginTop: '1rem' }}>
+        Cet import ne prend que le visuel de tête. Le bouton ci-dessous complète les
+        fiches avec les visuels secondaires — coloris, dos, détails de coque —, soit
+        deux à seize par référence. Comptez une vingtaine de minutes : chaque visuel
+        est téléchargé, redimensionné en sept déclinaisons puis renvoyé sur Supabase.
+      </p>
+      <ImportButton quoi="galeries" />
+
       <p style={{ marginTop: '1.5rem' }}>
         <strong>2. Les articles.</strong> Reprise depuis lesbikeuses.fr. L’import se fait par
         lots et reprend là où il s’est arrêté : on peut l’interrompre et le relancer

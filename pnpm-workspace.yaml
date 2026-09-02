@@ -1,0 +1,22 @@
+# Réglages pnpm.
+#
+# pnpm 11 ne lit plus le champ « pnpm » de package.json : les réglages vivent
+# désormais ici. Il exige en outre une décision explicite, paquet par paquet,
+# sur les scripts d'installation — sans quoi il s'arrête sur
+# ERR_PNPM_IGNORED_BUILDS. C'est ce qui a cassé le déploiement le jour où
+# Vercel est passé de pnpm 10 à pnpm 11.
+#
+# Les trois paquets ci-dessous compilaient déjà sous pnpm 10 : les autoriser
+# rétablit l'état antérieur, cela n'ouvre rien de nouveau. sharp porte le
+# redimensionnement des images, esbuild et unrs-resolver la compilation.
+allowBuilds:
+  sharp: true
+  esbuild: true
+  unrs-resolver: true
+
+# Conservé pour les versions 9 et 10, que la configuration du projet accepte
+# toujours et qui ignorent « allowBuilds ».
+onlyBuiltDependencies:
+  - sharp
+  - esbuild
+  - unrs-resolver

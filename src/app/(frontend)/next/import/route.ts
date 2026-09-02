@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import config from '@payload-config'
 
 import { importerArticles } from '@/endpoints/import'
+import { importerGaleries } from '@/endpoints/import/galeries'
 import { importerProduits } from '@/endpoints/import/produits'
 
 // L'import télécharge et réenvoie les visuels de chaque article : il faut de
@@ -29,6 +30,13 @@ export async function POST(request: Request): Promise<Response> {
     // aucun produit n'est en base est omis à l'import de l'article.
     if (url.searchParams.get('quoi') === 'produits') {
       return Response.json(await importerProduits({ payload, req, taille }))
+    }
+
+    // `?quoi=galeries` complète les fiches déjà en base avec les visuels
+    // secondaires. Un lot est plus petit : une référence peut porter seize
+    // visuels, chacun redimensionné en sept déclinaisons.
+    if (url.searchParams.get('quoi') === 'galeries') {
+      return Response.json(await importerGaleries({ payload, req, taille: Math.min(taille, 6) }))
     }
 
     const rapport = await importerArticles({

@@ -10,7 +10,7 @@ Flatsome).
 - **PostgreSQL** hébergé sur **Supabase**
 - **Stockage médias** : Supabase Storage (compatible S3), via `@payloadcms/storage-s3`
 - **Hébergement** : Vercel — prod live : https://les-bikeuses.vercel.app
-- Gestionnaire de paquets : **pnpm** (`pnpm install --ignore-workspace`)
+- Gestionnaire de paquets : **pnpm** (`pnpm install`)
 
 ## Périmètre actuel
 
@@ -21,7 +21,7 @@ commandes, paiement) viendra plus tard.
 ## Commandes utiles
 
 ```bash
-pnpm install --ignore-workspace   # installer
+pnpm install                      # installer
 pnpm dev                          # dev local (front + /admin)
 pnpm build                        # build prod (lance `payload migrate` puis `next build`)
 pnpm generate:types               # régénérer src/payload-types.ts
@@ -31,6 +31,10 @@ pnpm payload migrate:create <nom> # créer une migration après un changement de
 > ⚠️ Après toute modification de collection/champ Payload, générer une migration
 > (`pnpm payload migrate:create`) contre une base Postgres et la committer : le
 > build Vercel applique les migrations automatiquement (`src/migrations/`).
+
+> ⚠️ Ne pas ajouter `--ignore-workspace` : depuis pnpm 11, les réglages du
+> projet vivent dans `pnpm-workspace.yaml`, et ce drapeau les écarte —
+> l'installation s'arrête alors sur `ERR_PNPM_IGNORED_BUILDS`.
 
 ## Base de données (Supabase)
 
