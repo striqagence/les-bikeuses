@@ -7,6 +7,7 @@ import { home } from './home'
 import { image1 } from './image-1'
 import { articleVersPost, articlesImportes } from './lesbikeuses-posts'
 import { navigationEntete, piedDePage } from './navigation'
+import { typeMime } from '../import/medias'
 
 const collections: CollectionSlug[] = [
   'categories',
@@ -286,7 +287,7 @@ async function fetchFileByURL(url: string): Promise<File> {
   return {
     name: url.split('/').pop() || `file-${Date.now()}`,
     data: Buffer.from(data),
-    mimetype: `image/${url.split('.').pop()}`,
+    mimetype: typeMime(url),
     size: data.byteLength,
   }
 }

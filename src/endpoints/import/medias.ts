@@ -22,7 +22,14 @@ export const nomDeFichier = (url: string, repli = 'image'): string => {
   return nettoye.length > 120 ? nettoye.slice(-120) : nettoye
 }
 
-const typeMime = (nom: string): string => {
+/**
+ * Type MIME d'après l'extension.
+ *
+ * `image/jpg` n'existe pas — c'est `image/jpeg`. Sharp refuse le premier et
+ * enregistre alors le média sans dimensions, ce qui prive `next/image` de
+ * `srcset` et fait réclamer chaque visuel en pleine résolution.
+ */
+export const typeMime = (nom: string): string => {
   const ext = (nom.split('.').pop() ?? 'jpeg').toLowerCase()
   if (ext === 'jpg') return 'image/jpeg'
   if (ext === 'svg') return 'image/svg+xml'

@@ -74,7 +74,7 @@ export default async function FicheProduit({ params: p }: Args) {
         <span>{produit.title}</span>
       </nav>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-start lg:gap-14">
         <Galerie images={produit.gallery ?? []} titre={produit.title} />
 
         <div>

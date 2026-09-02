@@ -26,6 +26,19 @@ const nextConfig: NextConfig = {
     // 75 est le défaut de Next et le bon compromis. La configuration forçait
     // 100 : chaque image pesait deux à trois fois plus pour un gain invisible.
     qualities: [75],
+    // Les variantes optimisées sont conservées un mois. Le défaut est d'une
+    // minute : passé ce délai chaque visiteur relançait l'optimisation, et
+    // c'est ce même en-tête que reçoit le navigateur — il rechargeait donc
+    // toutes les images à chaque navigation.
+    //
+    // Sans risque : `getMediaUrl` suffixe chaque URL de la date de mise à
+    // jour du média, remplacer un visuel change donc la clé de cache.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
+    // La plus grande vignette de la boutique fait 620 px, le héros occupe la
+    // pleine largeur. Au-delà de 1920 px on ne sert plus que du poids : les
+    // deux paliers supérieurs du défaut (2048 et 3840) sont retirés.
+    deviceSizes: [360, 640, 828, 1080, 1280, 1600, 1920],
+    imageSizes: [64, 96, 128, 200, 300, 400],
     remotePatterns: [
       ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
         const url = new URL(item)
