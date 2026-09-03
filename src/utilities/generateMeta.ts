@@ -10,10 +10,11 @@ const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
 
   let url = serverUrl + '/website-template-OG.webp'
 
+  // Le visuel d'origine, et non un recadrage maison en 1200×630 : cette
+  // déclinaison pesait à elle seule un cinquième de la médiathèque, pour un
+  // format que les réseaux recadrent de toute façon eux-mêmes.
   if (image && typeof image === 'object' && 'url' in image) {
-    const ogUrl = image.sizes?.og?.url
-
-    url = ogUrl ? serverUrl + ogUrl : serverUrl + image.url
+    url = serverUrl + image.url
   }
 
   return url

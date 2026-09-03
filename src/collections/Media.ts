@@ -63,6 +63,14 @@ export const Media: CollectionConfig = {
     staticDir: path.resolve(dirname, '../../public/media'),
     adminThumbnail: 'thumbnail',
     focalPoint: true,
+    // Sept déclinaisons étaient générées par visuel. « xlarge » n'était
+    // référencée nulle part et « og » pesait le plus lourd des sept, pour une
+    // image de partage social qu'un visuel secondaire de fiche produit n'aura
+    // jamais à fournir — `generateMeta` retombe sur l'original en son absence.
+    //
+    // Les déclinaisons restantes allègent surtout la lecture par l'optimiseur
+    // Vercel, qui fabrique de toute façon la taille exacte de chaque
+    // emplacement et la garde en cache un mois.
     imageSizes: [
       {
         name: 'thumbnail',
@@ -84,16 +92,6 @@ export const Media: CollectionConfig = {
       {
         name: 'large',
         width: 1400,
-      },
-      {
-        name: 'xlarge',
-        width: 1920,
-      },
-      {
-        name: 'og',
-        width: 1200,
-        height: 630,
-        crop: 'center',
       },
     ],
   },

@@ -12,6 +12,8 @@ import * as migration_20260831_150100_fonds_decran from './20260831_150100_fonds
 import * as migration_20260831_150200_avis_et_fonds from './20260831_150200_avis_et_fonds';
 import * as migration_20260831_160000_rayon_des_avis from './20260831_160000_rayon_des_avis';
 import * as migration_20260902_090000_dimensions_des_medias from './20260902_090000_dimensions_des_medias';
+import * as migration_20260903_065158_alleger_declinaisons from './20260903_065158_alleger_declinaisons';
+
 export const migrations = [
   {
     up: migration_20260824_092635_initial.up,
@@ -82,5 +84,10 @@ export const migrations = [
     up: migration_20260902_090000_dimensions_des_medias.up,
     down: migration_20260902_090000_dimensions_des_medias.down,
     name: '20260902_090000_dimensions_des_medias',
+  },
+  {
+    up: migration_20260903_065158_alleger_declinaisons.up,
+    down: migration_20260903_065158_alleger_declinaisons.down,
+    name: '20260903_065158_alleger_declinaisons',
   },
 ];
