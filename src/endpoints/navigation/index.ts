@@ -178,13 +178,7 @@ export const basculerNavigation = async (
       link: { type: 'custom', label: 'Dictionnaire moto', url: '/dictionnaire-moto' },
     },
     {
-      // Pas d'équivalent ici : le guide vit toujours sur l'ancien site.
-      link: {
-        type: 'custom',
-        label: 'Débuter la moto',
-        url: `${SITE}/debuter-la-moto/`,
-        newTab: true,
-      },
+      link: { type: 'custom', label: 'Débuter la moto', url: '/debuter-la-moto' },
     },
   ]
 
@@ -203,7 +197,12 @@ export const basculerNavigation = async (
 
   // Reprises par un gabarit dédié plutôt que par la collection des pages :
   // elles sont bien ici, mais aucune fiche ne porte leur slug.
-  for (const slug of ['dictionnaire-moto', 'avis-des-clients', 'fond-decran-et-wallpaper']) {
+  for (const slug of [
+    'dictionnaire-moto',
+    'avis-des-clients',
+    'fond-decran-et-wallpaper',
+    'debuter-la-moto',
+  ]) {
     pagesLocales.add(slug)
   }
 
@@ -219,7 +218,7 @@ export const basculerNavigation = async (
       return {
         ...colonne,
         items: [
-          { link: { type: 'custom' as const, label: 'Débuter la moto', url: `${SITE}/debuter-la-moto/`, newTab: true } },
+          { link: { type: 'custom' as const, label: 'Débuter la moto', url: '/debuter-la-moto' } },
           { link: { type: 'custom' as const, label: 'Dictionnaire moto', url: '/dictionnaire-moto' } },
           { link: { label: 'Foire aux questions', ...versPage('faq') } },
           { link: { label: 'Fonds d’écran gratuits', ...versPage('fond-decran-et-wallpaper') } },

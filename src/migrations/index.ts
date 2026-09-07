@@ -13,6 +13,7 @@ import * as migration_20260831_150200_avis_et_fonds from './20260831_150200_avis
 import * as migration_20260831_160000_rayon_des_avis from './20260831_160000_rayon_des_avis';
 import * as migration_20260902_090000_dimensions_des_medias from './20260902_090000_dimensions_des_medias';
 import * as migration_20260903_065158_alleger_declinaisons from './20260903_065158_alleger_declinaisons';
+import * as migration_20260907_170000_debuter_la_moto from './20260907_170000_debuter_la_moto';
 
 export const migrations = [
   {
@@ -89,5 +90,10 @@ export const migrations = [
     up: migration_20260903_065158_alleger_declinaisons.up,
     down: migration_20260903_065158_alleger_declinaisons.down,
     name: '20260903_065158_alleger_declinaisons',
+  },
+  {
+    up: migration_20260907_170000_debuter_la_moto.up,
+    down: migration_20260907_170000_debuter_la_moto.down,
+    name: '20260907_170000_debuter_la_moto',
   },
 ];
