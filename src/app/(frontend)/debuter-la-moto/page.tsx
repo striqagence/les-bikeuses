@@ -71,7 +71,8 @@ export default async function DebuterLaMoto() {
           au premier équipement.
         </p>
 
-        <dl className="route mt-9 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-5 pt-7 sm:grid-cols-4">
+        <hr className="route mt-9 max-w-3xl" />
+        <dl className="mt-7 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
           <Chiffre valeur={nbGuides} libelle="guides du parcours" />
           <Chiffre valeur={ETAPES.length} libelle="étapes" />
           <Chiffre valeur={nbMotos} libelle="modèles au dictionnaire" />
@@ -138,7 +139,8 @@ const SectionEtape: React.FC<{ etape: Etape; parSlug: Record<string, Post> }> = 
 
   return (
     <section className="container mt-16 scroll-mt-24 md:mt-24" id={`etape-${etape.numero}`}>
-      <div className="route grid gap-x-12 gap-y-4 pt-7 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
+      <hr className="route" />
+      <div className="mt-7 grid gap-x-12 gap-y-4 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
         <div>
           <p className="mono-label text-primary">Étape {etape.numero}</p>
           <h2 className="wonk mt-2 text-2xl leading-tight font-medium md:text-4xl">
