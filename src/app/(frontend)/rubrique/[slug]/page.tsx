@@ -154,8 +154,10 @@ export default async function Rubrique({ params: p, searchParams: sp }: Args) {
           {produits.docs.length ? (
             <>
               <div className="grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-4">
-                {produits.docs.map((produit) => (
-                  <CarteProduit key={produit.id} produit={produit as Product} />
+                {/* La première rangée est chargée sans attendre : ce sont les
+                    seules cartes visibles avant tout défilement. */}
+                {produits.docs.map((produit, i) => (
+                  <CarteProduit key={produit.id} prioritaire={i < 4} produit={produit as Product} />
                 ))}
               </div>
               <PaginationRayon page={produits.page ?? 1} total={produits.totalPages} />

@@ -16,7 +16,9 @@ export const CarteMoto: React.FC<{
   moto: Post
   caracteristiques: (p: Post) => string[]
   marque: (p: Post) => string | null
-}> = ({ moto, caracteristiques, marque }) => {
+  /** Première rangée : chargée sans attendre, comme les cartes produit. */
+  prioritaire?: boolean
+}> = ({ moto, caracteristiques, marque, prioritaire = false }) => {
   const image = moto.meta?.image ?? moto.heroImage
   const specs = caracteristiques(moto)
   const nom = marque(moto)
@@ -29,7 +31,8 @@ export const CarteMoto: React.FC<{
             className="h-full"
             imgClassName="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
             resource={image}
-            size="(max-width: 700px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            priority={prioritaire}
+            size="(max-width: 700px) 50vw, (max-width: 1200px) 33vw, 300px"
             variante="small"
           />
         ) : (

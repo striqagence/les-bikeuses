@@ -18,10 +18,19 @@ export const prixFr = (n?: number | null): string | null =>
  * par un liseré. L'image est en `contain` et non `cover` — les visuels
  * produits sont détourés sur fond blanc, un recadrage couperait les manches.
  */
-export const CarteProduit: React.FC<{ produit: Product; className?: string }> = ({
-  produit,
-  className,
-}) => {
+export const CarteProduit: React.FC<{
+  produit: Product
+  className?: string
+  /**
+   * Charge le visuel sans attendre.
+   *
+   * À réserver à la première rangée : le reste de la grille est en chargement
+   * différé, mais l'appliquer aussi aux cartes visibles d'emblée laissait des
+   * cadres vides le temps que le navigateur veuille bien les demander — c'est
+   * ce qui donnait l'impression d'une page lente.
+   */
+  prioritaire?: boolean
+}> = ({ produit, className, prioritaire = false }) => {
   const image = produit.gallery?.[0]?.image
   const prix = prixFr(produit.price)
   const nbTailles = produit.tailles?.length ?? 0
@@ -38,8 +47,9 @@ export const CarteProduit: React.FC<{ produit: Product; className?: string }> = 
           <Media
             className="h-full"
             imgClassName="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.05]"
+            priority={prioritaire}
             resource={image}
-            size="(max-width: 700px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            size="(max-width: 700px) 50vw, (max-width: 1200px) 33vw, 300px"
             variante="small"
           />
         ) : (

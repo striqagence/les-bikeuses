@@ -134,12 +134,14 @@ export default async function Dictionnaire({ searchParams: sp }: Args) {
           {visibles.length ? (
             <>
               <div className="grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-4">
-                {visibles.map((moto) => (
+                {/* Première rangée chargée sans attendre, comme en boutique. */}
+                {visibles.map((moto, i) => (
                   <CarteMoto
                     caracteristiques={caracteristiquesDe}
                     key={moto.id}
                     marque={marqueDe}
                     moto={moto}
+                    prioritaire={i < 4}
                   />
                 ))}
               </div>
