@@ -258,8 +258,8 @@ const EntreeNav: React.FC<{
       {aSousMenu && (
         <div
           className={cn(
-            'absolute top-full left-1/2 mt-1.5 grid min-w-max -translate-x-1/2 grid-flow-col grid-rows-[repeat(5,auto)] gap-x-10 gap-y-0.5 rounded-panneau border border-border border-t-2 border-t-primary bg-card p-6 shadow-[0_18px_40px_-24px_rgb(0_0_0/0.35)] transition-[opacity,transform,visibility] duration-200',
-            ouvert
+            'absolute top-full left-0 mt-1.5 grid max-w-[calc(100vw-2rem)] min-w-max grid-flow-col grid-rows-[repeat(5,auto)] gap-x-10 gap-y-0.5 rounded-panneau border border-border border-t-2 border-t-primary bg-card p-6 shadow-[0_18px_40px_-24px_rgb(0_0_0/0.35)] transition-[opacity,transform,visibility] duration-200',
+              ouvert
               ? 'visible translate-y-0 opacity-100'
               : 'invisible translate-y-[-6px] opacity-0',
           )}
