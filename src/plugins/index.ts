@@ -24,6 +24,24 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
   return doc?.slug ? `${url}/${doc.slug}` : url
 }
 
+/**
+ * Base des URL publiques du compartiment Supabase.
+ *
+ * Déduite du point d'accès S3 (`https://<projet>.supabase.co/storage/v1/s3`)
+ * plutôt que d'une variable supplémentaire à tenir à jour.
+ *
+ * Vaut `null` si le format n'est pas celui attendu : on repasse alors par le
+ * proxy Payload, plus lent mais toujours fonctionnel, au lieu de produire des
+ * adresses mortes.
+ */
+const baseMediasPublique = ((): string | null => {
+  const endpoint = process.env.S3_ENDPOINT ?? ''
+  const bucket = process.env.S3_BUCKET ?? ''
+  if (!endpoint || !bucket || !/\/storage\/v1\/s3\/?$/.test(endpoint)) return null
+
+  return `${endpoint.replace(/\/s3\/?$/, '/object/public')}/${bucket}`
+})()
+
 export const plugins: Plugin[] = [
   redirectsPlugin({
     collections: ['pages', 'posts'],
@@ -97,7 +115,18 @@ export const plugins: Plugin[] = [
     ? [
         s3Storage({
           collections: {
-            media: true,
+            media: baseMediasPublique
+              ? {
+                  // Le compartiment étant public, les visuels sont servis
+                  // directement par le CDN Supabase. Auparavant chacun passait
+                  // par `/api/media/file/...`, c'est-à-dire une fonction Vercel
+                  // réveillée et une requête en base par image — le premier
+                  // chargement d'un visuel coûtait deux à quatre secondes.
+                  disablePayloadAccessControl: true,
+                  generateFileURL: ({ filename, prefix }) =>
+                    `${baseMediasPublique}/${[prefix, filename].filter(Boolean).join('/')}`,
+                }
+              : true,
           },
           bucket: process.env.S3_BUCKET,
           config: {

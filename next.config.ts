@@ -11,6 +11,15 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : process.env.__NEXT_PRIVATE_ORIGIN || 'http://localhost:3000'
 
+/** Hôte du stockage Supabase, déduit du point d'accès S3. */
+const hoteSupabase = (() => {
+  try {
+    return process.env.S3_ENDPOINT ? new URL(process.env.S3_ENDPOINT).hostname : null
+  } catch {
+    return null
+  }
+})()
+
 const nextConfig: NextConfig = {
   // Temporarily required on Windows until Next.js fixes Turbopack Sass resolution.
   // See: https://github.com/vercel/next.js/issues/86431
@@ -48,6 +57,12 @@ const nextConfig: NextConfig = {
           protocol: url.protocol.replace(':', '') as 'http' | 'https',
         }
       }),
+      // Les visuels sont servis par le CDN Supabase depuis que le compartiment
+      // est public : sans cet hôte, l'optimiseur refuse de les traiter et les
+      // laisse passer en pleine résolution.
+      ...(hoteSupabase
+        ? [{ hostname: hoteSupabase, protocol: 'https' as const, pathname: '/storage/v1/object/public/**' }]
+        : []),
     ],
   },
   webpack: (webpackConfig) => {
