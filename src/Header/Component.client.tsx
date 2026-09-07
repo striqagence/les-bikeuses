@@ -188,12 +188,28 @@ const Utilitaire: React.FC<{
 
 type NavItem = NonNullable<Header['navItems']>[number]
 
+/**
+ * Entrée de navigation, avec son sous-menu.
+ *
+ * L'ouverture était pilotée en CSS par `group-hover` et `group-focus-within`.
+ * Le second posait problème : après un clic, le lien conserve le focus, si
+ * bien que le sous-menu restait déployé une fois la page changée — la souris
+ * avait beau s'éloigner, `focus-within` restait vrai.
+ *
+ * L'état est donc tenu ici. Il se ferme au clic, quand le focus quitte le
+ * bloc, sur Échap, et à chaque changement d'adresse — ce dernier cas ne
+ * couvrant pas tout, puisqu'un lien vers la page courante ne la change pas.
+ */
 const EntreeNav: React.FC<{
   link: NavItem['link']
   accent?: boolean | null
   sousItems?: NavItem['sousItems']
 }> = ({ link, accent, sousItems }) => {
   const aSousMenu = Boolean(sousItems?.length)
+  const [ouvert, setOuvert] = useState(false)
+  const pathname = usePathname()
+
+  useEffect(() => setOuvert(false), [pathname])
 
   if (accent) {
     return (
@@ -204,24 +220,56 @@ const EntreeNav: React.FC<{
     )
   }
 
+  const fermer = () => setOuvert(false)
+
   return (
-    <div className="group relative my-2 flex items-center">
+    <div
+      className="relative my-2 flex items-center"
+      onBlur={(e) => {
+        // Ne referme que si le focus sort vraiment du bloc : passer d'un lien
+        // du sous-menu au suivant déclenche aussi un blur.
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) fermer()
+      }}
+      onFocus={() => aSousMenu && setOuvert(true)}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape' && ouvert) {
+          fermer()
+          ;(document.activeElement as HTMLElement | null)?.blur()
+        }
+      }}
+      onMouseEnter={() => aSousMenu && setOuvert(true)}
+      onMouseLeave={fermer}
+    >
       <CMSLink
         {...link}
-        className="inline-flex items-center gap-1.5 rounded-pilule px-3 py-2.5 text-[0.8125rem] font-bold tracking-[0.08em] whitespace-nowrap uppercase transition-colors group-hover:bg-accent group-hover:text-primary group-focus-within:bg-accent group-focus-within:text-primary xl:px-4"
+        className={cn(
+          'inline-flex items-center gap-1.5 rounded-pilule px-3 py-2.5 text-[0.8125rem] font-bold tracking-[0.08em] whitespace-nowrap uppercase transition-colors xl:px-4',
+          ouvert && 'bg-accent text-primary',
+        )}
+        onClick={fermer}
       >
         {aSousMenu && (
-          <ChevronDown className="size-2.5 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
+          <ChevronDown
+            className={cn('size-2.5 transition-transform duration-200', ouvert && 'rotate-180')}
+          />
         )}
       </CMSLink>
 
       {aSousMenu && (
-        <div className="invisible absolute top-full left-1/2 mt-1.5 grid min-w-max -translate-x-1/2 translate-y-[-6px] grid-flow-col grid-rows-[repeat(5,auto)] gap-x-10 gap-y-0.5 rounded-panneau border border-border border-t-2 border-t-primary bg-card p-6 opacity-0 shadow-[0_18px_40px_-24px_rgb(0_0_0/0.35)] transition-[opacity,transform,visibility] duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+        <div
+          className={cn(
+            'absolute top-full left-1/2 mt-1.5 grid min-w-max -translate-x-1/2 grid-flow-col grid-rows-[repeat(5,auto)] gap-x-10 gap-y-0.5 rounded-panneau border border-border border-t-2 border-t-primary bg-card p-6 shadow-[0_18px_40px_-24px_rgb(0_0_0/0.35)] transition-[opacity,transform,visibility] duration-200',
+            ouvert
+              ? 'visible translate-y-0 opacity-100'
+              : 'invisible translate-y-[-6px] opacity-0',
+          )}
+        >
           {sousItems?.map((sous, i) => (
             <CMSLink
               {...sous.link}
               className="-mx-2.5 flex items-baseline justify-between gap-8 rounded-[10px] px-2.5 py-2 transition-colors hover:bg-accent hover:text-primary"
               key={i}
+              onClick={fermer}
             >
               {sous.meta && (
                 <span className="mono-label shrink-0 text-muted-foreground">{sous.meta}</span>
@@ -242,6 +290,12 @@ const Tiroir: React.FC<{
   navItems: NavItem[]
 }> = ({ ouvert, fermer, navItems }) => {
   const [deplie, setDeplie] = useState<number | null>(null)
+
+  // Un tiroir refermé oublie la section qu'il avait dépliée : sans cela, il
+  // se rouvre sur l'état d'avant plutôt qu'à plat.
+  useEffect(() => {
+    if (!ouvert) setDeplie(null)
+  }, [ouvert])
 
   return (
     <div
@@ -303,6 +357,7 @@ const Tiroir: React.FC<{
                       {...sous.link}
                       className="mb-1 flex justify-between rounded-xl bg-secondary px-3.5 py-2.5 text-muted-foreground transition-colors hover:bg-accent hover:text-primary"
                       key={j}
+                      onClick={fermer}
                     >
                       {sous.meta && <span className="mono-label">{sous.meta}</span>}
                     </CMSLink>
