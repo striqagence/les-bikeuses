@@ -24,7 +24,8 @@ export const CarteMoto: React.FC<{
   const nom = marque(moto)
 
   return (
-    <article className="group flex flex-col gap-3.5 rounded-panneau border border-border bg-card p-2.5 transition-all duration-200 hover:-translate-y-1 hover:border-primary/40">
+    // Cliquable en entier, par un lien unique étiré : voir CarteProduit.
+    <article className="group relative flex flex-col gap-3.5 rounded-panneau border border-border bg-card p-2.5 transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background">
       <div className="aspect-[4/3] overflow-hidden rounded-[14px] bg-secondary">
         {image && typeof image === 'object' ? (
           <Media
@@ -45,7 +46,12 @@ export const CarteMoto: React.FC<{
       <div className="flex flex-1 flex-col gap-2 px-1 pb-1">
         {nom && <p className="mono-label text-muted-foreground">{nom}</p>}
         <h3 className="font-sans text-[0.9375rem] leading-snug font-bold transition-colors group-hover:text-primary">
-          <Link href={`/${moto.slug}`}>{moto.title}</Link>
+          <Link
+            className="outline-none after:absolute after:inset-0 after:content-['']"
+            href={`/${moto.slug}`}
+          >
+            {moto.title}
+          </Link>
         </h3>
 
         {specs.length > 0 && (

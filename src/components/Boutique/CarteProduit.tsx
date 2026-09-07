@@ -17,6 +17,13 @@ export const prixFr = (n?: number | null): string | null =>
  * Double arrondi, comme les cartes du journal : la carte et l'image, séparées
  * par un liseré. L'image est en `contain` et non `cover` — les visuels
  * produits sont détourés sur fond blanc, un recadrage couperait les manches.
+ *
+ * La carte entière est cliquable, mais ne contient qu'un seul lien : celui du
+ * titre, étiré sur toute la surface par un pseudo-élément. Envelopper la carte
+ * dans un lien, ou en ajouter un sur l'image, doublerait chaque produit dans
+ * la liste des liens de la page — un lecteur d'écran annoncerait deux fois le
+ * même article, et la navigation au clavier demanderait deux tabulations par
+ * carte.
  */
 export const CarteProduit: React.FC<{
   produit: Product
@@ -38,7 +45,9 @@ export const CarteProduit: React.FC<{
   return (
     <article
       className={cn(
-        'group flex flex-col gap-3.5 rounded-panneau border border-border bg-card p-2.5 transition-all duration-200 hover:-translate-y-1 hover:border-primary/40',
+        'group relative flex flex-col gap-3.5 rounded-panneau border border-border bg-card p-2.5 transition-all duration-200 hover:-translate-y-1 hover:border-primary/40',
+        // Le focus clavier se voit sur la carte, le lien étant invisible.
+        'focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background',
         className,
       )}
     >
@@ -62,7 +71,12 @@ export const CarteProduit: React.FC<{
       <div className="flex flex-1 flex-col gap-0.5 px-1">
         {produit.marque && <p className="mono-label text-muted-foreground">{produit.marque}</p>}
         <h3 className="font-sans text-[0.9375rem] leading-snug font-bold transition-colors group-hover:text-primary">
-          <Link href={`/produit/${produit.slug}`}>{produit.title}</Link>
+          <Link
+            className="outline-none after:absolute after:inset-0 after:content-['']"
+            href={`/produit/${produit.slug}`}
+          >
+            {produit.title}
+          </Link>
         </h3>
 
         <div className="mt-auto flex items-baseline justify-between gap-3 pt-2">
