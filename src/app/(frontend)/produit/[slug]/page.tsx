@@ -13,6 +13,34 @@ import { Galerie } from '@/components/Boutique/Galerie'
 
 export const revalidate = 600
 
+/**
+ * Pré-génère les fiches au build.
+ *
+ * Sans cette liste, une fiche est rendue à chaque visite : le gabarit racine
+ * appelle `draftMode()` pour la barre d'administration, ce qui exclut du
+ * cache toute page qui n'a pas été pré-générée. Les fiches répondaient donc
+ * en 900 ms là où le CDN sert une page pré-rendue en cinquante.
+ */
+export async function generateStaticParams() {
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const produits = await payload.find({
+      collection: 'products',
+      draft: false,
+      limit: 1000,
+      overrideAccess: false,
+      pagination: false,
+      select: { slug: true },
+    })
+
+    return produits.docs.map(({ slug }) => ({ slug })).filter((p) => Boolean(p.slug))
+  } catch {
+    // Base injoignable au build : les fiches basculent en rendu à la demande
+    // plutôt que de faire tomber le déploiement.
+    return []
+  }
+}
+
 const HOMOLOGATIONS: Record<string, string> = {
   'ce-aa': 'CE niveau AA',
   'ce-a': 'CE niveau A',
