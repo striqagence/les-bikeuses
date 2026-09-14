@@ -116,6 +116,10 @@ export const internaliserLiens = async (
     return { valeur: JSON.parse(sortie), nb }
   }
 
+  // Les pages portent des liens dans leur en-tête comme dans leur corps :
+  // les deux boutons du héros de l'accueil vivent dans `hero`, pas `layout`.
+  const CHAMPS = { posts: ['content'], pages: ['hero', 'layout'] } as const
+
   for (const collection of ['posts', 'pages'] as const) {
     const docs = await payload.find({
       ...contexte,
@@ -126,23 +130,32 @@ export const internaliserLiens = async (
     })
 
     for (const doc of docs.docs) {
-      const champ = collection === 'posts' ? 'content' : 'layout'
-      const source = (doc as unknown as Record<string, unknown>)[champ]
-      if (!source) continue
+      const modifs: Record<string, unknown> = {}
+      let nbDoc = 0
 
-      const { valeur, nb } = reecrire(source)
-      if (!nb) continue
+      for (const champ of CHAMPS[collection]) {
+        const source = (doc as unknown as Record<string, unknown>)[champ]
+        if (!source) continue
+
+        const { valeur, nb } = reecrire(source)
+        if (!nb) continue
+
+        modifs[champ] = valeur
+        nbDoc += nb
+      }
+
+      if (!nbDoc) continue
 
       await payload.update({
         ...contexte,
         collection,
         id: doc.id,
         depth: 0,
-        data: { [champ]: valeur } as never,
+        data: modifs as never,
         context: { disableRevalidate: true },
       })
 
-      rapport.liensReecrits += nb
+      rapport.liensReecrits += nbDoc
       if (collection === 'posts') rapport.articles++
       else rapport.pages++
     }
