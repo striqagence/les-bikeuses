@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 import type { CarrouselProduitsBlock as Props, Product } from '@/payload-types'
@@ -74,12 +75,13 @@ const Fiche: React.FC<{ produit: Product }> = ({ produit }) => {
     </>
   )
 
-  // Pas de fiche produit sur ce site tant que la boutique n'est pas ouverte :
-  // le lien renvoie vers lesbikeuses.fr, où l'on peut réellement acheter.
-  return produit.sourceUrl ? (
-    <a className="group block" href={produit.sourceUrl} rel="noopener noreferrer" target="_blank">
+  // La fiche produit vit désormais ici, avec sa galerie complète : le
+  // carrousel y mène plutôt que d'expédier la lectrice sur l'ancien site au
+  // milieu de sa lecture. C'est la fiche qui propose ensuite de commander.
+  return produit.slug ? (
+    <Link className="group block" href={`/produit/${produit.slug}`}>
       {contenu}
-    </a>
+    </Link>
   ) : (
     <div className="group block">{contenu}</div>
   )
