@@ -69,11 +69,18 @@ export const internaliserLiens = async (
     const produit = /^product\/([^/]+)$/.exec(propre)
     if (produit) return slugsProduits.has(produit[1]) ? `/produit/${produit[1]}` : null
 
-    const rayon = /^rubrique\/([^/]+)$/.exec(propre)
+    // L'ancienne boutique emboîtait ses rayons — « /rubrique/gants/
+    // gants-chauffants/ », « /rubrique/marques/helstons/ ». Le catalogue
+    // d'ici est à plat : c'est le dernier segment qui porte le rayon.
+    const rayon = /^rubrique\/(?:[^/]+\/)*([^/]+)$/.exec(propre)
     if (rayon) {
       const slug = RAYONS_RENOMMES[rayon[1]] ?? rayon[1]
       return slugsRayons.has(slug) ? `/rubrique/${slug}` : null
     }
+
+    // Les articles vivaient sous « /blog/ » avant de passer à la racine.
+    const article = /^blog\/([^/]+)$/.exec(propre)
+    if (article) return slugsArticles.has(article[1]) ? `/${article[1]}` : null
 
     // L'entrée de la boutique : le premier rayon du menu.
     if (propre === 'shop') return slugsRayons.has('blousons-moto') ? '/rubrique/blousons-moto' : null

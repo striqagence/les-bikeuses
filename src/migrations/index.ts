@@ -16,6 +16,7 @@ import * as migration_20260903_065158_alleger_declinaisons from './20260903_0651
 import * as migration_20260907_170000_debuter_la_moto from './20260907_170000_debuter_la_moto';
 import * as migration_20260914_090000_liens_internes from './20260914_090000_liens_internes';
 import * as migration_20260914_110000_liens_du_heros from './20260914_110000_liens_du_heros';
+import * as migration_20260914_140000_sous_rayons from './20260914_140000_sous_rayons';
 
 export const migrations = [
   {
@@ -107,5 +108,10 @@ export const migrations = [
     up: migration_20260914_110000_liens_du_heros.up,
     down: migration_20260914_110000_liens_du_heros.down,
     name: '20260914_110000_liens_du_heros',
+  },
+  {
+    up: migration_20260914_140000_sous_rayons.up,
+    down: migration_20260914_140000_sous_rayons.down,
+    name: '20260914_140000_sous_rayons',
   },
 ];
