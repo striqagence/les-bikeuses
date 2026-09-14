@@ -8,7 +8,7 @@ import React from 'react'
 
 import type { Post } from '@/payload-types'
 
-import { Media } from '@/components/Media'
+import { CarteGuide, Passerelle } from '@/components/Guides/CarteGuide'
 import { ETAPES, type Etape } from './etapes'
 
 export const revalidate = 600
@@ -98,6 +98,17 @@ export default async function DebuterLaMoto() {
         <SectionEtape etape={etape} key={etape.numero} parSlug={parSlug} />
       ))}
 
+      {/* Une fois le permis en poche, la suite se joue sur la page sœur. */}
+      <section className="container mt-16 md:mt-24">
+        <Passerelle
+          action="Voir les leçons"
+          detail="Maniement, conduite par mauvais temps, normes de protection et entretien : ce qu'on apprend une fois en selle."
+          eyebrow="Déjà le permis ?"
+          titre="Apprendre la moto"
+          url="/apprendre-la-moto"
+        />
+      </section>
+
       <section className="container mt-20">
         <div className="rounded-panneau border border-border bg-card p-8 md:p-12">
           <p className="eyebrow">Et après</p>
@@ -160,65 +171,14 @@ const SectionEtape: React.FC<{ etape: Etape; parSlug: Record<string, Post> }> = 
       </ul>
 
       {etape.suite && (
-        <Link
-          className="group mt-6 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 rounded-panneau border border-primary/40 bg-accent p-6 transition-colors hover:border-primary"
-          href={etape.suite.url}
-        >
-          <div className="max-w-[52ch]">
-            <p className="mono-label text-primary">Pour aller plus loin</p>
-            <p className="wonk mt-1.5 text-xl font-medium">{etape.suite.libelle}</p>
-            <p className="mt-1.5 text-sm text-muted-foreground">{etape.suite.detail}</p>
-          </div>
-          <span
-            aria-hidden="true"
-            className="mono-label shrink-0 rounded-pilule bg-primary px-4 py-2.5 text-primary-foreground transition-transform group-hover:translate-x-1"
-          >
-            Y aller →
-          </span>
-        </Link>
+        <Passerelle
+          detail={etape.suite.detail}
+          eyebrow="Pour aller plus loin"
+          titre={etape.suite.libelle}
+          url={etape.suite.url}
+        />
       )}
     </section>
-  )
-}
-
-/** Même idiome que les cartes du catalogue : un seul lien, étiré sur la carte. */
-const CarteGuide: React.FC<{ article: Post }> = ({ article }) => {
-  const image = article.heroImage
-
-  return (
-    <article className="group relative flex h-full flex-col gap-3.5 rounded-panneau border border-border bg-card p-2.5 transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background">
-      <div className="aspect-[16/10] overflow-hidden rounded-[14px] bg-secondary">
-        {image && typeof image === 'object' ? (
-          <Media
-            className="h-full"
-            imgClassName="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-            resource={image}
-            size="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
-            variante="small"
-          />
-        ) : (
-          <div className="mono-label grid h-full place-items-center text-muted-foreground">
-            Sans visuel
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-1 flex-col px-1 pb-1">
-        <h3 className="font-sans text-[0.9375rem] leading-snug font-bold transition-colors group-hover:text-primary">
-          <Link
-            className="outline-none after:absolute after:inset-0 after:content-['']"
-            href={`/${article.slug}`}
-          >
-            {article.title}
-          </Link>
-        </h3>
-        {article.meta?.description && (
-          <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-            {article.meta.description}
-          </p>
-        )}
-      </div>
-    </article>
   )
 }
 

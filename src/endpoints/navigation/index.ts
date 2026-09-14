@@ -202,6 +202,7 @@ export const basculerNavigation = async (
     'avis-des-clients',
     'fond-decran-et-wallpaper',
     'debuter-la-moto',
+    'apprendre-la-moto',
   ]) {
     pagesLocales.add(slug)
   }
@@ -219,6 +220,7 @@ export const basculerNavigation = async (
         ...colonne,
         items: [
           { link: { type: 'custom' as const, label: 'Débuter la moto', url: '/debuter-la-moto' } },
+          { link: { type: 'custom' as const, label: 'Apprendre la moto', url: '/apprendre-la-moto' } },
           { link: { type: 'custom' as const, label: 'Dictionnaire moto', url: '/dictionnaire-moto' } },
           { link: { label: 'Foire aux questions', ...versPage('faq') } },
           { link: { label: 'Fonds d’écran gratuits', ...versPage('fond-decran-et-wallpaper') } },

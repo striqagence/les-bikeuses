@@ -17,6 +17,7 @@ import * as migration_20260907_170000_debuter_la_moto from './20260907_170000_de
 import * as migration_20260914_090000_liens_internes from './20260914_090000_liens_internes';
 import * as migration_20260914_110000_liens_du_heros from './20260914_110000_liens_du_heros';
 import * as migration_20260914_140000_sous_rayons from './20260914_140000_sous_rayons';
+import * as migration_20260914_160000_apprendre_la_moto from './20260914_160000_apprendre_la_moto';
 
 export const migrations = [
   {
@@ -113,5 +114,10 @@ export const migrations = [
     up: migration_20260914_140000_sous_rayons.up,
     down: migration_20260914_140000_sous_rayons.down,
     name: '20260914_140000_sous_rayons',
+  },
+  {
+    up: migration_20260914_160000_apprendre_la_moto.up,
+    down: migration_20260914_160000_apprendre_la_moto.down,
+    name: '20260914_160000_apprendre_la_moto',
   },
 ];
