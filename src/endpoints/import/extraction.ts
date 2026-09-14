@@ -216,6 +216,18 @@ export const extraireArticle = async (
   const estParasite = (t: string) =>
     !t || catalogue.has(t.toLowerCase().trim()) || PARASITES.test(t.trim()) || PRIX.test(t)
 
+  /**
+   * Même filtre, sans la confrontation au catalogue.
+   *
+   * Un titre de section est structurel : qu'il porte le nom d'un rayon ne le
+   * rend pas suspect. « Casque jet », « Casque intégral », « Casque modulable »
+   * sont à la fois des rayons de la boutique et les trois sections d'un article
+   * sur le choix d'un casque — elles disparaissaient toutes les trois. De même
+   * pour « Sécurité », « LS2 », « Shark » ou « Bell » ailleurs.
+   */
+  const estParasiteHorsTitre = (t: string) =>
+    !t || PARASITES.test(t.trim()) || PRIX.test(t)
+
   const blocs: BlocExtrait[] = []
   const vues = new Set<string>()
 
@@ -362,7 +374,9 @@ export const extraireArticle = async (
 
     const nettoye = interieur.replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ').replace(/<img\b[^>]*>/gi, ' ')
     const brut = sansBalises(nettoye)
-    if (!brut || brut.length < 3 || estParasite(brut)) continue
+    const titreDeSection = tag === 'h2' || tag === 'h3'
+    const rejete = titreDeSection ? estParasiteHorsTitre(brut) : estParasite(brut)
+    if (!brut || brut.length < 3 || rejete) continue
 
     // Doublons consécutifs : Flatsome duplique certains blocs mobile/desktop.
     const precedent = blocs[blocs.length - 1] as { children?: { text?: string }[] } | undefined

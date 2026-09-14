@@ -23,6 +23,7 @@ import * as migration_20260914_200000_images_des_articles from './20260914_20000
 import * as migration_20260914_220000_images_oubliees from './20260914_220000_images_oubliees';
 import * as migration_20260915_090000_articles_a_carrousels from './20260915_090000_articles_a_carrousels';
 import * as migration_20260915_110000_titres_manquants from './20260915_110000_titres_manquants';
+import * as migration_20260915_140000_titres_et_rayons from './20260915_140000_titres_et_rayons';
 
 export const migrations = [
   {
@@ -149,5 +150,10 @@ export const migrations = [
     up: migration_20260915_110000_titres_manquants.up,
     down: migration_20260915_110000_titres_manquants.down,
     name: '20260915_110000_titres_manquants',
+  },
+  {
+    up: migration_20260915_140000_titres_et_rayons.up,
+    down: migration_20260915_140000_titres_et_rayons.down,
+    name: '20260915_140000_titres_et_rayons',
   },
 ];
