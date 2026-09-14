@@ -60,23 +60,39 @@ type Jeton =
   | { genre: 'paragraphe' }
   | { genre: 'image'; url: string; fichier: string }
 
-/** Séquence titres / paragraphes / images du corps d'origine, dans l'ordre. */
+/**
+ * Séquence titres / paragraphes / images du corps d'origine, dans l'ordre.
+ *
+ * Trois balayages distincts fusionnés par position, et non un motif unique :
+ * la plupart des images vivent à l'intérieur d'un paragraphe, si bien qu'une
+ * alternation les laissait avaler par la branche `<p>` avant de les voir.
+ */
 const lireSource = (corps: string): Jeton[] => {
-  const jetons: Jeton[] = []
-  const motif =
-    /<(h[23])[^>]*>([\s\S]*?)<\/\1>|<p[^>]*>([\s\S]*?)<\/p>|<img[^>]+src="(https:\/\/lesbikeuses\.fr\/wp-content\/uploads\/[^"]+)"/gi
+  const jetons: { rang: number; jeton: Jeton }[] = []
 
-  for (const m of corps.matchAll(motif)) {
-    if (m[1]) {
-      const t = texteBrut(m[2] ?? '')
-      if (t) jetons.push({ genre: 'titre', texte: t })
-    } else if (m[3] !== undefined) {
-      if (texteBrut(m[3]).length > 30) jetons.push({ genre: 'paragraphe' })
-    } else if (m[4]) {
-      jetons.push({ genre: 'image', url: m[4], fichier: m[4].split('/').pop() ?? '' })
+  for (const m of corps.matchAll(/<(h[23])[^>]*>([\s\S]*?)<\/\1>/gi)) {
+    const t = texteBrut(m[2] ?? '')
+    if (t) jetons.push({ rang: m.index ?? 0, jeton: { genre: 'titre', texte: t } })
+  }
+
+  for (const m of corps.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)) {
+    // Un paragraphe qui ne porte qu'une image n'en est pas un : le compter
+    // décalerait le rang d'insertion.
+    if (texteBrut(m[1] ?? '').length > 30) {
+      jetons.push({ rang: m.index ?? 0, jeton: { genre: 'paragraphe' } })
     }
   }
-  return jetons
+
+  for (const m of corps.matchAll(
+    /<img[^>]+src="(https:\/\/lesbikeuses\.fr\/wp-content\/uploads\/[^"]+)"/gi,
+  )) {
+    jetons.push({
+      rang: m.index ?? 0,
+      jeton: { genre: 'image', url: m[1], fichier: m[1].split('/').pop() ?? '' },
+    })
+  }
+
+  return jetons.sort((a, b) => a.rang - b.rang).map((x) => x.jeton)
 }
 
 type Noeud = Record<string, unknown>

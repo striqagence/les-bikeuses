@@ -45,6 +45,7 @@ export const importerArticles = async ({
   taille = 8,
   forcer = false,
   avant,
+  seulement,
 }: {
   payload: Payload
   req: PayloadRequest
@@ -68,6 +69,13 @@ export const importerArticles = async ({
    * de l'ensemble à traiter.
    */
   avant?: string
+  /**
+   * Restreint la reprise à ces slugs.
+   *
+   * Sert aux réparations ciblées : rejouer les deux cents articles pour en
+   * corriger six coûterait une heure et remettrait en jeu ce qui va bien.
+   */
+  seulement?: string[]
 }): Promise<Rapport> => {
   const slugs = await listerSlugs()
 
@@ -87,13 +95,15 @@ export const importerArticles = async ({
 
   const borne = avant ? Date.parse(avant) : Number.POSITIVE_INFINITY
 
+  const retenus = seulement?.length ? slugs.filter((s) => seulement.includes(s)) : slugs
+
   const aFaire = forcer
-    ? slugs.filter((s) => {
+    ? retenus.filter((s) => {
         const quand = misAJour.get(s)
         // Jamais importé, ou pas encore retraité depuis le début de la reprise.
         return !quand || Date.parse(quand) < borne
       })
-    : slugs.filter((s) => !dejaLa.has(s))
+    : retenus.filter((s) => !dejaLa.has(s))
   const lot = aFaire.slice(0, taille)
 
   const rapport: Rapport = {

@@ -21,6 +21,7 @@ import * as migration_20260914_160000_apprendre_la_moto from './20260914_160000_
 import * as migration_20260914_180000_marques_et_programme from './20260914_180000_marques_et_programme';
 import * as migration_20260914_200000_images_des_articles from './20260914_200000_images_des_articles';
 import * as migration_20260914_220000_images_oubliees from './20260914_220000_images_oubliees';
+import * as migration_20260915_090000_articles_a_carrousels from './20260915_090000_articles_a_carrousels';
 
 export const migrations = [
   {
@@ -137,5 +138,10 @@ export const migrations = [
     up: migration_20260914_220000_images_oubliees.up,
     down: migration_20260914_220000_images_oubliees.down,
     name: '20260914_220000_images_oubliees',
+  },
+  {
+    up: migration_20260915_090000_articles_a_carrousels.up,
+    down: migration_20260915_090000_articles_a_carrousels.down,
+    name: '20260915_090000_articles_a_carrousels',
   },
 ];

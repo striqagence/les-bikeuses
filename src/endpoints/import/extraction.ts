@@ -299,6 +299,26 @@ export const extraireArticle = async (
   const dansUnCarrousel = (index: number) =>
     groupes.some((g) => index >= g.debut && index <= g.fin)
 
+  /**
+   * Le bloc appartient-il vraiment à une carte produit ?
+   *
+   * Se trouver dans l'empan d'un carrousel ne suffisait pas à l'établir, et
+   * cette approximation coûtait cher : les carrousels s'intercalent entre les
+   * sections, si bien que des titres et des paragraphes entiers tombaient dans
+   * leur empan et disparaissaient. Un article sur les équipements gris avait
+   * ainsi perdu trois sections sur six.
+   *
+   * Un titre ouvre une section, jamais une carte : il passe toujours. Une
+   * carte ne laisse derrière elle que des libellés courts — le nom du produit,
+   * « ajouter à la liste d'envies » — là où la prose d'un article dépasse
+   * largement les quatre-vingts caractères.
+   */
+  const contenuDeCarte = (balise: string | undefined, interieur: string | undefined): boolean => {
+    if (balise === 'h2' || balise === 'h3') return false
+    if (!balise) return true
+    return decoder((interieur ?? '').replace(/<[^>]+>/g, '')).trim().length < 80
+  }
+
   // Les `<img>` isolés sont balayés au même titre que les blocs de texte :
   // beaucoup ne sont enveloppés dans aucun paragraphe.
   const re = /<(p|h2|h3|ul|figure)\b[^>]*>([\s\S]*?)<\/\1>|<img\b[^>]*>/gi
@@ -307,7 +327,7 @@ export const extraireArticle = async (
   while ((m = re.exec(corps))) {
     const [complet, balise, interieur] = m
 
-    if (dansUnCarrousel(m.index)) {
+    if (dansUnCarrousel(m.index) && contenuDeCarte(balise, interieur)) {
       viderFiches(m.index)
       continue
     }
