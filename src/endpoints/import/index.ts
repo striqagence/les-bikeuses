@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto'
 import type { Payload, PayloadRequest } from 'payload'
 
 import type { Category, Media } from '@/payload-types'
@@ -222,13 +223,21 @@ const construireContenu = async (
       // Une image qu'on n'a pas pu récupérer est omise, pas remplacée : mieux
       // vaut un article sans illustration qu'un cadre vide.
       if (media) {
+        // Un bloc `mediaBlock`, et non un nœud `upload` : le convertisseur de
+        // Payload abandonne sans un mot quand le média d'un nœud `upload`
+        // n'est pas peuplé, et la population ne se déclenche pas sur ce champ.
+        // Quatre cent trente-cinq images sont restées invisibles des mois
+        // durant pour cette raison. Le bloc, lui, se peuple — et passe par
+        // l'optimiseur plutôt que de poser une balise brute.
         enfants.push({
-          type: 'upload',
-          relationTo: 'media',
-          value: media.id,
-          fields: null,
+          type: 'block',
           format: '',
-          version: 3,
+          version: 2,
+          fields: {
+            id: randomBytes(12).toString('hex'),
+            blockType: 'mediaBlock',
+            media: media.id,
+          },
         })
       }
       continue

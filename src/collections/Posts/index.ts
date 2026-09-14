@@ -16,6 +16,7 @@ import { CarrouselProduits } from '../../blocks/CarrouselProduits/config'
 import { Code } from '../../blocks/Code/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
+import { imagesEnBlocs } from '../../hooks/imagesEnBlocs'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
 
@@ -240,6 +241,7 @@ export const Posts: CollectionConfig<'posts'> = {
   hooks: {
     afterChange: [revalidatePost],
     afterRead: [populateAuthors],
+    beforeChange: [imagesEnBlocs('content')],
     afterDelete: [revalidateDelete],
   },
   versions: {
