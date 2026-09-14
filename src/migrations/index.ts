@@ -18,6 +18,7 @@ import * as migration_20260914_090000_liens_internes from './20260914_090000_lie
 import * as migration_20260914_110000_liens_du_heros from './20260914_110000_liens_du_heros';
 import * as migration_20260914_140000_sous_rayons from './20260914_140000_sous_rayons';
 import * as migration_20260914_160000_apprendre_la_moto from './20260914_160000_apprendre_la_moto';
+import * as migration_20260914_180000_marques_et_programme from './20260914_180000_marques_et_programme';
 
 export const migrations = [
   {
@@ -119,5 +120,10 @@ export const migrations = [
     up: migration_20260914_160000_apprendre_la_moto.up,
     down: migration_20260914_160000_apprendre_la_moto.down,
     name: '20260914_160000_apprendre_la_moto',
+  },
+  {
+    up: migration_20260914_180000_marques_et_programme.up,
+    down: migration_20260914_180000_marques_et_programme.down,
+    name: '20260914_180000_marques_et_programme',
   },
 ];

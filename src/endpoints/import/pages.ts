@@ -25,6 +25,11 @@ const PAGES: { slug: string; titre: string }[] = [
   { slug: 'cgv', titre: 'Conditions générales de vente' },
   { slug: 'mentions-legales', titre: 'Mentions légales' },
   { slug: 'politique-de-confidentialite-rgpd', titre: 'Politique de confidentialité' },
+  // Programme d'entraînement gratuit : la page d'annonce et le programme
+  // lui-même, cinquante et un exercices détaillés. Cité par « Débuter la
+  // moto » sur l'ancien site — pousser sa machine est une épreuve du permis.
+  { slug: 'comment-pousser-sa-moto-plus-facilement', titre: 'Pousser sa moto plus facilement' },
+  { slug: 'programme-pousser-sa-moto-facilement', titre: 'Le programme, semaine par semaine' },
 ]
 
 const PARASITES =

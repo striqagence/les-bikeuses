@@ -38,5 +38,35 @@ export const redirects: NextConfig['redirects'] = async () => {
     permanent: false,
   }
 
-  return [internetExplorerRedirect, ...soldes, anciensArticles]
+  // Trois pages de l'ancien site que le dictionnaire et le catalogue
+  // couvrent déjà, mieux : elles sont renvoyées sur l'équivalent filtré
+  // plutôt que recopiées. Deux pages qui disent la même chose se
+  // cannibalisent dans les résultats de recherche.
+  //
+  // Temporaires, comme les soldes : si l'une d'elles justifie un jour une
+  // page à part entière, il suffira de changer la destination.
+  const remplacees = [
+    {
+      // « Motos faciles à conduire » : le dictionnaire filtre déjà sur le
+      // gabarit et la compatibilité permis A2, sur quatre-vingts modèles.
+      source: '/dictionnaire-moto/motos-faciles-a-conduire',
+      destination: '/dictionnaire-moto?gabarit=Petit+gabarit',
+      permanent: false,
+    },
+    {
+      // « Catégories de moto » : c'est la facette « type » du dictionnaire.
+      source: '/dictionnaire-moto/categories-moto',
+      destination: '/dictionnaire-moto',
+      permanent: false,
+    },
+    {
+      // « Road trip » : les vingt-neuf références citées sont au catalogue,
+      // pour l'essentiel en bagagerie.
+      source: '/road-trip',
+      destination: '/rubrique/bagagerie',
+      permanent: false,
+    },
+  ]
+
+  return [internetExplorerRedirect, ...soldes, anciensArticles, ...remplacees]
 }

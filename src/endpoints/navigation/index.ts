@@ -203,6 +203,7 @@ export const basculerNavigation = async (
     'fond-decran-et-wallpaper',
     'debuter-la-moto',
     'apprendre-la-moto',
+    'marques',
   ]) {
     pagesLocales.add(slug)
   }
@@ -255,7 +256,8 @@ export const basculerNavigation = async (
         link: { type: 'custom' as const, label: libelle, url: `/rubrique/${slug}` },
       }))
 
-    return { ...colonne, items }
+    // L'index des marques n'est pas un rayon : il s'ajoute après eux.
+    return { ...colonne, items: [...items, { link: { type: 'custom' as const, label: 'Toutes les marques', url: '/marques' } }] }
   })
 
   const navItemsPied = [
