@@ -22,15 +22,6 @@ import { recupererMedia } from './medias'
  * défaut de repère, l'image est écartée plutôt que posée au hasard.
  */
 
-const ARTICLES = [
-  'le-marron-pour-vos-equipements-de-moto',
-  'le-gris-pour-vos-equipements-de-moto',
-  'le-bleu-pour-vos-equipements-de-moto',
-  'le-kaki-pour-vos-equipements-de-moto',
-  'trouvez-le-style-qui-va-avec-le-scooter',
-  'une-bikeuse-nous-parle-de-la-securite-a-moto',
-]
-
 export type RapportImagesManquantes = {
   articles: { slug: string; ajoutees: number; sansRepere: number }[]
   ajoutees: number
@@ -105,7 +96,7 @@ const texteDuNoeud = (n: Noeud): string => {
 
 export const recupererImagesManquantes = async (
   payload: Payload,
-  { req }: { req?: PayloadRequest } = {},
+  { req, slugs }: { req?: PayloadRequest; slugs: string[] },
 ): Promise<RapportImagesManquantes> => {
   const contexte = req ? { req } : {}
   const rapport: RapportImagesManquantes = { articles: [], ajoutees: 0, sansRepere: 0 }
@@ -132,7 +123,7 @@ export const recupererImagesManquantes = async (
 
   const cache = new Map<string, Media | null>()
 
-  for (const slug of ARTICLES) {
+  for (const slug of slugs) {
     const trouve = await payload.find({
       ...contexte,
       collection: 'posts',

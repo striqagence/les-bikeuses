@@ -12,7 +12,8 @@ import { recupererImagesManquantes } from '../endpoints/import/images-manquantes
  * titre, plutôt que d'empiler les images en fin d'article.
  */
 export async function up({ payload, req }: MigrateUpArgs): Promise<void> {
-  const r = await recupererImagesManquantes(payload, { req })
+  // Passe historique : la liste vivait alors dans le module.
+  const r = await recupererImagesManquantes(payload, { req, slugs: [] })
 
   payload.logger.info(`Images oubliées : ${r.ajoutees} récupérée(s).`)
   for (const a of r.articles) {

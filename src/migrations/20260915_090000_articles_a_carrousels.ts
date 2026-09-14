@@ -38,7 +38,7 @@ export async function up({ payload, req }: MigrateUpArgs): Promise<void> {
       (reprise.ignores.length ? `, ${reprise.ignores.length} en échec` : ''),
   )
 
-  const images = await recupererImagesManquantes(payload, { req })
+  const images = await recupererImagesManquantes(payload, { req, slugs: ARTICLES })
   payload.logger.info(`Photos éditoriales replacées : ${images.ajoutees}.`)
   for (const a of images.articles) {
     payload.logger.info(
