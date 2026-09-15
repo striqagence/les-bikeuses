@@ -4,8 +4,11 @@ import React, { useCallback, useState } from 'react'
 
 import type { Product } from '@/payload-types'
 
+import Link from 'next/link'
+
 import { SelecteurVariante, type Choix } from './SelecteurVariante'
 import { prixFr } from './CarteProduit'
+import { usePanier } from '@/providers/Panier'
 
 /**
  * Bloc d'achat de la fiche produit.
@@ -27,6 +30,23 @@ export const AchatProduit: React.FC<{
   // `useCallback` : sans lui, l'effet du sélecteur se redéclencherait à chaque
   // rendu et le composant tournerait en boucle.
   const surChoix = useCallback((c: Choix) => setChoix(c), [])
+
+  const { ajouter } = usePanier()
+  const [ajoute, setAjoute] = useState(false)
+
+  // Une fiche sans déclinaison se vend telle quelle ; sinon il faut choisir.
+  const choixRequis = variantes.length > 0
+  const prete = !choixRequis || Boolean(choix.variante?.disponible)
+
+  const mettreAuPanier = useCallback(() => {
+    ajouter({
+      produit: produit.id,
+      variante: choix.variante?.wooId ?? null,
+      quantite: 1,
+    })
+    setAjoute(true)
+    window.setTimeout(() => setAjoute(false), 2500)
+  }, [ajouter, produit.id, choix.variante])
 
   const prix = prixFr(choix.prix ?? produit.price)
   const choisiEtEpuise = Boolean(choix.variante && !choix.variante.disponible)
@@ -68,23 +88,45 @@ export const AchatProduit: React.FC<{
         )
       )}
 
-      {/* Pas de panier tant que la boutique n'est pas ouverte : le bouton mène
-          là où la commande est réellement possible. */}
-      {produit.sourceUrl && (
-        <a
-          className="mt-7 inline-flex items-center gap-2.5 rounded-pilule bg-primary px-7 py-4 font-bold text-primary-foreground transition-colors hover:bg-brand-bright"
-          href={produit.sourceUrl}
-          rel="noopener noreferrer"
-          target="_blank"
+      <div className="mt-7 flex flex-wrap items-center gap-3">
+        <button
+          className="inline-flex items-center gap-2.5 rounded-pilule bg-primary px-7 py-4 font-bold text-primary-foreground transition-colors hover:bg-brand-bright disabled:cursor-not-allowed disabled:opacity-40"
+          disabled={!prete}
+          onClick={mettreAuPanier}
+          type="button"
         >
-          {choisiEtEpuise ? 'Voir les disponibilités' : 'Commander sur lesbikeuses.fr'}
-          <span aria-hidden="true">→</span>
-        </a>
-      )}
+          {choisiEtEpuise
+            ? 'Épuisé'
+            : choixRequis && !choix.variante
+              ? 'Choisissez une taille'
+              : 'Ajouter au panier'}
+        </button>
 
+        {ajoute && (
+          <Link className="mono-label text-primary underline-offset-2 hover:underline" href="/panier">
+            Ajouté — voir le panier →
+          </Link>
+        )}
+      </div>
+
+      {/* Le paiement n'est pas ouvert : on le dit plutôt que de laisser la
+          cliente le découvrir au bout du tunnel. */}
       <p className="mt-4 rounded-xl border border-primary/25 bg-accent px-4 py-3 text-sm">
-        <strong>La boutique n’est pas encore ouverte ici.</strong> La commande se fait sur
-        lesbikeuses.fr, où le catalogue est en ligne.
+        <strong>Le paiement n’est pas encore ouvert ici.</strong> Vous pouvez constituer votre
+        panier ; la commande se fait pour l’instant sur{' '}
+        {produit.sourceUrl ? (
+          <a
+            className="underline underline-offset-2"
+            href={produit.sourceUrl}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            lesbikeuses.fr
+          </a>
+        ) : (
+          'lesbikeuses.fr'
+        )}
+        .
       </p>
     </>
   )

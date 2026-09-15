@@ -3,7 +3,9 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import { ChevronDown, Heart, Menu, Search, User, X } from 'lucide-react'
+import { ChevronDown, Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react'
+
+import { usePanier } from '@/providers/Panier'
 
 import type { Header } from '@/payload-types'
 
@@ -109,6 +111,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
             <Utilitaire href="/search" icone={<Heart className="size-[18px]" />} masque={condense}>
               Favoris
             </Utilitaire>
+            <LienPanier masque={condense} />
             <Utilitaire href="/admin" icone={<User className="size-[18px]" />} masque={condense}>
               Mon compte
             </Utilitaire>
@@ -369,5 +372,32 @@ const Tiroir: React.FC<{
         })}
       </div>
     </div>
+  )
+}
+
+/**
+ * Entrée « Panier » du bandeau.
+ *
+ * Le compteur n'apparaît qu'une fois le stockage local lu : l'afficher avant
+ * ferait diverger le rendu du serveur et celui du navigateur.
+ */
+const LienPanier: React.FC<{ masque: boolean }> = ({ masque }) => {
+  const { nbArticles, pret } = usePanier()
+
+  return (
+    <Link
+      className="group relative inline-flex items-center gap-2 rounded-pilule px-2.5 py-2 transition-colors hover:text-primary"
+      href="/panier"
+    >
+      <span className="relative">
+        <ShoppingBag className="size-[18px]" />
+        {pret && nbArticles > 0 && (
+          <span className="mono-label absolute -top-2 -right-2 grid min-w-[17px] place-items-center rounded-pilule bg-primary px-1 text-[0.5625rem] leading-[17px] text-primary-foreground tabular-nums">
+            {nbArticles > 99 ? '99+' : nbArticles}
+          </span>
+        )}
+      </span>
+      <span className={cn('mono-label', masque && 'sr-only')}>Panier</span>
+    </Link>
   )
 }
