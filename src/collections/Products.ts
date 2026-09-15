@@ -89,6 +89,101 @@ export const Products: CollectionConfig = {
       },
     },
     {
+      /**
+       * Déclinaisons vendables.
+       *
+       * Une référence se vend par combinaison — taille et, souvent, coloris —
+       * chacune avec sa propre disponibilité. Le champ `tailles` au-dessus ne
+       * porte que des étiquettes, utiles aux filtres de rayon mais incapables
+       * de dire si le M est encore là.
+       *
+       * `stock` reste vide à la reprise : WooCommerce n'expose pas les
+       * quantités, seulement l'état « en stock ». Tant qu'il est vide, la
+       * disponibilité fait foi ; le renseigner permettra de décompter
+       * réellement et d'éviter de vendre ce qu'on n'a plus.
+       */
+      name: 'variantes',
+      label: 'Déclinaisons',
+      type: 'array',
+      labels: { singular: 'Déclinaison', plural: 'Déclinaisons' },
+      admin: {
+        description:
+          'Reprises de l’ancienne boutique. Renseigner le stock permet le décompte automatique ; laissé vide, seule la disponibilité est prise en compte.',
+        components: { RowLabel: '@/collections/Products/LigneVariante#LigneVariante' },
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'taille',
+              type: 'text',
+              admin: { width: '34%' },
+            },
+            {
+              name: 'declinaison',
+              label: 'Coloris ou modèle',
+              type: 'text',
+              admin: { width: '33%' },
+            },
+            {
+              name: 'reference',
+              label: 'Référence',
+              type: 'text',
+              admin: { width: '33%' },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'prix',
+              label: 'Prix (€)',
+              type: 'number',
+              min: 0,
+              admin: {
+                width: '34%',
+                description: 'Vide : le prix du produit s’applique.',
+              },
+            },
+            {
+              name: 'stock',
+              label: 'Quantité en stock',
+              type: 'number',
+              min: 0,
+              admin: { width: '33%', description: 'Vide : quantité inconnue.' },
+            },
+            {
+              name: 'disponible',
+              label: 'Disponible',
+              type: 'checkbox',
+              defaultValue: true,
+              admin: { width: '33%' },
+            },
+          ],
+        },
+        {
+          name: 'wooId',
+          label: 'Identifiant WooCommerce',
+          type: 'number',
+          index: true,
+          admin: { readOnly: true, description: 'Renseigné à l’import.' },
+        },
+      ],
+    },
+    {
+      name: 'enStock',
+      label: 'Au moins une déclinaison disponible',
+      type: 'checkbox',
+      defaultValue: true,
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Calculé depuis les déclinaisons : sert à masquer les ruptures des rayons.',
+      },
+    },
+    {
       name: 'tailles',
       label: 'Tailles disponibles',
       type: 'text',

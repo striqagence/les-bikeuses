@@ -22,8 +22,10 @@ import * as migration_20260914_180000_marques_et_programme from './20260914_1800
 import * as migration_20260914_200000_images_des_articles from './20260914_200000_images_des_articles';
 import * as migration_20260914_220000_images_oubliees from './20260914_220000_images_oubliees';
 import * as migration_20260915_090000_articles_a_carrousels from './20260915_090000_articles_a_carrousels';
+import * as migration_20260915_102919_variantes_produits from './20260915_102919_variantes_produits';
 import * as migration_20260915_110000_titres_manquants from './20260915_110000_titres_manquants';
 import * as migration_20260915_140000_titres_et_rayons from './20260915_140000_titres_et_rayons';
+import * as migration_20260915_120000_variantes from './20260915_120000_variantes';
 
 export const migrations = [
   {
@@ -147,6 +149,11 @@ export const migrations = [
     name: '20260915_090000_articles_a_carrousels',
   },
   {
+    up: migration_20260915_102919_variantes_produits.up,
+    down: migration_20260915_102919_variantes_produits.down,
+    name: '20260915_102919_variantes_produits',
+  },
+  {
     up: migration_20260915_110000_titres_manquants.up,
     down: migration_20260915_110000_titres_manquants.down,
     name: '20260915_110000_titres_manquants',
@@ -154,6 +161,11 @@ export const migrations = [
   {
     up: migration_20260915_140000_titres_et_rayons.up,
     down: migration_20260915_140000_titres_et_rayons.down,
-    name: '20260915_140000_titres_et_rayons',
+    name: '20260915_140000_titres_et_rayons'
+  },
+  {
+    up: migration_20260915_120000_variantes.up,
+    down: migration_20260915_120000_variantes.down,
+    name: '20260915_120000_variantes',
   },
 ];

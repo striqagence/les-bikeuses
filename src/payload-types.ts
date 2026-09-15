@@ -1069,6 +1069,34 @@ export interface Product {
    */
   marque?: string | null;
   /**
+   * Reprises de l’ancienne boutique. Renseigner le stock permet le décompte automatique ; laissé vide, seule la disponibilité est prise en compte.
+   */
+  variantes?:
+    | {
+        taille?: string | null;
+        declinaison?: string | null;
+        reference?: string | null;
+        /**
+         * Vide : le prix du produit s’applique.
+         */
+        prix?: number | null;
+        /**
+         * Vide : quantité inconnue.
+         */
+        stock?: number | null;
+        disponible?: boolean | null;
+        /**
+         * Renseigné à l’import.
+         */
+        wooId?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Calculé depuis les déclinaisons : sert à masquer les ruptures des rayons.
+   */
+  enStock?: boolean | null;
+  /**
    * Reprises de WooCommerce à l’import.
    */
   tailles?: string[] | null;
@@ -1787,6 +1815,19 @@ export interface ProductsSelect<T extends boolean = true> {
   reference?: T;
   price?: T;
   marque?: T;
+  variantes?:
+    | T
+    | {
+        taille?: T;
+        declinaison?: T;
+        reference?: T;
+        prix?: T;
+        stock?: T;
+        disponible?: T;
+        wooId?: T;
+        id?: T;
+      };
+  enStock?: T;
   tailles?: T;
   homologation?: T;
   saison?: T;
