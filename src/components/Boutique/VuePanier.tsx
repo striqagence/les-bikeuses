@@ -140,8 +140,7 @@ export const VuePanier: React.FC = () => {
         </p>
 
         <p className="mono-label mt-5 rounded-xl border border-primary/25 bg-accent px-3.5 py-3 leading-relaxed">
-          Le paiement n’est pas encore ouvert sur ce site. Votre sélection est conservée ; la
-          commande se fait pour l’instant sur lesbikeuses.fr.
+          Le paiement n’est pas encore ouvert sur ce site. Votre sélection est conservée.
         </p>
 
         <button
