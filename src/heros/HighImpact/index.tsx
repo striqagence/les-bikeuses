@@ -78,7 +78,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
 
         {media && typeof media === 'object' && (
           <div className="flex flex-col gap-3">
-            <figure className="relative m-0 aspect-[5/4] overflow-hidden rounded-slide bg-secondary md:aspect-[4/5]">
+            <figure className="relative m-0 h-[clamp(320px,48vh,520px)] overflow-hidden rounded-slide bg-secondary">
               <Media
                 className="h-full"
                 imgClassName="h-full w-full object-cover"
