@@ -9,6 +9,7 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Avis } from './collections/Avis'
+import { Commandes } from './collections/Commandes'
 import { Products } from './collections/Products'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
@@ -110,7 +111,7 @@ export default buildConfig({
       connectionTimeoutMillis: enMigration ? 90_000 : 15_000,
     },
   }),
-  collections: [Pages, Posts, Products, Avis, Media, Categories, Users],
+  collections: [Pages, Posts, Products, Avis, Commandes, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,

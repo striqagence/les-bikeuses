@@ -71,6 +71,7 @@ export interface Config {
     posts: Post;
     products: Product;
     avis: Avi;
+    commandes: Commande;
     media: Media;
     categories: Category;
     users: User;
@@ -95,6 +96,7 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     avis: AvisSelect<false> | AvisSelect<true>;
+    commandes: CommandesSelect<false> | CommandesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -1180,6 +1182,65 @@ export interface Avi {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commandes".
+ */
+export interface Commande {
+  id: number;
+  /**
+   * Attribué à la création.
+   */
+  numero?: string | null;
+  statut: 'brouillon' | 'attente-paiement' | 'payee' | 'preparation' | 'expediee' | 'livree' | 'annulee' | 'remboursee';
+  client: {
+    email: string;
+    telephone?: string | null;
+    prenom?: string | null;
+    nom?: string | null;
+  };
+  livraison?: {
+    adresse?: string | null;
+    complement?: string | null;
+    codePostal?: string | null;
+    ville?: string | null;
+    pays?: string | null;
+  };
+  /**
+   * Recopiées à l’achat : une commande ne bouge pas si le catalogue change.
+   */
+  lignes?:
+    | {
+        /**
+         * Pour la navigation seulement — les montants viennent d’ici.
+         */
+        produit?: (number | null) | Product;
+        titre: string;
+        reference?: string | null;
+        taille?: string | null;
+        declinaison?: string | null;
+        prixUnitaire: number;
+        quantite: number;
+        id?: string | null;
+      }[]
+    | null;
+  sousTotal?: number | null;
+  fraisPort?: number | null;
+  total?: number | null;
+  /**
+   * Renseigné par le prestataire une fois le paiement branché.
+   */
+  paiement?: {
+    fournisseur?: string | null;
+    reference?: string | null;
+  };
+  /**
+   * Non visible par la cliente.
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1383,6 +1444,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'avis';
         value: number | Avi;
+      } | null)
+    | ({
+        relationTo: 'commandes';
+        value: number | Commande;
       } | null)
     | ({
         relationTo: 'media';
@@ -1863,6 +1928,55 @@ export interface AvisSelect<T extends boolean = true> {
   produitSlug?: T;
   rayon?: T;
   enAvant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commandes_select".
+ */
+export interface CommandesSelect<T extends boolean = true> {
+  numero?: T;
+  statut?: T;
+  client?:
+    | T
+    | {
+        email?: T;
+        telephone?: T;
+        prenom?: T;
+        nom?: T;
+      };
+  livraison?:
+    | T
+    | {
+        adresse?: T;
+        complement?: T;
+        codePostal?: T;
+        ville?: T;
+        pays?: T;
+      };
+  lignes?:
+    | T
+    | {
+        produit?: T;
+        titre?: T;
+        reference?: T;
+        taille?: T;
+        declinaison?: T;
+        prixUnitaire?: T;
+        quantite?: T;
+        id?: T;
+      };
+  sousTotal?: T;
+  fraisPort?: T;
+  total?: T;
+  paiement?:
+    | T
+    | {
+        fournisseur?: T;
+        reference?: T;
+      };
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
