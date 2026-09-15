@@ -9,6 +9,7 @@ import React, { cache } from 'react'
 import type { Category, Product } from '@/payload-types'
 
 import { CarteProduit, prixFr } from '@/components/Boutique/CarteProduit'
+import { AchatProduit } from '@/components/Boutique/AchatProduit'
 import { Galerie } from '@/components/Boutique/Galerie'
 
 export const revalidate = 600
@@ -111,50 +112,7 @@ export default async function FicheProduit({ params: p }: Args) {
             {produit.title}
           </h1>
 
-          {prix && (
-            <div className="mt-5 flex items-baseline gap-3">
-              <span className="font-mono text-3xl tabular-nums">{prix}</span>
-              <span className="mono-label text-muted-foreground">TTC</span>
-            </div>
-          )}
-
-          {produit.shortDescription && (
-            <p className="mt-5 max-w-[52ch] text-muted-foreground">{produit.shortDescription}</p>
-          )}
-
-          {!!produit.tailles?.length && (
-            <div className="mt-7">
-              <h2 className="mono-label mb-3">Tailles disponibles</h2>
-              <ul className="flex list-none flex-wrap gap-1.5 p-0">
-                {produit.tailles.map((t) => (
-                  <li
-                    className="min-w-[42px] rounded-[10px] border border-border px-2.5 py-1.5 text-center font-mono text-[0.6875rem]"
-                    key={t}
-                  >
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Pas de panier tant que la boutique n'est pas ouverte : le bouton
-              mène là où la commande est réellement possible. */}
-          {produit.sourceUrl && (
-            <a
-              className="mt-7 inline-flex items-center gap-2.5 rounded-pilule bg-primary px-7 py-4 font-bold text-primary-foreground transition-colors hover:bg-brand-bright"
-              href={produit.sourceUrl}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              Commander sur lesbikeuses.fr <span aria-hidden="true">→</span>
-            </a>
-          )}
-
-          <p className="mt-4 rounded-xl border border-primary/25 bg-accent px-4 py-3 text-sm">
-            <strong>La boutique n’est pas encore ouverte ici.</strong> La commande se fait sur
-            lesbikeuses.fr, où le catalogue est en ligne.
-          </p>
+          <AchatProduit produit={produit} />
 
           {!!specs.length && (
             <dl className="mt-8 grid grid-cols-1 border-t border-border sm:grid-cols-2 sm:gap-x-8">
