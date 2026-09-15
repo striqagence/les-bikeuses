@@ -8,7 +8,7 @@ import React, { cache } from 'react'
 
 import type { Category, Product } from '@/payload-types'
 
-import { CarteProduit, prixFr } from '@/components/Boutique/CarteProduit'
+import { CarteProduit } from '@/components/Boutique/CarteProduit'
 import { AchatProduit } from '@/components/Boutique/AchatProduit'
 import { Galerie } from '@/components/Boutique/Galerie'
 
@@ -65,7 +65,6 @@ export default async function FicheProduit({ params: p }: Args) {
   if (!produit) notFound()
 
   const rayon = produit.category?.find((c): c is Category => typeof c === 'object')
-  const prix = prixFr(produit.price)
 
   // Caractéristiques : seules celles renseignées sont affichées. Une ligne
   // « Matière : — » n'apprend rien et alourdit le tableau.
