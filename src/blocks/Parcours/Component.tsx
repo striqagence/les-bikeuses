@@ -4,8 +4,6 @@ import type { ParcoursBlock as ParcoursBlockProps } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 
-const LETTRES = 'ABCDEFGH'
-
 export const ParcoursBlock: React.FC<ParcoursBlockProps & { id?: string }> = ({
   id,
   entrees,
@@ -31,10 +29,9 @@ export const ParcoursBlock: React.FC<ParcoursBlockProps & { id?: string }> = ({
         <div className="grid gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))]">
           {entrees.map((entree, i) => (
             <article
-              className="flex flex-col gap-3 bg-card p-7 transition-colors hover:bg-accent md:p-10"
+              className="flex flex-col gap-3.5 bg-card p-7 transition-colors hover:bg-accent md:p-10"
               key={entree.id ?? i}
             >
-              <span className="mono-label text-primary">Entrée {LETTRES[i] ?? i + 1}</span>
               <h3 className="wonk text-2xl leading-tight font-semibold">{entree.title}</h3>
               {entree.text && <p className="text-sm text-muted-foreground">{entree.text}</p>}
               {entree.link && (
