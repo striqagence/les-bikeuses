@@ -27,6 +27,7 @@ import * as migration_20260915_110000_titres_manquants from './20260915_110000_t
 import * as migration_20260915_112707_commandes from './20260915_112707_commandes';
 import * as migration_20260915_120000_variantes from './20260915_120000_variantes';
 import * as migration_20260915_140000_titres_et_rayons from './20260915_140000_titres_et_rayons';
+import * as migration_20260916_063404_retrait_preuves from './20260916_063404_retrait_preuves';
 
 export const migrations = [
   {
@@ -172,6 +173,11 @@ export const migrations = [
   {
     up: migration_20260915_140000_titres_et_rayons.up,
     down: migration_20260915_140000_titres_et_rayons.down,
-    name: '20260915_140000_titres_et_rayons'
+    name: '20260915_140000_titres_et_rayons',
+  },
+  {
+    up: migration_20260916_063404_retrait_preuves.up,
+    down: migration_20260916_063404_retrait_preuves.down,
+    name: '20260916_063404_retrait_preuves'
   },
 ];

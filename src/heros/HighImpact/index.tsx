@@ -13,12 +13,6 @@ import RichText from '@/components/RichText'
  * du titre ne dépend donc jamais de l'image posée derrière, contrairement à un
  * bandeau pleine largeur en surimpression.
  *
- * Les chiffres sont posés sur la photo plutôt qu'alignés sous les boutons :
- * détachés, ils allongeaient la colonne de texte et ajoutaient un deuxième
- * filet horizontal juste après celui des boutons. Sur l'image, ils tiennent le
- * rôle du bandeau de caractéristiques d'une fiche d'équipement — la ligne
- * directrice de la charte.
- *
  * Les visuels secondaires passent au second plan, en bande étroite : trois
  * images de même poids donnaient un collage, où l'œil ne savait pas où aller.
  */
@@ -29,13 +23,11 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   media,
   mediaSecondary,
   richText,
-  stats,
 }) => {
   const visuelsSecondaires = (mediaSecondary ?? []).filter(
     (item) => item.image && typeof item.image === 'object',
   )
   const mentions = (marquee ?? []).map((item) => item.text).filter(Boolean)
-  const chiffres = stats ?? []
 
   return (
     // `-mt-16` annule le `pt-16` de l'article : le héros porte son propre
@@ -88,18 +80,6 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                 variante="large"
               />
 
-              {chiffres.length > 0 && (
-                <dl className="absolute inset-x-0 bottom-0 m-0 flex flex-wrap gap-x-7 gap-y-2 bg-linear-to-t from-bitume via-bitume/85 to-transparent px-5 pt-12 pb-5 text-sur-bitume">
-                  {chiffres.map((stat, i) => (
-                    <div className="flex flex-col" key={stat.id ?? i}>
-                      <dt className="mono-label text-sur-bitume/60">{stat.label}</dt>
-                      <dd className="wonk order-first m-0 text-2xl leading-none font-medium tabular-nums">
-                        {stat.value}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
             </figure>
 
             {visuelsSecondaires.length > 0 && (

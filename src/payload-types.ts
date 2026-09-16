@@ -223,16 +223,6 @@ export interface Page {
         }[]
       | null;
     /**
-     * Ex. « 340+ » / « Pièces testées ». Affichées sous les boutons.
-     */
-    stats?:
-      | {
-          value: string;
-          label: string;
-          id?: string | null;
-        }[]
-      | null;
-    /**
      * Bande sombre défilante sous le héros. Laisser vide pour la masquer.
      */
     marquee?:
@@ -1555,13 +1545,6 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               image?: T;
-              id?: T;
-            };
-        stats?:
-          | T
-          | {
-              value?: T;
-              label?: T;
               id?: T;
             };
         marquee?:

@@ -142,11 +142,6 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
       ],
       // Chiffres relevés sur le catalogue WooCommerce, pas des promesses
       // marketing : 477 produits, 35 marques, 11 rayons de tête.
-      stats: [
-        { value: '477', label: 'Produits au catalogue' },
-        { value: '35', label: 'Marques distribuées' },
-        { value: '5J/7', label: 'Service client' },
-      ],
       marquee: [
         { text: 'Service client 5J/7' },
         { text: 'Lundi à vendredi · 9h–12h30 / 13h30–18h' },

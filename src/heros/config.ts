@@ -102,42 +102,6 @@ export const hero: Field = {
       ],
     },
     {
-      name: 'stats',
-      type: 'array',
-      label: 'Preuves',
-      labels: {
-        singular: 'Preuve',
-        plural: 'Preuves',
-      },
-      maxRows: 3,
-      admin: {
-        condition: (_, { type } = {}) => type === 'highImpact',
-        initCollapsed: true,
-        description: 'Ex. « 340+ » / « Pièces testées ». Affichées sous les boutons.',
-      },
-      fields: [
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'value',
-              type: 'text',
-              label: 'Chiffre',
-              required: true,
-              admin: { width: '40%' },
-            },
-            {
-              name: 'label',
-              type: 'text',
-              label: 'Légende',
-              required: true,
-              admin: { width: '60%' },
-            },
-          ],
-        },
-      ],
-    },
-    {
       name: 'marquee',
       type: 'array',
       label: 'Bandeau défilant',
