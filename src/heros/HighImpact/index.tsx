@@ -75,6 +75,11 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
               <Media
                 className="h-full"
                 imgClassName="h-full w-full object-cover"
+                // `<picture>` est en ligne par défaut : la hauteur du cadre ne
+                // descendait pas jusqu'à l'image, qui se chargeait sans jamais
+                // s'afficher. Invisible tant que le cadre portait un rapport
+                // plutôt qu'une hauteur.
+                pictureClassName="block h-full w-full"
                 priority
                 resource={media}
                 size="(max-width: 768px) 100vw, 46vw"
