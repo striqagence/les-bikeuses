@@ -129,8 +129,6 @@ export const piedDePage = {
   contact: {
     titre: 'Nous contacter',
     mention: 'Notre service client vous répond 5J/7',
-    telephone: '+33 6 16 76 32 90',
-    email: 'contact@lesbikeuses.fr',
     horaires: 'Lundi à vendredi · 9h–12h30 / 13h30–18h',
   },
   paiements: [],

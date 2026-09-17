@@ -145,8 +145,6 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
       marquee: [
         { text: 'Service client 5J/7' },
         { text: 'Lundi à vendredi · 9h–12h30 / 13h30–18h' },
-        { text: 'contact@lesbikeuses.fr' },
-        { text: '+33 6 16 76 32 90' },
         { text: 'Visa · Mastercard · PayPal · Stripe' },
       ],
     },
