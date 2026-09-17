@@ -147,26 +147,32 @@ export const FormBlock: React.FC<
 
           {!hasSubmitted && (
             <form
-              className="[&_input]:rounded-xl [&_select]:rounded-xl [&_textarea]:rounded-xl"
+              className="[&_input]:rounded-xl [&_select]:rounded-xl [&_textarea]:rounded-xl [&_input]:w-full [&_select]:w-full [&_textarea]:w-full"
               id={formID}
               onSubmit={handleSubmit(onSubmit)}
             >
-              <div className="flex flex-col gap-6">
+              {/* Les champs portent une largeur en pourcentage : deux
+                  colonnes la respectent, là où une simple pile la réduisait à
+                  des champs étroits alignés les uns sous les autres. */}
+              <div className="grid gap-x-5 gap-y-6 sm:grid-cols-2">
                 {formFromProps?.fields?.map((field, index) => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const Field: React.FC<any> = fields?.[field.blockType as keyof typeof fields]
                   if (!Field) return null
 
+                  const largeur = (field as { width?: number }).width ?? 100
+
                   return (
+                    <div className={largeur <= 50 ? 'sm:col-span-1' : 'sm:col-span-2'} key={index}>
                     <Field
                       form={formFromProps}
-                      key={index}
                       {...field}
                       {...formMethods}
                       control={control}
                       errors={errors}
                       register={register}
                     />
+                    </div>
                   )
                 })}
               </div>
