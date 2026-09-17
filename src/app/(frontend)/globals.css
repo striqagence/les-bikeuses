@@ -378,6 +378,46 @@
   }
 
   /* Filet « marquage au sol » — séparateur structurel entre sections */
+  /**
+   * Halo chaud posé derrière une section.
+   *
+   * Le papier était d'un gris parfaitement plat : les blocs semblaient
+   * découpés et collés dessus. Une lueur orange très diluée, partant du haut
+   * à droite, donne une profondeur sans introduire de couleur nouvelle —
+   * l'accent de la charte, simplement étalé.
+   *
+   * Les proportions changent selon le thème : sur fond sombre il faut moins
+   * d'opacité pour obtenir le même effet, la lueur se détachant davantage.
+   */
+  .halo {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .halo::before {
+    content: '';
+    position: absolute;
+    inset: -10% -5% auto auto;
+    z-index: -1;
+    width: min(70rem, 90%);
+    height: min(46rem, 120%);
+    pointer-events: none;
+    background: radial-gradient(
+      55% 55% at 70% 25%,
+      color-mix(in oklab, var(--primary) 12%, transparent) 0%,
+      transparent 70%
+    );
+  }
+
+  :root[data-theme='dark'] .halo::before,
+  :root:not([data-theme='light']) .halo::before {
+    background: radial-gradient(
+      55% 55% at 70% 25%,
+      color-mix(in oklab, var(--primary) 16%, transparent) 0%,
+      transparent 70%
+    );
+  }
+
   .route {
     @apply h-[2px] border-0 opacity-55;
     background-image: repeating-linear-gradient(

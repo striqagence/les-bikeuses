@@ -32,7 +32,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   return (
     // `-mt-16` annule le `pt-16` de l'article : le héros porte son propre
     // rythme vertical, et le bandeau défilant doit toucher le bloc suivant.
-    <section className="-mt-16">
+    <section className="halo -mt-16">
       <div className="container grid items-center gap-10 border-b border-border py-10 md:grid-cols-[1.02fr_0.98fr] md:gap-14 md:py-16">
         <div>
           {eyebrow && <p className="eyebrow mb-5">{eyebrow}</p>}
@@ -50,15 +50,16 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
             <ul className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
               {links.map(({ link }, i) => (
                 <li key={i}>
-                  {/* Le premier appel tranche, le second s'efface : deux
-                      boutons pleins se disputaient le regard. */}
+                  {/* Deux pastilles de même gabarit : le premier plein, le
+                      second cerclé. Un bouton plein et un lien nu formaient
+                      une paire bancale, où le second se lisait à peine. */}
                   <CMSLink
                     {...link}
                     appearance={i === 0 ? undefined : 'link'}
                     className={
                       i === 0
                         ? 'inline-flex items-center gap-2.5 rounded-pilule bg-primary px-7 py-3.5 font-bold text-primary-foreground transition-colors hover:bg-brand-bright'
-                        : 'mono-label inline-flex items-center gap-2 underline-offset-4 hover:text-primary hover:underline'
+                        : 'inline-flex items-center gap-2 rounded-pilule border-[1.5px] border-primary px-7 py-3.5 font-bold text-primary transition-colors hover:bg-primary hover:text-primary-foreground'
                     }
                     size={i === 0 ? 'lg' : undefined}
                   />
