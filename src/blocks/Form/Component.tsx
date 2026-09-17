@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import React, { useCallback, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import RichText from '@/components/RichText'
-import { Button } from '@/components/ui/button'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import { fields } from './fields'
@@ -25,6 +24,7 @@ export const FormBlock: React.FC<
   } & FormBlockType
 > = (props) => {
   const {
+    id,
     enableIntro,
     form: formFromProps,
     form: { id: formID, confirmationMessage, confirmationType, redirect, submitButtonLabel } = {},
@@ -103,7 +103,7 @@ export const FormBlock: React.FC<
           console.warn(err)
           setIsLoading(false)
           setError({
-            message: 'Something went wrong.',
+            message: 'L’envoi a échoué. Réessayez dans un instant.',
           })
         }
       }
@@ -114,46 +114,72 @@ export const FormBlock: React.FC<
   )
 
   return (
-    <div className="container lg:max-w-[48rem]">
+    <div className="container lg:max-w-[46rem]" id={id ? `block-${id}` : undefined}>
       {enableIntro && introContent && !hasSubmitted && (
-        <RichText className="mb-8 lg:mb-12" data={introContent} enableGutter={false} />
+        <RichText className="mb-8 lg:mb-10" data={introContent} enableGutter={false} />
       )}
-      <div className="p-4 lg:p-6 border border-border rounded-[0.8rem]">
+
+      <div className="rounded-panneau border border-border bg-card p-6 md:p-9">
         <FormProvider {...formMethods}>
+          {/* Confirmation : le formulaire disparaît au profit du message, pour
+              qu'on ne se demande pas si l'envoi est parti. */}
           {!isLoading && hasSubmitted && confirmationType === 'message' && (
-            <RichText data={confirmationMessage} />
+            <div className="flex flex-col gap-3">
+              <p className="mono-label text-primary">Message envoyé</p>
+              <RichText className="max-w-none" data={confirmationMessage} enableGutter={false} />
+            </div>
           )}
-          {isLoading && !hasSubmitted && <p>Loading, please wait...</p>}
-          {error && <div>{`${error.status || '500'}: ${error.message || ''}`}</div>}
+
+          {isLoading && !hasSubmitted && (
+            <p aria-live="polite" className="mono-label text-muted-foreground">
+              Envoi en cours…
+            </p>
+          )}
+
+          {error && (
+            <p
+              className="mono-label mb-5 rounded-xl border border-primary/40 bg-accent px-4 py-3 text-primary"
+              role="alert"
+            >
+              {error.message}
+            </p>
+          )}
+
           {!hasSubmitted && (
-            <form id={formID} onSubmit={handleSubmit(onSubmit)}>
-              <div className="mb-4 last:mb-0">
-                {formFromProps &&
-                  formFromProps.fields &&
-                  formFromProps.fields?.map((field, index) => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const Field: React.FC<any> = fields?.[field.blockType as keyof typeof fields]
-                    if (Field) {
-                      return (
-                        <div className="mb-6 last:mb-0" key={index}>
-                          <Field
-                            form={formFromProps}
-                            {...field}
-                            {...formMethods}
-                            control={control}
-                            errors={errors}
-                            register={register}
-                          />
-                        </div>
-                      )
-                    }
-                    return null
-                  })}
+            <form
+              className="[&_input]:rounded-xl [&_select]:rounded-xl [&_textarea]:rounded-xl"
+              id={formID}
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <div className="flex flex-col gap-6">
+                {formFromProps?.fields?.map((field, index) => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const Field: React.FC<any> = fields?.[field.blockType as keyof typeof fields]
+                  if (!Field) return null
+
+                  return (
+                    <Field
+                      form={formFromProps}
+                      key={index}
+                      {...field}
+                      {...formMethods}
+                      control={control}
+                      errors={errors}
+                      register={register}
+                    />
+                  )
+                })}
               </div>
 
-              <Button form={formID} type="submit" variant="default">
-                {submitButtonLabel}
-              </Button>
+              <button
+                className="mt-8 inline-flex items-center gap-2.5 rounded-pilule bg-primary px-7 py-3.5 font-bold text-primary-foreground transition-colors hover:bg-brand-bright disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={isLoading}
+                form={formID}
+                type="submit"
+              >
+                {submitButtonLabel || 'Envoyer'}
+                <span aria-hidden="true">→</span>
+              </button>
             </form>
           )}
         </FormProvider>

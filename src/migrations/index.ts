@@ -30,6 +30,7 @@ import * as migration_20260915_140000_titres_et_rayons from './20260915_140000_t
 import * as migration_20260916_063404_retrait_preuves from './20260916_063404_retrait_preuves';
 import * as migration_20260917_090000_retrait_contact from './20260917_090000_retrait_contact';
 import * as migration_20260917_140000_visuels_accueil from './20260917_140000_visuels_accueil';
+import * as migration_20260918_090000_formulaire_contact from './20260918_090000_formulaire_contact';
 
 export const migrations = [
   {
@@ -191,5 +192,10 @@ export const migrations = [
     up: migration_20260917_140000_visuels_accueil.up,
     down: migration_20260917_140000_visuels_accueil.down,
     name: '20260917_140000_visuels_accueil',
+  },
+  {
+    up: migration_20260918_090000_formulaire_contact.up,
+    down: migration_20260918_090000_formulaire_contact.down,
+    name: '20260918_090000_formulaire_contact',
   },
 ];
