@@ -51,7 +51,9 @@ export async function generateStaticParams() {
       }),
     ])
 
-    return [...pages.docs, ...posts.docs]
+    // « faq » a son propre gabarit : la laisser ici ferait pré-générer deux
+    // routes pour la même adresse.
+    return [...pages.docs.filter((d) => d.slug !== 'faq'), ...posts.docs]
       .map(({ slug }) => slug)
       .filter((slug): slug is string => Boolean(slug) && slug !== 'home')
       .map((slug) => ({ slug }))
