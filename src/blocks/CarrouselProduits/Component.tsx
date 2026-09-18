@@ -53,7 +53,7 @@ const Fiche: React.FC<{ produit: Product }> = ({ produit }) => {
 
   const contenu = (
     <>
-      <div className="aspect-square overflow-hidden rounded-[14px] border border-border bg-card">
+      <div className="aspect-square overflow-hidden rounded-panneau bg-secondary">
         {image && typeof image === 'object' ? (
           <Media
             className="h-full"

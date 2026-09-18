@@ -20,7 +20,7 @@ export const CarteAvis: React.FC<{ avis: Avi; lienProduit?: boolean }> = ({
   const texte = avis.texte?.trim()
 
   return (
-    <article className="flex break-inside-avoid flex-col gap-3 rounded-panneau border border-border bg-card p-5">
+    <article className="flex break-inside-avoid flex-col gap-3 border-t-[1.5px] border-foreground pt-5">
       <header className="flex items-start justify-between gap-3">
         <div>
           <Etoiles note={avis.note} />

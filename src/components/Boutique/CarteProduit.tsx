@@ -14,8 +14,10 @@ export const prixFr = (n?: number | null): string | null =>
 /**
  * Carte produit du catalogue.
  *
- * Double arrondi, comme les cartes du journal : la carte et l'image, séparées
- * par un liseré. L'image est en `contain` et non `cover` — les visuels
+ * Rien dans une boîte : l'image est posée à même le fond de page, le texte
+ * dessous. La carte cernée et surélevée au survol enfermait chaque produit
+ * dans un panneau, et la grille se lisait comme un tableau de vignettes plutôt
+ * que comme un étal. L'image reste en `contain` et non `cover` — les visuels
  * produits sont détourés sur fond blanc, un recadrage couperait les manches.
  *
  * La carte entière est cliquable, mais ne contient qu'un seul lien : celui du
@@ -45,13 +47,13 @@ export const CarteProduit: React.FC<{
   return (
     <article
       className={cn(
-        'group relative flex flex-col gap-3.5 rounded-panneau border border-border bg-card p-2.5 transition-all duration-200 hover:-translate-y-1 hover:border-primary/40',
+        'group relative flex flex-col gap-3.5',
         // Le focus clavier se voit sur la carte, le lien étant invisible.
-        'focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background',
+        'focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-4 focus-within:ring-offset-background',
         className,
       )}
     >
-      <div className="aspect-square overflow-hidden rounded-[14px] bg-secondary">
+      <div className="aspect-square overflow-hidden rounded-panneau bg-secondary">
         {image && typeof image === 'object' ? (
           <Media
             className="h-full"
@@ -68,9 +70,9 @@ export const CarteProduit: React.FC<{
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-0.5 px-1">
+      <div className="flex flex-1 flex-col gap-1">
         {produit.marque && <p className="mono-label text-muted-foreground">{produit.marque}</p>}
-        <h3 className="font-sans text-[0.9375rem] leading-snug font-bold transition-colors group-hover:text-primary">
+        <h3 className="text-[0.9375rem] leading-snug transition-colors group-hover:text-primary">
           <Link
             className="outline-none after:absolute after:inset-0 after:content-['']"
             href={`/produit/${produit.slug}`}
@@ -85,6 +87,19 @@ export const CarteProduit: React.FC<{
             {nbTailles ? `${nbTailles} tailles` : 'Taille unique'}
           </span>
         </div>
+
+        {/* Pastille décorative et non second lien : la carte entière est déjà
+            cliquable par le titre étiré. En faire un vrai lien doublerait
+            chaque produit dans la liste des liens de la page. `aria-hidden`
+            l'écarte donc de la restitution vocale — elle reste cliquable,
+            puisque le lien du titre passe dessous. */}
+        <span
+          aria-hidden="true"
+          className="mono-label mt-3 inline-flex items-center justify-center gap-2 self-start rounded-pilule border border-border px-4 py-2 transition-colors group-hover:border-primary group-hover:text-primary"
+        >
+          Voir la fiche
+          <span className="text-[0.85em]">→</span>
+        </span>
       </div>
     </article>
   )

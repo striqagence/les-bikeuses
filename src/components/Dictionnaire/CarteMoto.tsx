@@ -25,8 +25,8 @@ export const CarteMoto: React.FC<{
 
   return (
     // Cliquable en entier, par un lien unique étiré : voir CarteProduit.
-    <article className="group relative flex flex-col gap-3.5 rounded-panneau border border-border bg-card p-2.5 transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background">
-      <div className="aspect-[4/3] overflow-hidden rounded-[14px] bg-secondary">
+    <article className="group relative flex flex-col gap-3.5 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-4 focus-within:ring-offset-background">
+      <div className="aspect-[4/3] overflow-hidden rounded-panneau bg-secondary">
         {image && typeof image === 'object' ? (
           <Media
             className="h-full"

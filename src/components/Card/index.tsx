@@ -46,7 +46,7 @@ export const Card: React.FC<{
   return (
     <article
       className={cn(
-        'group flex cursor-pointer flex-col gap-4 rounded-panneau border border-border bg-card p-3 transition-all duration-200 hover:-translate-y-1 hover:border-primary/40',
+        'group flex cursor-pointer flex-col gap-4',
         une && 'md:grid md:grid-cols-2 md:items-center md:gap-7 md:p-4',
         className,
       )}
@@ -54,7 +54,7 @@ export const Card: React.FC<{
     >
       <div
         className={cn(
-          'overflow-hidden rounded-[14px] bg-secondary',
+          'overflow-hidden rounded-panneau bg-secondary',
           une ? 'aspect-[16/10]' : 'aspect-[3/2]',
         )}
       >
