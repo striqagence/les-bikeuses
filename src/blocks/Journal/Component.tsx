@@ -123,7 +123,7 @@ const Une: React.FC<{ post: Post }> = ({ post }) => {
   return (
     <Link className="group flex flex-col gap-4" href={`/${post.slug}`}>
       {image && typeof image === 'object' && (
-        <div className="aspect-video overflow-hidden border border-border bg-secondary">
+        <div className="aspect-video overflow-hidden rounded-panneau bg-secondary">
           <Media
             className="h-full"
             imgClassName="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"

@@ -28,7 +28,7 @@ export const DebuterBlock: React.FC<DebuterBlockProps & { id?: string }> = ({
               {links.map(({ link }, i) => (
                 <CMSLink
                   {...link}
-                  className="inline-flex items-center gap-2 border-[1.5px] border-sur-bitume px-6 py-3.5 text-sm font-bold transition-colors hover:bg-sur-bitume hover:text-bitume"
+                  className="mono-label inline-flex items-center gap-2.5 rounded-pilule border border-sur-bitume/55 px-6 py-3.5 transition-colors hover:bg-sur-bitume hover:text-bitume"
                   key={i}
                 />
               ))}

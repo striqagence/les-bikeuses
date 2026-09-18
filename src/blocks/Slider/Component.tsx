@@ -81,17 +81,15 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
             <article
               aria-label={`${i + 1} sur ${total}`}
               aria-roledescription="diapositive"
-              className={cn(
-                'relative flex min-h-[clamp(360px,56vh,580px)] items-center p-5 md:p-12',
-                slide.coteCarton === 'droite' && 'justify-end',
-              )}
+              className="relative isolate flex min-h-[clamp(360px,56vh,560px)] flex-col justify-end p-6 md:p-12"
               hidden={!actif}
               id={`${idBase}-slide-${i}`}
               key={slide.id ?? i}
             >
               {image && typeof image === 'object' && (
                 <Media
-                  className="absolute inset-0 z-0 h-full w-full"
+                  className="absolute inset-0 -z-10 h-full w-full"
+                  pictureClassName="block h-full w-full"
                   imgClassName={cn(
                     'h-full w-full object-cover',
                     POSITIONS[slide.positionImage ?? 'center'] ?? 'object-center',
@@ -103,19 +101,38 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                 />
               )}
 
-              {/* Carton opaque : la lisibilité du titre ne dépend jamais de
-                  la photo posée derrière. */}
-              <div className="relative z-[1] flex max-w-[min(30rem,100%)] flex-col items-start gap-3.5 rounded-panneau border border-border bg-card p-6 md:p-9">
-                {slide.eyebrow && <p className="eyebrow">{slide.eyebrow}</p>}
-                <h2 className="wonk text-3xl leading-[1.03] font-medium md:text-[2.75rem]">
+              {/* Le dégradé porte le contraste à la place du carton opaque.
+                  Un panneau blanc posé sur la photo garantissait la lisibilité,
+                  mais masquait le tiers de l'image qu'il venait couvrir — et la
+                  diapositive se lisait comme une annonce collée sur un fond,
+                  non comme une image qui parle. */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/45 via-45% to-black/10"
+              />
+
+              <div
+                className={cn(
+                  'relative flex max-w-[min(36rem,100%)] flex-col items-start gap-4 text-white',
+                  slide.coteCarton === 'droite' && 'ml-auto',
+                )}
+              >
+                {slide.eyebrow && (
+                  <p className="mono-label flex items-center gap-3 text-white/75">
+                    <span aria-hidden="true" className="h-px w-8 bg-brand-bright" />
+                    {slide.eyebrow}
+                  </p>
+                )}
+                <h2 className="titre-section max-w-[16ch]">
                   {slide.titre}{' '}
                   {slide.titreAccent && <em>{slide.titreAccent}</em>}
                 </h2>
-                {slide.texte && <p className="text-sm text-muted-foreground">{slide.texte}</p>}
+                {slide.texte && <p className="max-w-[46ch] text-sm text-white/80">{slide.texte}</p>}
                 {slide.links?.[0]?.link && (
                   <CMSLink
                     {...slide.links[0].link}
-                    className="mt-1 inline-flex items-center gap-2.5 rounded-pilule bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-brand-bright"
+                    appearance="link"
+                    className="mono-label mt-1 inline-flex items-center gap-2.5 rounded-pilule border border-white bg-white px-6 py-3.5 text-bitume transition-colors hover:bg-white/85"
                   />
                 )}
               </div>
@@ -130,7 +147,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
 
             <div
               aria-label="Choisir une diapositive"
-              className="absolute bottom-4 left-1/2 z-[2] flex -translate-x-1/2 gap-2 rounded-pilule border border-border bg-card/90 px-3 py-2 backdrop-blur-sm"
+              className="absolute bottom-4 left-1/2 z-[2] flex -translate-x-1/2 gap-2"
               role="tablist"
             >
               {slides?.map((_, i) => (
@@ -140,7 +157,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                   aria-label={`Diapositive ${i + 1}`}
                   className={cn(
                     'h-[5px] rounded-pilule transition-all duration-200',
-                    i === index ? 'w-11 bg-primary' : 'w-[30px] bg-border',
+                    i === index ? 'w-11 bg-white' : 'w-[30px] bg-white/45',
                   )}
                   key={i}
                   onClick={() => aller(i)}
@@ -163,7 +180,7 @@ const Fleche: React.FC<{ direction: 'prec' | 'suiv'; onClick: () => void }> = ({
   <button
     aria-label={direction === 'prec' ? 'Diapositive précédente' : 'Diapositive suivante'}
     className={cn(
-      'absolute top-1/2 z-[2] hidden size-11 -translate-y-1/2 place-items-center rounded-full border border-border bg-card text-foreground transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground sm:grid',
+      'absolute top-1/2 z-[2] hidden size-11 -translate-y-1/2 place-items-center rounded-full border border-white/50 text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-bitume sm:grid',
       direction === 'prec' ? 'left-2 md:left-4' : 'right-2 md:right-4',
     )}
     onClick={onClick}

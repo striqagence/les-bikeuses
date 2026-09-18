@@ -26,21 +26,22 @@ export const ParcoursBlock: React.FC<ParcoursBlockProps & { id?: string }> = ({
           {intro && <p className="max-w-[34ch] text-sm text-muted-foreground">{intro}</p>}
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))]">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))] lg:gap-12">
           {entrees.map((entree, i) => (
             <article
-              // Cartes détachées plutôt qu'une grille au trait : une seule
-              // ligne d'un pixel entre des angles vifs donnait un tableau,
-              // pas une sélection dans laquelle on a envie d'entrer.
-              className="flex flex-col gap-3.5 rounded-panneau border border-border bg-card p-7 shadow-[0_1px_2px_rgb(0_0_0/0.04)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_14px_30px_-18px_rgb(0_0_0/0.3)] md:p-10"
+              // Rien dans une boîte : un filet en tête, le texte posé à même
+              // le fond. Les cartes ombrées et surélevées au survol dataient
+              // l'ensemble à elles seules — trois panneaux flottants dans une
+              // page qui, partout ailleurs, ne flotte pas.
+              className="group flex flex-col gap-3.5 border-t-[1.5px] border-foreground pt-6"
               key={entree.id ?? i}
             >
-              <h3 className="wonk text-2xl leading-tight font-semibold">{entree.title}</h3>
+              <h3 className="wonk text-2xl leading-tight">{entree.title}</h3>
               {entree.text && <p className="text-sm text-muted-foreground">{entree.text}</p>}
               {entree.link && (
                 <CMSLink
                   {...entree.link}
-                  className="mono-label mt-auto self-start border-b-[1.5px] border-primary pb-[3px] transition-colors hover:text-primary"
+                  className="mono-label mt-auto inline-flex items-center gap-2.5 self-start rounded-pilule border border-border px-5 py-2.5 transition-colors group-hover:border-primary group-hover:text-primary"
                 >
                   {' '}
                   <span aria-hidden="true">→</span>
