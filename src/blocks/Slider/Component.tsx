@@ -106,9 +106,24 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                   mais masquait le tiers de l'image qu'il venait couvrir — et la
                   diapositive se lisait comme une annonce collée sur un fond,
                   non comme une image qui parle. */}
+              {/* Un voile latéral en plus du montant, contrairement au héros.
+                  Là-bas, croiser deux dégradés noyait une photo de sous-bois
+                  déjà sombre. Ici le cas est inverse : les visuels sont
+                  clairs — ciel, plan d'eau — et le texte est posé sur le côté,
+                  à mi-hauteur, là où un dégradé montant n'arrive plus. Le
+                  voile suit donc le côté où la rédaction a rangé le texte. */}
               <div
                 aria-hidden="true"
-                className="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/45 via-45% to-black/10"
+                className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-black/20 to-transparent"
+              />
+              <div
+                aria-hidden="true"
+                className={cn(
+                  'absolute inset-0 -z-10',
+                  slide.coteCarton === 'droite'
+                    ? 'bg-gradient-to-l from-black/60 via-black/25 via-45% to-transparent'
+                    : 'bg-gradient-to-r from-black/60 via-black/25 via-45% to-transparent',
+                )}
               />
 
               <div
