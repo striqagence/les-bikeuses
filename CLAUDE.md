@@ -69,16 +69,22 @@ cette rigueur son parti pris. Tokens dans `src/app/(frontend)/globals.css`
   volontairement pas de papier crème, l'orange doit rester la seule source de
   chaleur de la page.
 - `--radius: 0` — angles vifs assumés, y compris sur les composants shadcn.
-- Typo : **Fraunces** (titres, axes `SOFT`/`WONK`) × **Manrope** (texte/UI) ×
-  **DM Mono** (données techniques : niveaux CE, matières, tailles, prix,
-  dates), via `next/font` (`src/app/(frontend)/layout.tsx`).
-  - **Exception, le héros de l'accueil** : titre en Manrope 800, capitales,
-    interlignage 0.92 (`.heros-titre`). Une affiche se lit à deux mètres, d'un
-    bloc — la Fraunces y perdait en présence ce qu'elle gagnait en élégance.
-    Elle reste la voix du site partout ailleurs. L'emphase (`<em>`) s'y joue
-    sur la graisse (300 contre 800) et non sur la couleur : posée sur une
-    photo, une emphase colorée a le contraste que l'image veut bien lui
-    laisser.
+- Typo : **Manrope** (titres, texte, UI) × **DM Mono** (données techniques :
+  niveaux CE, matières, tailles, prix, dates), via `next/font`
+  (`src/app/(frontend)/layout.tsx`). La **Fraunces** tenait les titres
+  jusqu'en septembre 2026 ; deux familles se partageaient alors la page selon
+  la hauteur du titre, ce qui se lisait comme deux sites cousus ensemble.
+  - La hiérarchie passe par la **graisse, le corps et la casse**, plus par
+    l'opposition serif/grotesque. Trois crans, du plus fort au plus discret :
+    `.heros-titre` (800, capitales, interlignage 0.92), `.titre-section`
+    (800, capitales, 0.98) et `.wonk` (800, casse normale — il habille aussi
+    des titres d'articles de douze mots, qu'une composition tout en capitales
+    rendrait illisibles).
+  - L'emphase (`<em>`) dans un titre se joue sur la **graisse** (300 contre
+    800), jamais sur l'italique ni sur la couleur. La Manrope n'a pas de vrai
+    italique — le navigateur en fabrique une oblique, visible dès que le corps
+    grandit ; et posée sur une photo, une emphase colorée n'a que le contraste
+    que l'image veut bien lui laisser.
 - Primitives réutilisables (globals.css) : `mono-label` (déclarée en
   `@utility` pour rester applicable via `@apply`), `.eyebrow`, `.wonk`,
   `.route` (filet « marquage au sol »), `.heros-titre`.
