@@ -140,10 +140,10 @@ export default async function Faq() {
                     {/* `details` natif : l'accordéon fonctionne sans script, et
                         la recherche du navigateur ouvre la bonne réponse. */}
                     <details
-                      className="group rounded-panneau border border-border bg-card transition-colors open:border-primary/40 hover:border-primary/40"
+                      className="group border-b border-border"
                       id={q.id}
                     >
-                      <summary className="flex cursor-pointer list-none items-start justify-between gap-5 p-5 font-semibold md:p-6 [&::-webkit-details-marker]:hidden">
+                      <summary className="flex cursor-pointer list-none items-start justify-between gap-5 py-5 font-semibold transition-colors group-open:text-primary hover:text-primary [&::-webkit-details-marker]:hidden">
                         {q.titre}
                         <span
                           aria-hidden="true"
@@ -153,7 +153,7 @@ export default async function Faq() {
                         </span>
                       </summary>
 
-                      <div className="border-t border-border px-5 pt-4 pb-5 md:px-6 md:pb-6">
+                      <div className="max-w-[72ch] pr-10 pb-6">
                         <RichText
                           className="max-w-none"
                           data={
