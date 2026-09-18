@@ -44,7 +44,7 @@ export const VueArticle: React.FC<{ post: Post }> = ({ post }) => {
           </div>
           <div className="container pt-10 md:pt-14">
             <p className="eyebrow">À lire ensuite</p>
-            <h2 className="wonk mt-2 mb-8 text-3xl font-medium md:text-4xl">
+            <h2 className="wonk mt-2 mb-8 text-3xl md:text-4xl">
               Dans la même rubrique
             </h2>
             <RelatedPosts docs={lies} />

@@ -96,7 +96,7 @@ export default async function Marques() {
     <div className="container pt-8 pb-20 md:pt-14">
       <header className="max-w-[60ch]">
         <p className="eyebrow">Le catalogue</p>
-        <h1 className="wonk mt-3 text-4xl leading-[1.02] font-medium md:text-6xl">
+        <h1 className="wonk mt-3 text-4xl leading-[1.02] md:text-6xl">
           Toutes les marques
         </h1>
         <p className="mt-6 text-lg text-muted-foreground">

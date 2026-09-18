@@ -109,7 +109,7 @@ export default async function Dictionnaire({ searchParams: sp }: Args) {
     <div className="container pt-6 pb-16 md:pt-10">
       <header className="mb-8 max-w-[46rem]">
         <p className="eyebrow">Dictionnaire moto</p>
-        <h1 className="wonk mt-2 text-3xl leading-[1.03] font-medium md:text-5xl">
+        <h1 className="titre-section mt-3 max-w-[18ch]">
           Trouvez la moto qui vous va
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">

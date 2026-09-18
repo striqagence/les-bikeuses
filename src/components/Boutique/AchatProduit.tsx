@@ -90,7 +90,7 @@ export const AchatProduit: React.FC<{
 
       <div className="mt-7 flex flex-wrap items-center gap-3">
         <button
-          className="inline-flex items-center gap-2.5 rounded-pilule bg-primary px-7 py-4 font-bold text-primary-foreground transition-colors hover:bg-brand-bright disabled:cursor-not-allowed disabled:opacity-40"
+          className="mono-label inline-flex items-center gap-2.5 rounded-pilule bg-primary px-7 py-4 text-primary-foreground transition-colors hover:bg-brand-bright disabled:cursor-not-allowed disabled:opacity-40"
           disabled={!prete}
           onClick={mettreAuPanier}
           type="button"

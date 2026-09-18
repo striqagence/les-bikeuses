@@ -29,7 +29,7 @@ export const IndexCategoriesBlock: React.FC<IndexCategoriesBlockProps & { id?: s
               className="flex items-baseline justify-between gap-4 border-b border-border py-4 transition-[padding,color] hover:pl-3 hover:text-primary"
               key={item.id ?? i}
             >
-              <span className="wonk text-lg font-medium md:text-2xl">{item.label}</span>
+              <span className="wonk text-lg md:text-2xl">{item.label}</span>
               {item.meta && (
                 <span className="mono-label shrink-0 text-muted-foreground">{item.meta}</span>
               )}

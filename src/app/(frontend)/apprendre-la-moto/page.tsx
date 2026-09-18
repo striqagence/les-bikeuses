@@ -43,7 +43,7 @@ export default async function ApprendreLaMoto() {
     <div className="pb-20">
       <header className="container pt-8 md:pt-14">
         <p className="eyebrow">Apprendre</p>
-        <h1 className="wonk mt-3 max-w-[18ch] text-4xl leading-[1.02] font-medium md:text-6xl">
+        <h1 className="titre-section mt-3 max-w-[18ch]">
           Ce qu’on apprend une fois en selle
         </h1>
         <p className="mt-6 max-w-[58ch] text-lg text-muted-foreground">
@@ -81,7 +81,7 @@ export default async function ApprendreLaMoto() {
       <section className="container mt-20">
         <div className="rounded-panneau border border-border bg-card p-8 md:p-12">
           <p className="eyebrow">Et ensuite</p>
-          <h2 className="wonk mt-3 max-w-[24ch] text-2xl leading-tight font-medium md:text-3xl">
+          <h2 className="wonk mt-3 max-w-[24ch] text-2xl leading-tight md:text-3xl">
             Le journal, pour la suite du voyage
           </h2>
           <p className="mt-4 max-w-[60ch] text-muted-foreground">
@@ -113,7 +113,7 @@ const SectionDomaine: React.FC<{
     <section className="container mt-16 scroll-mt-24 md:mt-24" id={domaine.cle}>
       <hr className="route" />
       <div className="mt-7 grid gap-x-12 gap-y-3 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
-        <h2 className="wonk text-2xl leading-tight font-medium md:text-4xl">{domaine.titre}</h2>
+        <h2 className="wonk text-2xl leading-tight md:text-4xl">{domaine.titre}</h2>
         <p className="max-w-[54ch] self-end text-muted-foreground">{domaine.chapeau}</p>
       </div>
 

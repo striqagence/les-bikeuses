@@ -97,10 +97,10 @@ export default async function Faq() {
   })).filter((g) => g.questions.length)
 
   return (
-    <div className="halo container pt-8 pb-20 md:pt-14">
+    <div className="container pt-8 pb-20 md:pt-14">
       <header className="max-w-[58ch]">
         <p className="eyebrow">Aide</p>
-        <h1 className="wonk mt-3 text-4xl leading-[1.02] font-medium md:text-6xl">
+        <h1 className="titre-section mt-3 max-w-[18ch]">
           Vos questions, nos réponses
         </h1>
         <p className="mt-6 text-lg text-muted-foreground">
@@ -130,7 +130,7 @@ export default async function Faq() {
         <div className="flex flex-col gap-12">
           {groupes.map((groupe) => (
             <section className="scroll-mt-24" id={groupe.cle} key={groupe.cle}>
-              <h2 className="wonk text-2xl leading-tight font-medium md:text-3xl">
+              <h2 className="wonk text-2xl leading-tight md:text-3xl">
                 {groupe.titre}
               </h2>
 
@@ -180,7 +180,7 @@ export default async function Faq() {
 
           <aside className="rounded-panneau border border-primary/40 bg-accent p-6 md:p-8">
             <p className="mono-label text-primary">Vous ne trouvez pas ?</p>
-            <p className="wonk mt-2 text-xl font-medium">Le journal répond plus longuement</p>
+            <p className="wonk mt-2 text-xl">Le journal répond plus longuement</p>
             <p className="mt-2 max-w-[52ch] text-sm text-muted-foreground">
               Guides de tailles, homologations, choix d’une première machine : les articles
               entrent dans le détail que cette page survole.

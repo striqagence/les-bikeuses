@@ -107,7 +107,7 @@ export default async function FicheProduit({ params: p }: Args) {
 
         <div>
           {produit.marque && <p className="eyebrow">{produit.marque}</p>}
-          <h1 className="wonk mt-3 text-3xl leading-[1.08] font-medium md:text-4xl">
+          <h1 className="wonk mt-3 text-3xl leading-[1.08] md:text-4xl">
             {produit.title}
           </h1>
 
@@ -132,7 +132,7 @@ export default async function FicheProduit({ params: p }: Args) {
       {!!similaires.length && (
         <section className="pt-14">
           <p className="eyebrow">Dans le même rayon</p>
-          <h2 className="wonk mt-2 mb-7 text-2xl font-medium md:text-3xl">Vous aimerez aussi</h2>
+          <h2 className="wonk mt-2 mb-7 text-2xl md:text-3xl">Vous aimerez aussi</h2>
           <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
             {similaires.map((p) => (
               <CarteProduit key={p.id} produit={p} />

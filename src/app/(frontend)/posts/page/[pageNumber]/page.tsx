@@ -39,7 +39,7 @@ export default async function Page({ params: paramsPromise }: Args) {
       <PageClient />
       <header className="container mb-10 md:mb-14">
         <p className="eyebrow">Le journal</p>
-        <h1 className="wonk mt-3 text-4xl leading-[1.03] font-medium md:text-5xl">
+        <h1 className="titre-section mt-3 max-w-[18ch]">
           Tous les articles
         </h1>
       </header>

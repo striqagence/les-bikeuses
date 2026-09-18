@@ -44,7 +44,7 @@ export const PostHero: React.FC<{ post: Post }> = ({ post }) => {
 
       {nomRubrique && <p className="eyebrow mb-4">{nomRubrique}</p>}
 
-      <h1 className="wonk max-w-[20ch] text-4xl leading-[1.02] font-medium tracking-[-0.02em] md:text-6xl">
+      <h1 className="wonk max-w-[20ch] text-4xl leading-[1.02] tracking-[-0.02em] md:text-6xl">
         {title}
       </h1>
 

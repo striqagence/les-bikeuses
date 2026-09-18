@@ -71,7 +71,7 @@ export const Passerelle: React.FC<{
   >
     <div className="max-w-[52ch]">
       <p className="mono-label text-primary">{eyebrow}</p>
-      <p className="wonk mt-1.5 text-xl font-medium">{titre}</p>
+      <p className="wonk mt-1.5 text-xl">{titre}</p>
       <p className="mt-1.5 text-sm text-muted-foreground">{detail}</p>
     </div>
     <span

@@ -178,7 +178,7 @@ export const FormBlock: React.FC<
               </div>
 
               <button
-                className="mt-8 inline-flex items-center gap-2.5 rounded-pilule bg-primary px-7 py-3.5 font-bold text-primary-foreground transition-colors hover:bg-brand-bright disabled:cursor-not-allowed disabled:opacity-50"
+                className="mono-label mt-8 inline-flex items-center gap-2.5 rounded-pilule bg-primary px-7 py-3.5 text-primary-foreground transition-colors hover:bg-brand-bright disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={isLoading}
                 form={formID}
                 type="submit"

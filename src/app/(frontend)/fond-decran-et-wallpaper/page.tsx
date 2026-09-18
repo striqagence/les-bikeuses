@@ -47,7 +47,7 @@ export default async function FondsDecran() {
     <div className="container pt-6 pb-20 md:pt-10">
       <header className="max-w-[60ch]">
         <p className="eyebrow">Gratuit</p>
-        <h1 className="wonk mt-2 text-3xl leading-[1.03] font-medium md:text-5xl">
+        <h1 className="titre-section mt-3 max-w-[18ch]">
           Fonds d’écran moto
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
@@ -86,7 +86,7 @@ const Galerie: React.FC<{
     <section className="mt-14">
       <div className="mb-6 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-border pb-4">
         <div>
-          <h2 className="wonk text-2xl font-medium">{titre}</h2>
+          <h2 className="wonk text-2xl">{titre}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{legende}</p>
         </div>
         <p className="mono-label text-muted-foreground">{fonds.length} visuels</p>

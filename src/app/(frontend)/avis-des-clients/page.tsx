@@ -115,13 +115,13 @@ export default async function AvisDesClients({ searchParams: sp }: Args) {
     <div className="container pt-6 pb-16 md:pt-10">
       <header className="mb-9">
         <p className="eyebrow">La boutique</p>
-        <h1 className="wonk mt-2 text-3xl leading-[1.03] font-medium md:text-5xl">
+        <h1 className="titre-section mt-3 max-w-[18ch]">
           Les avis de nos clientes
         </h1>
 
         <div className="mt-7 flex flex-wrap items-center gap-x-10 gap-y-6 rounded-panneau border border-border bg-card p-6">
           <div>
-            <p className="wonk text-5xl leading-none font-medium tabular-nums">
+            <p className="wonk text-5xl leading-none tabular-nums">
               {synthese.moyenne.toFixed(1).replace('.', ',')}
             </p>
             <div className="mt-2">

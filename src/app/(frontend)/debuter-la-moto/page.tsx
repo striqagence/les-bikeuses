@@ -62,7 +62,7 @@ export default async function DebuterLaMoto() {
     <div className="pb-20">
       <header className="container pt-8 md:pt-14">
         <p className="eyebrow">Débuter</p>
-        <h1 className="wonk mt-3 max-w-[16ch] text-4xl leading-[1.02] font-medium md:text-6xl">
+        <h1 className="titre-section mt-3 max-w-[18ch]">
           Commencer la moto, étape par étape
         </h1>
         <p className="mt-6 max-w-[58ch] text-lg text-muted-foreground">
@@ -112,7 +112,7 @@ export default async function DebuterLaMoto() {
       <section className="container mt-20">
         <div className="rounded-panneau border border-border bg-card p-8 md:p-12">
           <p className="eyebrow">Et après</p>
-          <h2 className="wonk mt-3 max-w-[24ch] text-2xl leading-tight font-medium md:text-3xl">
+          <h2 className="wonk mt-3 max-w-[24ch] text-2xl leading-tight md:text-3xl">
             Le journal continue là où ce parcours s’arrête
           </h2>
           <p className="mt-4 max-w-[60ch] text-muted-foreground">
@@ -135,7 +135,7 @@ export default async function DebuterLaMoto() {
 const Chiffre: React.FC<{ valeur: number; libelle: string }> = ({ valeur, libelle }) => (
   <div>
     <dt className="sr-only">{libelle}</dt>
-    <dd className="wonk text-3xl leading-none font-medium tabular-nums md:text-4xl">{valeur}</dd>
+    <dd className="wonk text-3xl leading-none tabular-nums md:text-4xl">{valeur}</dd>
     <p className="mono-label mt-2 text-muted-foreground">{libelle}</p>
   </div>
 )
@@ -154,7 +154,7 @@ const SectionEtape: React.FC<{ etape: Etape; parSlug: Record<string, Post> }> = 
       <div className="mt-7 grid gap-x-12 gap-y-4 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
         <div>
           <p className="mono-label text-primary">Étape {etape.numero}</p>
-          <h2 className="wonk mt-2 text-2xl leading-tight font-medium md:text-4xl">
+          <h2 className="wonk mt-2 text-2xl leading-tight md:text-4xl">
             {etape.titre}
           </h2>
           <p className="mt-3 text-lg text-muted-foreground italic">« {etape.question} »</p>

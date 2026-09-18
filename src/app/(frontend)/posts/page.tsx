@@ -36,7 +36,7 @@ export default async function Page() {
 
       <header className="container mb-10 md:mb-14">
         <p className="eyebrow">Le journal</p>
-        <h1 className="wonk mt-3 max-w-[18ch] text-4xl leading-[1.03] font-medium md:text-6xl">
+        <h1 className="titre-section mt-3 max-w-[18ch]">
           Essais, conseils et routes à faire
         </h1>
         <p className="mt-5 max-w-[52ch] text-lg text-muted-foreground">

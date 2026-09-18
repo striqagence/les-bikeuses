@@ -129,7 +129,7 @@ export default async function Rubrique({ params: p, searchParams: sp }: Args) {
       <header className="mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
         <div>
           <p className="eyebrow">Boutique</p>
-          <h1 className="wonk mt-2 text-3xl leading-[1.03] font-medium md:text-5xl">
+          <h1 className="titre-section mt-3 max-w-[18ch]">
             {rubrique.title}
           </h1>
         </div>

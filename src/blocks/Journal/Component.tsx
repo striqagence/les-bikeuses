@@ -134,7 +134,7 @@ const Une: React.FC<{ post: Post }> = ({ post }) => {
         </div>
       )}
       <Meta post={post} />
-      <h3 className="wonk max-w-[22ch] text-2xl leading-[1.12] font-medium transition-colors group-hover:text-primary md:text-[2rem]">
+      <h3 className="wonk max-w-[22ch] text-2xl leading-[1.12] transition-colors group-hover:text-primary md:text-[2rem]">
         {post.title}
       </h3>
       {post.meta?.description && (
