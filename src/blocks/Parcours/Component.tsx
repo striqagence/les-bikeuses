@@ -14,12 +14,12 @@ export const ParcoursBlock: React.FC<ParcoursBlockProps & { id?: string }> = ({
   if (!entrees?.length) return null
 
   return (
-    <section className="halo py-14 md:py-24" id={`block-${id}`}>
+    <section className="py-16 md:py-28" id={`block-${id}`}>
       <div className="container">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
           <div>
             {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-            <h2 className="mt-2 max-w-[18ch] text-3xl leading-[1.08] text-balance md:text-[2.75rem]">
+            <h2 className="mt-3 max-w-[16ch] text-[2.1rem] leading-[0.98] tracking-[-0.025em] text-balance md:text-[3.25rem]">
               {title}
             </h2>
           </div>

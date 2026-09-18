@@ -67,19 +67,19 @@ export const JournalBlock: React.FC<JournalBlockProps & { id?: string }> = async
   const [une, ...breves] = posts
 
   return (
-    <section className="py-14 md:py-24" id={`block-${id}`}>
+    <section className="py-16 md:py-28" id={`block-${id}`}>
       <div className="container">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
           <div>
             {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-            <h2 className="mt-2 max-w-[18ch] text-3xl leading-[1.08] text-balance md:text-[2.75rem]">
+            <h2 className="mt-3 max-w-[16ch] text-[2.1rem] leading-[0.98] tracking-[-0.025em] text-balance md:text-[3.25rem]">
               {title}
             </h2>
           </div>
           {links?.[0]?.link && (
             <CMSLink
               {...links[0].link}
-              className="mono-label border-b-[1.5px] border-primary pb-[3px] transition-colors hover:text-primary"
+              className="mono-label inline-flex items-center gap-2.5 rounded-pilule border border-border px-5 py-2.5 transition-colors hover:border-primary hover:text-primary"
             >
               {' '}
               <span aria-hidden="true">→</span>

@@ -14,11 +14,11 @@ export const DebuterBlock: React.FC<DebuterBlockProps & { id?: string }> = ({
   titleAccent,
 }) => {
   return (
-    <section className="bg-bitume py-14 text-sur-bitume md:py-24" id={`block-${id}`}>
+    <section className="bg-bitume py-16 text-sur-bitume md:py-28" id={`block-${id}`}>
       <div className="container grid items-start gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-16">
         <div>
           {eyebrow && <p className="eyebrow text-brand-bright">{eyebrow}</p>}
-          <h2 className="wonk mt-3 text-3xl leading-[1.05] font-medium md:text-5xl">
+          <h2 className="mt-3 text-[2.1rem] leading-[0.98] font-medium tracking-[-0.025em] md:text-[3.25rem]">
             {title}{' '}
             {titleAccent && <em className="text-brand-bright">{titleAccent}</em>}
           </h2>

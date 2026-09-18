@@ -289,24 +289,30 @@
 
   /* Titre du héros High Impact — rendu depuis le rich text, donc stylé ici
      plutôt qu'en variantes Tailwind arbitraires côté composant. */
+  /*
+   * Titre de héros : grotesque très gras, capitales, interlignage serré.
+   *
+   * La Fraunces reste la voix du site partout ailleurs — articles, fiches,
+   * titres de section. Le héros, lui, est une affiche : il se lit à deux
+   * mètres, d'un bloc, par-dessus une photo. Un romain à empattements y
+   * perdait en présence ce qu'il gagnait en élégance.
+   */
   .heros-titre h1 {
-    font-family: var(--font-display);
-    font-variation-settings:
-      'SOFT' 0,
-      'WONK' 1;
-    font-weight: 500;
-    font-size: clamp(2.6rem, 7vw, 4.75rem);
-    line-height: 0.98;
-    letter-spacing: -0.015em;
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: clamp(2.6rem, 6.4vw, 5.25rem);
+    line-height: 0.92;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
     text-wrap: balance;
-    max-width: 13ch;
+    max-width: 15ch;
     margin: 0;
   }
   .heros-titre em {
-    @apply text-primary;
+    @apply not-italic text-brand-bright;
   }
   .heros-titre p {
-    @apply mt-6 max-w-[42ch] text-muted-foreground;
+    @apply mt-5 max-w-[44ch] text-base;
   }
 
   /* Bandeau défilant sous le héros */
@@ -389,11 +395,11 @@
    * Les proportions changent selon le thème : sur fond sombre il faut moins
    * d'opacité pour obtenir le même effet, la lueur se détachant davantage.
    */
+
   .halo {
     position: relative;
     isolation: isolate;
   }
-
   .halo::before {
     content: '';
     position: absolute;

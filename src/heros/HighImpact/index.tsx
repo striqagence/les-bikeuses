@@ -7,14 +7,16 @@ import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 
 /**
- * Héros éditorial.
+ * Héros affiche.
  *
- * Le type porte la promesse à gauche, la photo tient la droite — le contraste
- * du titre ne dépend donc jamais de l'image posée derrière, contrairement à un
- * bandeau pleine largeur en surimpression.
+ * La promesse est posée *dans* la photo et non à côté : une image encartée,
+ * pleine largeur, coins adoucis, le titre en bas à gauche. La version en deux
+ * colonnes mettait le type et la photo à égalité — deux centres d'attention,
+ * donc aucun.
  *
- * Les visuels secondaires passent au second plan, en bande étroite : trois
- * images de même poids donnaient un collage, où l'œil ne savait pas où aller.
+ * Le contraste du titre ne dépend pas pour autant du hasard de l'image : un
+ * dégradé sombre monte du bas et garantit le rapport, quelle que soit la photo
+ * que la rédaction dépose.
  */
 export const HighImpactHero: React.FC<Page['hero']> = ({
   eyebrow,
@@ -32,80 +34,95 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   return (
     // `-mt-16` annule le `pt-16` de l'article : le héros porte son propre
     // rythme vertical, et le bandeau défilant doit toucher le bloc suivant.
-    <section className="halo -mt-16">
-      <div className="container grid items-center gap-10 border-b border-border py-10 md:grid-cols-[1.02fr_0.98fr] md:gap-14 md:py-16">
-        <div>
-          {eyebrow && <p className="eyebrow mb-5">{eyebrow}</p>}
-
-          {richText && (
-            <RichText
-              className="heros-titre"
-              data={richText}
-              enableGutter={false}
-              enableProse={false}
+    <section className="-mt-16 pt-4 md:pt-6">
+      <div className="container">
+        <div className="relative isolate flex min-h-[clamp(440px,76vh,720px)] flex-col justify-end overflow-hidden rounded-slide bg-bitume">
+          {media && typeof media === 'object' && (
+            <Media
+              className="absolute inset-0 -z-10"
+              imgClassName="h-full w-full object-cover"
+              // `<picture>` est en ligne par défaut : sans passer en bloc, la
+              // hauteur du cadre ne descend pas jusqu'à l'image, qui se charge
+              // sans jamais s'afficher.
+              pictureClassName="block h-full w-full"
+              priority
+              resource={media}
+              size="(max-width: 1280px) 100vw, 1200px"
+              variante="large"
             />
           )}
 
-          {Array.isArray(links) && links.length > 0 && (
-            <ul className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
-              {links.map(({ link }, i) => (
-                <li key={i}>
-                  {/* Deux pastilles de même gabarit : le premier plein, le
-                      second cerclé. Un bouton plein et un lien nu formaient
-                      une paire bancale, où le second se lisait à peine. */}
-                  <CMSLink
-                    {...link}
-                    appearance={i === 0 ? undefined : 'link'}
-                    className={
-                      i === 0
-                        ? 'inline-flex items-center gap-2.5 rounded-pilule bg-primary px-7 py-3.5 font-bold text-primary-foreground transition-colors hover:bg-brand-bright'
-                        : 'inline-flex items-center gap-2 rounded-pilule border-[1.5px] border-primary px-7 py-3.5 font-bold text-primary transition-colors hover:bg-primary hover:text-primary-foreground'
-                    }
-                    size={i === 0 ? 'lg' : undefined}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
+          {/* Deux dégradés plutôt qu'un voile uni : le bas est assez dense pour
+              porter le texte, le haut reste presque intact. Un voile uniforme
+              aurait éteint la photo pour ne servir qu'un quart de l'image. */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 bg-gradient-to-t from-black/75 via-black/30 to-transparent"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 bg-gradient-to-r from-black/55 to-transparent md:to-50%"
+          />
+
+          <div className="p-6 md:p-12 lg:p-16">
+            {eyebrow && (
+              <p className="mono-label mb-5 flex items-center gap-3 text-white/75">
+                <span aria-hidden="true" className="h-px w-8 bg-brand-bright" />
+                {eyebrow}
+              </p>
+            )}
+
+            {richText && (
+              <RichText
+                className="heros-titre text-white"
+                data={richText}
+                enableGutter={false}
+                enableProse={false}
+              />
+            )}
+
+            {Array.isArray(links) && links.length > 0 && (
+              <ul className="mt-8 flex flex-wrap items-center gap-3">
+                {links.map(({ link }, i) => (
+                  <li key={i}>
+                    {/* Sur une photo, le blanc plein est le seul aplat dont le
+                        contraste est acquis d'avance : l'orange de marque, lui,
+                        dépend de ce qu'il y a dessous. Il reste sur le filet du
+                        sur-titre, où il ne porte pas de texte. */}
+                    <CMSLink
+                      {...link}
+                      appearance="link"
+                      className={
+                        'mono-label inline-flex items-center gap-2.5 rounded-pilule border px-6 py-3.5 transition-colors ' +
+                        (i === 0
+                          ? 'border-white bg-white text-bitume hover:bg-white/85'
+                          : 'border-white/45 text-white hover:border-white hover:bg-white hover:text-bitume')
+                      }
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
-        {media && typeof media === 'object' && (
-          <div className="flex flex-col gap-3">
-            <figure className="relative m-0 h-[clamp(320px,48vh,520px)] overflow-hidden rounded-slide bg-secondary">
-              <Media
-                className="h-full"
-                imgClassName="h-full w-full object-cover"
-                // `<picture>` est en ligne par défaut : la hauteur du cadre ne
-                // descendait pas jusqu'à l'image, qui se chargeait sans jamais
-                // s'afficher. Invisible tant que le cadre portait un rapport
-                // plutôt qu'une hauteur.
-                pictureClassName="block h-full w-full"
-                priority
-                resource={media}
-                size="(max-width: 768px) 100vw, 46vw"
-                variante="large"
-              />
-
-            </figure>
-
-            {visuelsSecondaires.length > 0 && (
-              <div className="grid grid-cols-2 gap-3">
-                {visuelsSecondaires.map((item, i) => (
-                  <div
-                    className="aspect-[3/2] overflow-hidden rounded-panneau bg-secondary"
-                    key={item.id ?? i}
-                  >
-                    <Media
-                      className="h-full"
-                      imgClassName="h-full w-full object-cover"
-                      resource={item.image}
-                      size="(max-width: 768px) 50vw, 23vw"
-                      variante="small"
-                    />
-                  </div>
-                ))}
+        {visuelsSecondaires.length > 0 && (
+          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+            {visuelsSecondaires.map((item, i) => (
+              <div
+                className="aspect-[4/3] overflow-hidden rounded-panneau bg-secondary"
+                key={item.id ?? i}
+              >
+                <Media
+                  className="h-full"
+                  imgClassName="h-full w-full object-cover"
+                  pictureClassName="block h-full w-full"
+                  resource={item.image}
+                  size="(max-width: 768px) 50vw, 25vw"
+                  variante="small"
+                />
               </div>
-            )}
+            ))}
           </div>
         )}
       </div>
@@ -119,12 +136,12 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
 // En `prefers-reduced-motion`, l'animation est coupée (cf. globals.css) : la
 // première piste reste lisible, la seconde est purement décorative.
 const Bandeau: React.FC<{ mentions: string[] }> = ({ mentions }) => (
-  <div aria-hidden="true" className="overflow-hidden bg-bitume py-3 text-sur-bitume">
+  <div aria-hidden="true" className="mt-10 overflow-hidden border-y border-border py-3.5">
     <div className="flex whitespace-nowrap">
       {[0, 1].map((piste) => (
         <div className="bandeau-piste flex shrink-0 gap-12 pr-12" key={piste}>
           {mentions.map((mention, i) => (
-            <span className="mono-label flex items-center gap-3" key={i}>
+            <span className="mono-label flex items-center gap-3 text-muted-foreground" key={i}>
               <span className="text-[0.5rem] text-brand-bright">◆</span>
               {mention}
             </span>
