@@ -18,6 +18,14 @@ import RichText from '@/components/RichText'
  * dégradé sombre monte du bas et garantit le rapport, quelle que soit la photo
  * que la rédaction dépose.
  */
+/** Colonnes de la bande secondaire, indexées par le nombre de visuels. */
+const COLONNES: Record<number, string> = {
+  1: 'md:grid-cols-1',
+  2: 'md:grid-cols-2',
+  3: 'md:grid-cols-3',
+  4: 'md:grid-cols-4',
+}
+
 export const HighImpactHero: React.FC<Page['hero']> = ({
   eyebrow,
   links,
@@ -36,7 +44,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
     // rythme vertical, et le bandeau défilant doit toucher le bloc suivant.
     <section className="-mt-16 pt-4 md:pt-6">
       <div className="container">
-        <div className="relative isolate flex min-h-[clamp(440px,76vh,720px)] flex-col justify-end overflow-hidden rounded-slide bg-bitume">
+        <div className="relative isolate flex min-h-[clamp(400px,62vh,600px)] flex-col justify-end overflow-hidden rounded-slide bg-bitume">
           {media && typeof media === 'object' && (
             <Media
               className="absolute inset-0 -z-10"
@@ -107,10 +115,13 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
         </div>
 
         {visuelsSecondaires.length > 0 && (
-          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+          // Autant de colonnes que de visuels : une grille de quatre pour deux
+          // images laissait la moitié droite vide, ce qui se lit comme un
+          // gabarit mal rempli plutôt que comme une bande.
+          <div className={`mt-3 grid grid-cols-2 gap-3 ${COLONNES[Math.min(visuelsSecondaires.length, 4)]}`}>
             {visuelsSecondaires.map((item, i) => (
               <div
-                className="aspect-[4/3] overflow-hidden rounded-panneau bg-secondary"
+                className="aspect-[16/9] overflow-hidden rounded-panneau bg-secondary"
                 key={item.id ?? i}
               >
                 <Media
@@ -118,7 +129,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                   imgClassName="h-full w-full object-cover"
                   pictureClassName="block h-full w-full"
                   resource={item.image}
-                  size="(max-width: 768px) 50vw, 25vw"
+                  size="(max-width: 768px) 50vw, 40vw"
                   variante="small"
                 />
               </div>

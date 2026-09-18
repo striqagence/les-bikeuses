@@ -308,8 +308,16 @@
     max-width: 15ch;
     margin: 0;
   }
+  /*
+   * Emphase tonale et non colorée.
+   *
+   * En capitales de cinq rem, l'orange de marque cessait d'être un accent
+   * pour devenir la moitié de l'affiche — et son contraste dépendait de la
+   * photo posée dessous. L'accent se replie sur le filet du sur-titre, où il
+   * ne porte aucun texte ; le titre garde sa hiérarchie par la valeur.
+   */
   .heros-titre em {
-    @apply not-italic text-brand-bright;
+    @apply not-italic text-white/55;
   }
   .heros-titre p {
     @apply mt-5 max-w-[44ch] text-base;
