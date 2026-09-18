@@ -17,7 +17,7 @@ export const IndexCategoriesBlock: React.FC<IndexCategoriesBlockProps & { id?: s
       <div className="container">
         <div className="mb-10">
           {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-          <h2 className="mt-3 max-w-[16ch] text-[2.1rem] leading-[0.98] tracking-[-0.025em] text-balance md:text-[3.25rem]">
+          <h2 className="titre-section mt-3 max-w-[18ch]">
             {title}
           </h2>
         </div>

@@ -1,18 +1,13 @@
 import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
-import { DM_Mono, Fraunces, Manrope } from 'next/font/google'
+import { DM_Mono, Manrope } from 'next/font/google'
 import React from 'react'
 
-// Trio typographique Les Bikeuses :
-// Fraunces (titres) × Manrope (texte / UI) × DM Mono (données techniques)
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  // SOFT et WONK portent le caractère éditorial des titres (cf. utilitaire `.wonk`)
-  axes: ['SOFT', 'WONK', 'opsz'],
-  display: 'swap',
-  variable: '--font-fraunces',
-})
+// Duo typographique Les Bikeuses :
+// Manrope (titres, texte, UI) × DM Mono (données techniques).
+// La Fraunces tenait les titres ; deux familles se partageaient la page selon
+// la hauteur du titre, ce qui se lisait comme deux sites cousus ensemble.
 const manrope = Manrope({
   subsets: ['latin'],
   display: 'swap',
@@ -42,7 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html
-      className={cn(fraunces.variable, manrope.variable, dmMono.variable)}
+      className={cn(manrope.variable, dmMono.variable)}
       lang="fr"
       suppressHydrationWarning
     >

@@ -19,7 +19,7 @@ export const ParcoursBlock: React.FC<ParcoursBlockProps & { id?: string }> = ({
         <div className="mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
           <div>
             {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-            <h2 className="mt-3 max-w-[16ch] text-[2.1rem] leading-[0.98] tracking-[-0.025em] text-balance md:text-[3.25rem]">
+            <h2 className="titre-section mt-3 max-w-[18ch]">
               {title}
             </h2>
           </div>

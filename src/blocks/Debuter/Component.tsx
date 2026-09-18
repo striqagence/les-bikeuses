@@ -18,7 +18,7 @@ export const DebuterBlock: React.FC<DebuterBlockProps & { id?: string }> = ({
       <div className="container grid items-start gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-16">
         <div>
           {eyebrow && <p className="eyebrow text-brand-bright">{eyebrow}</p>}
-          <h2 className="mt-3 text-[2.1rem] leading-[0.98] font-medium tracking-[-0.025em] md:text-[3.25rem]">
+          <h2 className="titre-section mt-3 max-w-[18ch]">
             {title}{' '}
             {titleAccent && <em className="text-brand-bright">{titleAccent}</em>}
           </h2>

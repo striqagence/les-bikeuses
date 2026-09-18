@@ -20,12 +20,21 @@
     font-weight: unset;
     font-size: unset;
   }
-  /* Titres en Fraunces (serif éditoriale) — habillage Les Bikeuses */
+  /*
+   * Titres en grotesque gras — la voix du héros, étendue à tout le site.
+   *
+   * La Fraunces tenait les titres jusqu'ici ; deux familles se partageaient
+   * la page selon la hauteur du titre, ce qui se lisait comme deux sites
+   * cousus ensemble. Une seule famille désormais, la hiérarchie passe par la
+   * graisse, le corps et la casse.
+   */
   h1,
   h2,
   h3,
   h4 {
     font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.025em;
   }
 }
 
@@ -52,7 +61,7 @@
   --breakpoint-2xl: 86rem;
   --font-mono: var(--font-dm-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: var(--font-fraunces), Georgia, 'Times New Roman', serif;
+  --font-display: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 @layer utilities {
@@ -277,28 +286,43 @@
     @apply block h-[2px] w-[22px] flex-none bg-current;
   }
 
-  /* Fraunces avec l'axe WONK activé — réservé aux titres éditoriaux */
+  /*
+   * Titre éditorial : même famille et même graisse que le héros.
+   *
+   * Sans capitales, à la différence de `.titre-section` : cet utilitaire
+   * habille aussi des titres d'articles de douze mots, qu'une composition
+   * tout en capitales rendrait illisibles. La casse est réservée aux titres
+   * courts, posés en tête de section.
+   */
   .wonk {
     font-family: var(--font-display);
-    font-variation-settings:
-      'SOFT' 0,
-      'WONK' 1;
-    letter-spacing: -0.015em;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  /* Tête de section : le traitement du héros, à un cran en dessous. */
+  .titre-section {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.1rem, 4.4vw, 3.25rem);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
     text-wrap: balance;
   }
 
   /* Titre du héros High Impact — rendu depuis le rich text, donc stylé ici
      plutôt qu'en variantes Tailwind arbitraires côté composant. */
   /*
-   * Titre de héros : grotesque très gras, capitales, interlignage serré.
+   * Titre de héros : le cran au-dessus de `.titre-section`.
    *
-   * La Fraunces reste la voix du site partout ailleurs — articles, fiches,
-   * titres de section. Le héros, lui, est une affiche : il se lit à deux
-   * mètres, d'un bloc, par-dessus une photo. Un romain à empattements y
-   * perdait en présence ce qu'il gagnait en élégance.
+   * Même famille, même graisse, même casse que les têtes de section — seuls
+   * le corps et l'interlignage changent. Une affiche se lit à deux mètres,
+   * d'un bloc.
    */
   .heros-titre h1 {
-    font-family: var(--font-body);
+    font-family: var(--font-display);
     font-weight: 800;
     font-size: clamp(2.6rem, 6.4vw, 5.25rem);
     line-height: 0.92;
@@ -335,7 +359,7 @@
   }
 
   /* Corps d'article. `prose` de Tailwind reste actif dessous : on ne
-     redéfinit que ce que la DA impose — mesure, titres en Fraunces, puces
+     redéfinit que ce que la DA impose — mesure, titres, puces
      carrées orange. Le `scroll-margin-top` évite qu'un clic dans le sommaire
      ne colle le titre sous l'en-tête collant. */
   .corps-article {
@@ -346,10 +370,7 @@
   }
   .corps-article h2 {
     font-family: var(--font-display);
-    font-variation-settings:
-      'SOFT' 0,
-      'WONK' 1;
-    font-weight: 600;
+    font-weight: 800;
     font-size: clamp(1.5rem, 2.6vw, 2rem);
     line-height: 1.15;
     letter-spacing: -0.015em;
@@ -381,9 +402,7 @@
   }
   .corps-article blockquote {
     font-family: var(--font-display);
-    font-variation-settings:
-      'SOFT' 0,
-      'WONK' 1;
+    font-weight: 500;
     font-size: 1.4rem;
     line-height: 1.3;
     letter-spacing: -0.01em;
