@@ -136,8 +136,11 @@ export default async function FicheProduit({ params: p }: Args) {
           porte le référencement de la fiche. */}
       {produit.description && (
         <section className="mt-14 border-t border-border pt-12">
-          <p className="eyebrow">La fiche</p>
-          <h2 className="titre-section mt-3 mb-8 max-w-[18ch]">Description</h2>
+          {/* Pas de titre de section ajouté : 455 descriptions sur 477
+              ouvrent déjà par le leur, dont 218 par « Description ». Le
+              sur-titre suffit à nommer la zone, et la hiérarchie du document
+              reste celle que la rédaction a écrite. */}
+          <p className="eyebrow mb-7">La fiche</p>
           <RichText
             className="corps-article mx-0! max-w-[68ch]"
             data={produit.description}
