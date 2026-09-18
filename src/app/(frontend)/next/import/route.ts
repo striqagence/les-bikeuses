@@ -4,6 +4,7 @@ import config from '@payload-config'
 
 import { importerArticles } from '@/endpoints/import'
 import { importerGaleries } from '@/endpoints/import/galeries'
+import { importerDescriptions } from '@/endpoints/import/descriptions'
 import { importerProduits } from '@/endpoints/import/produits'
 
 // L'import télécharge et réenvoie les visuels de chaque article : il faut de
@@ -37,6 +38,16 @@ export async function POST(request: Request): Promise<Response> {
     // visuels, chacun redimensionné en sept déclinaisons.
     if (url.searchParams.get('quoi') === 'galeries') {
       return Response.json(await importerGaleries({ payload, req, taille: Math.min(taille, 6) }))
+    }
+
+    // `?quoi=descriptions` complète les fiches déjà en base avec leur corps
+    // rédigé : l'import initial ne lisait que l'accroche. Un lot plus large
+    // que les autres, une description ne coûtant qu'un appel et une écriture
+    // — ni téléchargement ni redimensionnement d'image.
+    if (url.searchParams.get('quoi') === 'descriptions') {
+      const demandee = Number(url.searchParams.get('taille'))
+      const lot = Number.isFinite(demandee) ? Math.min(Math.max(demandee, 1), 60) : 30
+      return Response.json(await importerDescriptions({ payload, req, taille: lot }))
     }
 
     const rapport = await importerArticles({

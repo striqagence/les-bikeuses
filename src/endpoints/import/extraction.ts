@@ -78,7 +78,7 @@ const ENTITES: [RegExp, string][] = [
 export const decoder = (s: string): string =>
   ENTITES.reduce((acc, [re, rep]) => acc.replace(re, rep), s)
 
-const sansBalises = (html: string): string =>
+export const sansBalises = (html: string): string =>
   decoder(html.replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim()
 
 const meta = (html: string, nom: string): string | null =>
@@ -88,7 +88,7 @@ const meta = (html: string, nom: string): string | null =>
 
 /* ---------- fabriques de nœuds Lexical ---------- */
 
-const texte = (t: string, format = 0): NoeudTexte => ({
+export const texte = (t: string, format = 0): NoeudTexte => ({
   type: 'text',
   detail: 0,
   format,
@@ -98,7 +98,7 @@ const texte = (t: string, format = 0): NoeudTexte => ({
   version: 1,
 })
 
-const paragraphe = (enfants: (NoeudTexte | NoeudLien)[]) => ({
+export const paragraphe = (enfants: (NoeudTexte | NoeudLien)[]) => ({
   type: 'paragraph',
   children: enfants,
   direction: 'ltr',
@@ -108,7 +108,7 @@ const paragraphe = (enfants: (NoeudTexte | NoeudLien)[]) => ({
   version: 1,
 })
 
-const titre = (t: string, tag: 'h2' | 'h3') => ({
+export const titre = (t: string, tag: 'h2' | 'h3') => ({
   type: 'heading',
   children: [texte(t)],
   direction: 'ltr',
@@ -118,7 +118,7 @@ const titre = (t: string, tag: 'h2' | 'h3') => ({
   version: 1,
 })
 
-const liste = (items: (NoeudTexte | NoeudLien)[][]) => ({
+export const liste = (items: (NoeudTexte | NoeudLien)[][]) => ({
   type: 'list',
   listType: 'bullet',
   tag: 'ul',

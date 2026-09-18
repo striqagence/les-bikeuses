@@ -11,6 +11,7 @@ import type { Category, Product } from '@/payload-types'
 import { CarteProduit } from '@/components/Boutique/CarteProduit'
 import { AchatProduit } from '@/components/Boutique/AchatProduit'
 import { Galerie } from '@/components/Boutique/Galerie'
+import RichText from '@/components/RichText'
 
 export const revalidate = 600
 
@@ -128,6 +129,22 @@ export default async function FicheProduit({ params: p }: Args) {
           )}
         </div>
       </div>
+
+      {/* Le corps rédigé, sous les deux colonnes et non dans la colonne
+          d'achat : il porte des titres et des listes, et une mesure de
+          trente caractères les rendrait illisibles. C'est aussi le texte qui
+          porte le référencement de la fiche. */}
+      {produit.description && (
+        <section className="mt-14 border-t border-border pt-12">
+          <p className="eyebrow">La fiche</p>
+          <h2 className="titre-section mt-3 mb-8 max-w-[18ch]">Description</h2>
+          <RichText
+            className="corps-article max-w-[68ch]"
+            data={produit.description}
+            enableGutter={false}
+          />
+        </section>
+      )}
 
       {!!similaires.length && (
         <section className="pt-14">
