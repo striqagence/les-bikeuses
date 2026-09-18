@@ -22,19 +22,36 @@ const STORE = 'https://lesbikeuses.fr/wp-json/wc/store/v1'
 
 type Attribut = { name: string; value: string }
 type Variation = { id: number; attributes?: Attribut[] }
+type Disponibilite = { class?: string; text?: string }
 type ProduitWoo = {
   id: number
   type?: string
   variations?: Variation[]
   prices?: { price?: string; currency_minor_unit?: number }
   is_in_stock?: boolean
+  stock_availability?: Disponibilite
   sku?: string
 }
 type DetailVariation = {
   id: number
   sku?: string
   is_in_stock?: boolean
+  stock_availability?: Disponibilite
   prices?: { price?: string; currency_minor_unit?: number }
+}
+
+/**
+ * Disponibilité réelle d'une fiche WooCommerce.
+ *
+ * `is_in_stock` seul ne suffit pas : sur un produit variable, il reflète le
+ * drapeau du parent, pas l'état de ses déclinaisons. Une fiche peut donc
+ * l'annoncer à `true` alors que `stock_availability` dit « Rupture de stock »
+ * — c'est le cas des vingt-six articles repris sans prix, dont WooCommerce
+ * n'expose plus aucune déclinaison vendable. Le champ affiché fait foi.
+ */
+const disponible = (d: { is_in_stock?: boolean; stock_availability?: Disponibilite }): boolean => {
+  if (d.stock_availability?.class === 'out-of-stock') return false
+  return d.is_in_stock !== false
 }
 
 export type RapportVariantes = {
@@ -131,7 +148,7 @@ export const importerVariantes = async ({
           // une remise sur le produit ne redescendrait jamais aux tailles.
           prix: prix !== null && prix !== produit.price ? prix : null,
           stock: null,
-          disponible: detail.is_in_stock !== false,
+          disponible: disponible(detail),
         })
       }
 

@@ -7,7 +7,7 @@ import type { Product } from '@/payload-types'
 import Link from 'next/link'
 
 import { SelecteurVariante, type Choix } from './SelecteurVariante'
-import { prixFr } from './CarteProduit'
+import { prixCatalogue } from './CarteProduit'
 import { usePanier } from '@/providers/Panier'
 
 /**
@@ -48,7 +48,7 @@ export const AchatProduit: React.FC<{
     window.setTimeout(() => setAjoute(false), 2500)
   }, [ajouter, produit.id, choix.variante])
 
-  const prix = prixFr(choix.prix ?? produit.price)
+  const prix = prixCatalogue(choix.prix ?? produit.price)
   const choisiEtEpuise = Boolean(choix.variante && !choix.variante.disponible)
 
   return (

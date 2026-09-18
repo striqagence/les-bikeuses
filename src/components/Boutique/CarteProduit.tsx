@@ -12,6 +12,19 @@ export const prixFr = (n?: number | null): string | null =>
     : null
 
 /**
+ * Prix d'un article du catalogue, ou `null` s'il n'y en a pas.
+ *
+ * Distinct de `prixFr`, qui sert aussi aux totaux du panier : là, zéro est une
+ * valeur légitime — un panier vide vaut 0,00 €. Sur une fiche produit, non :
+ * WooCommerce cesse de publier le prix d'un produit variable dès qu'il n'a plus
+ * de déclinaison vendable, et le prix du parent retombe à zéro. Vingt-six
+ * articles repris de l'ancien site sont dans ce cas ; ils affichaient
+ * « 0,00 € », ce qui est faux.
+ */
+export const prixCatalogue = (n?: number | null): string | null =>
+  typeof n === 'number' && n > 0 ? prixFr(n) : null
+
+/**
  * Carte produit du catalogue.
  *
  * Rien dans une boîte : l'image est posée à même le fond de page, le texte
@@ -41,7 +54,7 @@ export const CarteProduit: React.FC<{
   prioritaire?: boolean
 }> = ({ produit, className, prioritaire = false }) => {
   const image = produit.gallery?.[0]?.image
-  const prix = prixFr(produit.price)
+  const prix = prixCatalogue(produit.price)
   const nbTailles = produit.tailles?.length ?? 0
 
   return (
@@ -82,7 +95,14 @@ export const CarteProduit: React.FC<{
         </h3>
 
         <div className="mt-auto flex items-baseline justify-between gap-3 pt-2">
-          {prix && <span className="font-mono text-base tabular-nums">{prix}</span>}
+          {prix ? (
+            <span className="font-mono text-base tabular-nums">{prix}</span>
+          ) : (
+            // Les seuls articles sans prix sont ceux dont l'ancien site n'a
+            // plus aucune déclinaison vendable : relevé fait le 18/09/2026,
+            // les vingt-six sont en rupture à la source.
+            <span className="mono-label text-muted-foreground">Épuisé</span>
+          )}
           <span className="mono-label text-muted-foreground">
             {nbTailles ? `${nbTailles} tailles` : 'Taille unique'}
           </span>
