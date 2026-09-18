@@ -139,7 +139,7 @@ export default async function FicheProduit({ params: p }: Args) {
           <p className="eyebrow">La fiche</p>
           <h2 className="titre-section mt-3 mb-8 max-w-[18ch]">Description</h2>
           <RichText
-            className="corps-article max-w-[68ch]"
+            className="corps-article mx-0! max-w-[68ch]"
             data={produit.description}
             enableGutter={false}
           />
