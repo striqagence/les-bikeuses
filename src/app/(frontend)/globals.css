@@ -393,31 +393,53 @@
     font-weight: 800;
     margin-block: 2rem 0.75rem;
   }
-  .corps-article ul {
-    list-style: none;
-    padding-left: 0;
-  }
   /*
-   * Le marqueur natif est éteint en plus de `list-style`.
-   * Le plugin typography pose son propre marqueur, que `list-style: none`
-   * ne suffit pas à retirer : les listes des descriptions produit sortaient
-   * avec deux puces, la ronde grise du plugin et notre carré orange.
+   * Puces du corps rédigé.
+   *
+   * L'important est nécessaire, et seulement ici : le plugin typography pose
+   * ses propres retraits — 26 px sur la liste, 6 px sur l'élément — depuis une
+   * couche postérieure à la nôtre. Or une couche l'emporte sur la
+   * spécificité, quelle qu'elle soit ; seule une déclaration importante
+   * inverse cet ordre. Sans cela nos règles étaient écrites mais jamais
+   * appliquées, et le carré, posé au bord gauche d'un élément qui ne
+   * commençait qu'à six pixels, chevauchait la première lettre.
    */
-  .corps-article ul > li::marker {
-    content: '';
+  .corps-article ul {
+    list-style: none !important;
+    padding-left: 0 !important;
   }
   .corps-article ul > li {
     position: relative;
-    padding-left: 1.4rem;
+    padding-left: 1.65rem !important;
+    margin-block: 0.35rem !important;
+  }
+  /* Le marqueur natif s'éteint par son contenu : `list-style` ne le retire
+     pas quand le plugin l'a déjà redéclaré. */
+  .corps-article ul > li::marker {
+    content: '';
   }
   .corps-article ul > li::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0.62em;
-    width: 7px;
-    height: 7px;
+    left: 0.2rem;
+    /*
+     * Calé sur la hauteur d'x de la première ligne, et non sur le haut de la
+     * boîte : sur un élément qui court sur deux lignes, un carré aligné en
+     * haut paraît décroché de son texte.
+     */
+    top: 0.68em;
+    width: 6px;
+    height: 6px;
     background: var(--primary);
+  }
+  /* Une liste imbriquée se décale sans répéter la puce pleine. */
+  .corps-article ul ul {
+    margin-block: 0.35rem !important;
+    padding-left: 1.1rem !important;
+  }
+  .corps-article ul ul > li::before {
+    background: transparent;
+    border: 1.5px solid var(--primary);
   }
   .corps-article blockquote {
     font-family: var(--font-display);
