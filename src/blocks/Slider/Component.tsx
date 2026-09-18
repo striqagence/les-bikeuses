@@ -109,7 +109,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                 {slide.eyebrow && <p className="eyebrow">{slide.eyebrow}</p>}
                 <h2 className="wonk text-3xl leading-[1.03] font-medium md:text-[2.75rem]">
                   {slide.titre}{' '}
-                  {slide.titreAccent && <em className="text-primary">{slide.titreAccent}</em>}
+                  {slide.titreAccent && <em>{slide.titreAccent}</em>}
                 </h2>
                 {slide.texte && <p className="text-sm text-muted-foreground">{slide.texte}</p>}
                 {slide.links?.[0]?.link && (

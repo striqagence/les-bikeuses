@@ -340,7 +340,17 @@
    * photo posée dessous. L'accent se replie sur le filet du sur-titre, où il
    * ne porte aucun texte ; le titre garde sa hiérarchie par la valeur.
    */
-  .heros-titre em {
+  /*
+   * Emphase des titres : par la graisse, jamais par l'italique.
+   *
+   * La Manrope n'a pas de vrai italique — le navigateur en fabrique une
+   * oblique, dont l'inclinaison mécanique se voit d'autant plus que le corps
+   * est grand. Et une emphase colorée posée sur une photo n'a que le
+   * contraste que l'image veut bien lui laisser.
+   */
+  .heros-titre em,
+  .titre-section em,
+  .wonk em {
     @apply not-italic;
     font-weight: 300;
   }

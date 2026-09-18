@@ -20,7 +20,7 @@ export const DebuterBlock: React.FC<DebuterBlockProps & { id?: string }> = ({
           {eyebrow && <p className="eyebrow text-brand-bright">{eyebrow}</p>}
           <h2 className="titre-section mt-3 max-w-[18ch]">
             {title}{' '}
-            {titleAccent && <em className="text-brand-bright">{titleAccent}</em>}
+            {titleAccent && <em>{titleAccent}</em>}
           </h2>
           {intro && <p className="mt-5 max-w-[40ch] text-taupe-nuit">{intro}</p>}
           {!!links?.length && (
