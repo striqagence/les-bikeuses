@@ -62,6 +62,9 @@ cette rigueur son parti pris. Tokens dans `src/app/(frontend)/globals.css`
     Contraste 5.2:1 sur papier, seul niveau sûr pour les labels mono à 11 px.
   - `--brand-bright` `#EE5B16` / `#FF9E6B` — aplats et fonds sombres
     **uniquement** (3.6:1 sur papier, insuffisant pour du petit texte).
+  - Sur une photo, l'orange ne porte **aucun texte** : il se réduit au filet
+    du sur-titre. Les appels à l'action passent au blanc plein et au blanc
+    cerclé, seul aplat dont le contraste soit acquis d'avance.
 - **Neutres froids** (papier `#F7F6F4`, encre asphalte `#16151A`) :
   volontairement pas de papier crème, l'orange doit rester la seule source de
   chaleur de la page.
@@ -69,6 +72,13 @@ cette rigueur son parti pris. Tokens dans `src/app/(frontend)/globals.css`
 - Typo : **Fraunces** (titres, axes `SOFT`/`WONK`) × **Manrope** (texte/UI) ×
   **DM Mono** (données techniques : niveaux CE, matières, tailles, prix,
   dates), via `next/font` (`src/app/(frontend)/layout.tsx`).
+  - **Exception, le héros de l'accueil** : titre en Manrope 800, capitales,
+    interlignage 0.92 (`.heros-titre`). Une affiche se lit à deux mètres, d'un
+    bloc — la Fraunces y perdait en présence ce qu'elle gagnait en élégance.
+    Elle reste la voix du site partout ailleurs. L'emphase (`<em>`) s'y joue
+    sur la graisse (300 contre 800) et non sur la couleur : posée sur une
+    photo, une emphase colorée a le contraste que l'image veut bien lui
+    laisser.
 - Primitives réutilisables (globals.css) : `mono-label` (déclarée en
   `@utility` pour rester applicable via `@apply`), `.eyebrow`, `.wonk`,
   `.route` (filet « marquage au sol »), `.heros-titre`.
