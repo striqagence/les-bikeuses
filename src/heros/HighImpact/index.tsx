@@ -60,16 +60,14 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
             />
           )}
 
-          {/* Deux dégradés plutôt qu'un voile uni : le bas est assez dense pour
-              porter le texte, le haut reste presque intact. Un voile uniforme
-              aurait éteint la photo pour ne servir qu'un quart de l'image. */}
+          {/* Un seul dégradé, montant du bas.
+              En croiser un second par la gauche paraissait plus sûr pour le
+              contraste ; sur une photo déjà sombre — un sous-bois — les deux
+              se multipliaient et le quart supérieur gauche virait au noir
+              plein. La photo disparaissait derrière son propre voile. */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 -z-10 bg-gradient-to-t from-black/75 via-black/30 to-transparent"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 -z-10 bg-gradient-to-r from-black/55 to-transparent md:to-50%"
+            className="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/45 via-45% to-black/10"
           />
 
           <div className="p-6 md:p-12 lg:p-16">
@@ -121,7 +119,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
           <div className={`mt-3 grid grid-cols-2 gap-3 ${COLONNES[Math.min(visuelsSecondaires.length, 4)]}`}>
             {visuelsSecondaires.map((item, i) => (
               <div
-                className="aspect-[16/9] overflow-hidden rounded-panneau bg-secondary"
+                className="aspect-[2/1] overflow-hidden rounded-panneau bg-secondary"
                 key={item.id ?? i}
               >
                 <Media
