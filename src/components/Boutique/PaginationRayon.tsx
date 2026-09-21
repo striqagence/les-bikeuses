@@ -13,6 +13,11 @@ import { cn } from '@/utilities/ui'
  * changer de page réinitialiserait la sélection. Des liens, et non des
  * boutons pilotés par le routeur, pour rester ouvrables dans un nouvel onglet
  * et indexables.
+ *
+ * Seul endroit de ce dossier à laisser le défilement se faire : les facettes
+ * gardent `scroll={false}`, parce que cocher un filtre ne doit pas déplacer
+ * la page sous la main qui coche. Changer de page, si — sinon on atterrit au
+ * milieu d'une liste qu'on vient de remplacer, sans voir son début.
  */
 export const PaginationRayon: React.FC<{ page: number; total: number }> = ({ page, total }) => {
   const chemin = usePathname()
@@ -79,7 +84,7 @@ const Lien: React.FC<{
       {children}
     </span>
   ) : (
-    <Link className={classe} href={href} scroll={false}>
+    <Link className={classe} href={href}>
       {children}
     </Link>
   )
