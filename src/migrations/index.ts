@@ -36,6 +36,7 @@ import * as migration_20260921_090000_themes_du_journal from './20260921_090000_
 import * as migration_20260921_120000_emojis_en_images from './20260921_120000_emojis_en_images';
 import * as migration_20260921_150000_widget_articles_lies from './20260921_150000_widget_articles_lies';
 import * as migration_20260921_170000_resumes_pollues from './20260921_170000_resumes_pollues';
+import * as migration_20260921_183000_resumes_restants from './20260921_183000_resumes_restants';
 
 export const migrations = [
   {
@@ -227,5 +228,10 @@ export const migrations = [
     up: migration_20260921_170000_resumes_pollues.up,
     down: migration_20260921_170000_resumes_pollues.down,
     name: '20260921_170000_resumes_pollues',
+  },
+  {
+    up: migration_20260921_183000_resumes_restants.up,
+    down: migration_20260921_183000_resumes_restants.down,
+    name: '20260921_183000_resumes_restants',
   },
 ];
