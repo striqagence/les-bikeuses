@@ -1,5 +1,7 @@
 import type { Payload, PayloadRequest } from 'payload'
 
+import { THEMES } from '../../utilities/themesJournal'
+
 const SITE = 'https://lesbikeuses.fr'
 
 /**
@@ -96,6 +98,16 @@ export const basculerNavigation = async (
   })
   const parSlug = new Map(categories.docs.map((c) => [c.slug as string, c]))
 
+  /** Compte les articles d'un thème, pour la mention affichée au survol. */
+  const compterArticles = async (id: number) =>
+    (
+      await payload.count({
+        ...(req ? { req } : {}),
+        collection: 'posts',
+        where: { categories: { in: [id] } },
+      })
+    ).totalDocs
+
   /** Compte les produits d'un rayon, pour la mention affichée au survol. */
   const compter = async (id: number) =>
     (
@@ -148,6 +160,35 @@ export const basculerNavigation = async (
       : { type: 'custom', label: libelle, url: repli, newTab: true }
   }
 
+  /*
+   * Sous-entrées du journal.
+   *
+   * Elles portaient toutes `/posts` : cinq intitulés différents menant à la
+   * même liste entière, ce qui promet un tri sans le tenir. Elles pointent
+   * désormais vers le filtre par thème.
+   *
+   * Un thème absent de la base ou sans article est omis, comme un rayon vide :
+   * une entrée de menu qui ne mène à rien n'est pas une information.
+   */
+  const themesDuJournal: { link: Record<string, unknown>; meta?: string }[] = []
+  for (const { libelle, slug } of THEMES) {
+    const cat = parSlug.get(slug)
+    if (!cat) {
+      rapport.omises.push(`${libelle} (thème absent)`)
+      continue
+    }
+    const nb = await compterArticles(cat.id)
+    if (!nb) {
+      rapport.omises.push(`${libelle} (thème vide)`)
+      continue
+    }
+    rapport.posees.push(`Journal · ${libelle}`)
+    themesDuJournal.push({
+      link: { type: 'custom', label: libelle, url: `/posts?theme=${slug}` },
+      meta: `${nb} art.`,
+    })
+  }
+
   const navItems = [
     {
       link: tete('Équipements', 'blousons-moto', equipements, `${SITE}/rubrique/blouson-moto/`),
@@ -163,13 +204,7 @@ export const basculerNavigation = async (
     },
     {
       link: { type: 'custom', label: 'Le journal', url: '/posts' },
-      sousItems: [
-        { link: { type: 'custom', label: 'Équipements', url: '/posts' } },
-        { link: { type: 'custom', label: 'Technique', url: '/posts' } },
-        { link: { type: 'custom', label: 'Permis moto', url: '/posts' } },
-        { link: { type: 'custom', label: 'Style', url: '/posts' } },
-        { link: { type: 'custom', label: 'Divers', url: '/posts' } },
-      ],
+      sousItems: themesDuJournal,
     },
     ...(parSlug.has('bons-plans')
       ? [{ link: { type: 'custom', label: 'Bons plans', url: '/rubrique/bons-plans' } }]
