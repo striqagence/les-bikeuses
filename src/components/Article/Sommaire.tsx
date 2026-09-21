@@ -46,7 +46,7 @@ export const Sommaire: React.FC<{ entrees: EntreeSommaire[] }> = ({ entrees }) =
   return (
     <nav
       aria-label="Sommaire"
-      className="lg:sticky lg:top-24 max-lg:rounded-panneau max-lg:border max-lg:border-border max-lg:p-5"
+      className="lg:sticky lg:top-24 max-lg:border-t max-lg:border-border max-lg:pt-5"
     >
       <h2 className="mono-label mb-4 text-primary">Sommaire</h2>
       <ol className="flex list-none flex-col p-0">

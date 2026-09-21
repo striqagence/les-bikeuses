@@ -76,7 +76,7 @@ export const Card: React.FC<{
       <div className={cn('flex flex-col gap-2.5 px-1.5 pb-2', une && 'md:px-3')}>
         <div className="mono-label flex flex-wrap items-center gap-3 text-muted-foreground">
           {showCategories && nomRubrique && (
-            <span className="rounded-pilule bg-accent px-2.5 py-1 text-primary">{nomRubrique}</span>
+            <span className="text-primary">{nomRubrique}</span>
           )}
           {publishedAt && <time dateTime={publishedAt}>{dateCourte(publishedAt)}</time>}
         </div>
