@@ -119,7 +119,6 @@ export const AchatProduit: React.FC<{
             className="underline underline-offset-2"
             href={produit.sourceUrl}
             rel="noopener noreferrer"
-            target="_blank"
           >
             lesbikeuses.fr
           </a>

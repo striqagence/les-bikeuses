@@ -55,6 +55,10 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
             name: 'newTab',
             type: 'checkbox',
             admin: {
+              // Masqué : le rendu ouvre tout dans le même onglet (cf. CMSLink).
+              // Le champ reste en base pour ne pas imposer une migration de
+              // schéma à des centaines de liens qui le portent déjà.
+              hidden: true,
               style: {
                 alignSelf: 'flex-end',
               },

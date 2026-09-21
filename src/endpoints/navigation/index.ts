@@ -157,7 +157,7 @@ export const basculerNavigation = async (
     const premier = sous[0]?.link?.url as string | undefined
     return premier
       ? { type: 'custom', label: libelle, url: premier }
-      : { type: 'custom', label: libelle, url: repli, newTab: true }
+      : { type: 'custom', label: libelle, url: repli }
   }
 
   /*
@@ -247,7 +247,7 @@ export const basculerNavigation = async (
   const versPage = (slug: string) =>
     pagesLocales.has(slug)
       ? { type: 'custom' as const, url: `/${slug}` }
-      : { type: 'custom' as const, url: `${SITE}/${slug}/`, newTab: true }
+      : { type: 'custom' as const, url: `${SITE}/${slug}/` }
 
   const footer = await payload.findGlobal({ slug: 'footer', depth: 0, ...(req ? { req } : {}) })
   const colonnes = (footer?.colonnes ?? []).map((colonne) => {
@@ -272,7 +272,7 @@ export const basculerNavigation = async (
           { link: { label: 'Qui sommes-nous', ...versPage('a-propos') } },
           { link: { type: 'custom' as const, label: 'Le journal', url: '/posts' } },
           { link: { label: 'Politique de retour', ...versPage('politique-de-retour') } },
-          { link: { type: 'custom' as const, label: 'Nous contacter', url: `${SITE}/contact/`, newTab: true } },
+          { link: { type: 'custom' as const, label: 'Nous contacter', url: `${SITE}/contact/` } },
         ],
       }
     }

@@ -37,6 +37,7 @@ import * as migration_20260921_120000_emojis_en_images from './20260921_120000_e
 import * as migration_20260921_150000_widget_articles_lies from './20260921_150000_widget_articles_lies';
 import * as migration_20260921_170000_resumes_pollues from './20260921_170000_resumes_pollues';
 import * as migration_20260921_183000_resumes_restants from './20260921_183000_resumes_restants';
+import * as migration_20260921_200000_meme_onglet from './20260921_200000_meme_onglet';
 
 export const migrations = [
   {
@@ -233,5 +234,10 @@ export const migrations = [
     up: migration_20260921_183000_resumes_restants.up,
     down: migration_20260921_183000_resumes_restants.down,
     name: '20260921_183000_resumes_restants',
+  },
+  {
+    up: migration_20260921_200000_meme_onglet.up,
+    down: migration_20260921_200000_meme_onglet.down,
+    name: '20260921_200000_meme_onglet',
   },
 ];

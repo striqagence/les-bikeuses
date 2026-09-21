@@ -45,7 +45,16 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   if (!href) return null
 
   const size = appearance === 'link' ? 'clear' : sizeFromProps
-  const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
+  /*
+   * Tout s'ouvre dans le même onglet.
+   *
+   * `newTab` reste dans le modèle — des centaines de liens le portent, hérités
+   * du seed et de la reprise, et les effacer un à un n'apporterait rien — mais
+   * il n'est plus lu au rendu. La case correspondante est masquée dans
+   * l'administration : offrir un réglage sans effet serait pire que de ne pas
+   * l'offrir.
+   */
+  const newTabProps = {}
 
   /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {
