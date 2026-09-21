@@ -261,7 +261,10 @@ const EntreeNav: React.FC<{
       {aSousMenu && (
         <div
           className={cn(
-            'absolute top-full left-0 mt-1.5 grid max-w-[calc(100vw-2rem)] min-w-max grid-flow-col grid-rows-[repeat(5,auto)] gap-x-10 gap-y-0.5 rounded-panneau border border-border border-t-2 border-t-primary bg-card p-6 shadow-[0_18px_40px_-24px_rgb(0_0_0/0.35)] transition-[opacity,transform,visibility] duration-200',
+            // Une seule colonne. La grille à cinq rangées reversait le
+            // surplus dans une seconde colonne : sept entrées donnaient un
+            // 5 + 2 bancal, avec un vide à droite.
+            'absolute top-full left-0 mt-2 flex max-w-[calc(100vw-2rem)] min-w-[16rem] flex-col rounded-panneau border border-border bg-card p-2.5 shadow-[0_14px_34px_-24px_rgb(0_0_0/0.4)] transition-[opacity,transform,visibility] duration-200',
               ouvert
               ? 'visible translate-y-0 opacity-100'
               : 'invisible translate-y-[-6px] opacity-0',
@@ -270,12 +273,24 @@ const EntreeNav: React.FC<{
           {sousItems?.map((sous, i) => (
             <CMSLink
               {...sous.link}
-              className="-mx-2.5 flex items-baseline justify-between gap-8 rounded-[10px] px-2.5 py-2 transition-colors hover:bg-accent hover:text-primary"
+              // Le filet qui pousse depuis la gauche au survol, plutôt qu'un
+              // aplat plein derrière la ligne : c'est la même langue que les
+              // sur-titres du site, et ça ne déplace pas le texte.
+              className="relative flex items-baseline gap-2.5 py-2.5 pr-3 pl-6 text-[0.9375rem] transition-colors before:absolute before:top-[0.95em] before:left-0 before:h-px before:w-0 before:bg-primary before:transition-[width] before:duration-200 hover:text-primary hover:before:w-3.5"
               key={i}
               onClick={fermer}
             >
+              {/*
+                * Le compte suit le libellé au lieu d'être aligné à droite.
+                * Une colonne de chiffres en chasse fixe donnait un relevé de
+                * terminal plutôt qu'un menu : l'œil lisait le tableau avant
+                * de lire les entrées. En chasse variable et discret, il
+                * redevient ce qu'il est — une précision.
+                */}
               {sous.meta && (
-                <span className="mono-label shrink-0 text-muted-foreground">{sous.meta}</span>
+                <span className="shrink-0 text-[0.8125rem] text-muted-foreground/75">
+                  {sous.meta}
+                </span>
               )}
             </CMSLink>
           ))}
@@ -362,7 +377,7 @@ const Tiroir: React.FC<{
                       key={j}
                       onClick={fermer}
                     >
-                      {sous.meta && <span className="mono-label">{sous.meta}</span>}
+                      {sous.meta && <span className="text-[0.8125rem] text-muted-foreground/75">{sous.meta}</span>}
                     </CMSLink>
                   ))}
                 </div>

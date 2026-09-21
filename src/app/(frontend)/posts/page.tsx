@@ -10,7 +10,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
 
-const PAR_PAGE = 24
+const PAR_PAGE = 36
 
 // La page lit `searchParams` : Next la rend donc à chaque visite, et
 // `revalidate` ne s'y applique pas. Le décompte des thèmes, qui ne dépend
