@@ -2,6 +2,7 @@ import React from 'react'
 
 import type { Post } from '@/payload-types'
 
+import { Caracteristiques } from '@/components/Article/Caracteristiques'
 import { Essentiel } from '@/components/Article/Essentiel'
 import { ProgressionLecture } from '@/components/Article/ProgressionLecture'
 import { Sommaire } from '@/components/Article/Sommaire'
@@ -9,6 +10,7 @@ import { PostHero } from '@/heros/PostHero'
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import RichText from '@/components/RichText'
 import { construireSommaire } from '@/utilities/sommaire'
+import { extraireSpecs } from '@/utilities/specsMoto'
 
 /**
  * Rendu complet d'un article.
@@ -22,6 +24,10 @@ export const VueArticle: React.FC<{ post: Post }> = ({ post }) => {
   const essentiel = post.essentiel ?? []
   const lies = (post.relatedPosts ?? []).filter((p): p is Post => typeof p === 'object')
 
+  // Le sommaire se construit sur le contenu entier : la découpe ci-dessous
+  // est une affaire de rendu, elle ne doit pas lui retirer d'ancre.
+  const { specs, avant, apres } = extraireSpecs(post.content)
+
   return (
     <>
       <ProgressionLecture />
@@ -33,7 +39,18 @@ export const VueArticle: React.FC<{ post: Post }> = ({ post }) => {
 
         <div className="max-w-[68ch]">
           {essentiel.length > 0 && <Essentiel points={essentiel} />}
-          <RichText className="corps-article" data={post.content} enableGutter={false} />
+
+          {specs.length > 0 ? (
+            <>
+              {/* Le titre « Caractéristiques » reste en fin de première
+                  moitié : il porte l'ancre du sommaire. */}
+              <RichText className="corps-article" data={avant} enableGutter={false} />
+              <Caracteristiques specs={specs} />
+              {apres && <RichText className="corps-article" data={apres} enableGutter={false} />}
+            </>
+          ) : (
+            <RichText className="corps-article" data={post.content} enableGutter={false} />
+          )}
         </div>
       </div>
 
