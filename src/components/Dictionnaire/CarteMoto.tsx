@@ -45,7 +45,7 @@ export const CarteMoto: React.FC<{
 
       <div className="flex flex-1 flex-col gap-2 px-1 pb-1">
         {nom && <p className="mono-label text-muted-foreground">{nom}</p>}
-        <h3 className="font-sans text-[0.9375rem] leading-snug font-bold transition-colors group-hover:text-primary">
+        <h3 className="text-[0.9375rem] leading-snug transition-colors group-hover:text-primary">
           <Link
             className="outline-none after:absolute after:inset-0 after:content-['']"
             href={`/${moto.slug}`}
@@ -55,13 +55,19 @@ export const CarteMoto: React.FC<{
         </h3>
 
         {specs.length > 0 && (
-          <ul className="mt-auto flex list-none flex-wrap gap-1 p-0 pt-1">
-            {specs.map((s) => (
-              <li
-                className="mono-label rounded-pilule bg-secondary px-2 py-0.5 text-muted-foreground"
-                key={s}
-              >
-                {s}
+          // Une ligne de données séparées par des points, plutôt que trois
+          // pastilles grises. Les aplats faisaient de caractéristiques — une
+          // cylindrée, un poids, un type — des étiquettes d'arrière-boutique,
+          // alors que c'est précisément ce qu'on vient lire sur une fiche.
+          <ul className="mono-label mt-auto flex list-none flex-wrap items-baseline gap-x-2 gap-y-1 p-0 pt-1.5 text-muted-foreground">
+            {specs.map((valeur, i) => (
+              <li className="flex items-baseline gap-2" key={valeur}>
+                {i > 0 && (
+                  <span aria-hidden="true" className="text-[0.5rem] opacity-50">
+                    ◆
+                  </span>
+                )}
+                {valeur}
               </li>
             ))}
           </ul>
