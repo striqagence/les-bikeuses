@@ -59,14 +59,19 @@ export const CarteMoto: React.FC<{
           // pastilles grises. Les aplats faisaient de caractéristiques — une
           // cylindrée, un poids, un type — des étiquettes d'arrière-boutique,
           // alors que c'est précisément ce qu'on vient lire sur une fiche.
-          <ul className="mono-label mt-auto flex list-none flex-wrap items-baseline gap-x-2 gap-y-1 p-0 pt-1.5 text-muted-foreground">
-            {specs.map((valeur, i) => (
-              <li className="flex items-baseline gap-2" key={valeur}>
-                {i > 0 && (
-                  <span aria-hidden="true" className="text-[0.5rem] opacity-50">
-                    ◆
-                  </span>
-                )}
+          <ul className="mono-label mt-auto flex list-none flex-wrap items-baseline gap-x-3 gap-y-1 p-0 pt-1.5 text-muted-foreground">
+            {/*
+              * Un losange devant chaque valeur, y compris la première, comme
+              * le bandeau du héros. Ne le poser qu'entre les valeurs laissait
+              * un losange orphelin en tête de seconde ligne dès que la liste
+              * se repliait — trois caractéristiques sur une carte étroite,
+              * c'est-à-dire presque toujours.
+              */}
+            {specs.map((valeur) => (
+              <li className="flex items-baseline gap-1.5" key={valeur}>
+                <span aria-hidden="true" className="text-[0.5rem] text-primary/60">
+                  ◆
+                </span>
                 {valeur}
               </li>
             ))}
