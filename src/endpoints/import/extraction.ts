@@ -239,6 +239,14 @@ export const extraireArticle = async (
       // `noscript` qui porte l'adresse réelle.
       if (!src || /^data:/.test(src)) continue
 
+      // Les émojis de WordPress sont des images comme les autres pour le
+      // navigateur : un SVG de 36 px servi depuis s.w.org, nommé d'après le
+      // point de code du caractère. Rien ne les distingue d'une photo au
+      // niveau de la balise — d'où cent six vignettes d'émoji reprises en
+      // images de contenu, et cassées à l'affichage.
+      if (/(^|\/\/)s\.w\.org\//.test(src)) continue
+      if (/\bwp-smiley\b|\bemoji\b/i.test(img[0])) continue
+
       const url = new URL(decoder(src), 'https://lesbikeuses.fr').toString()
       if (vues.has(url)) continue
       vues.add(url)

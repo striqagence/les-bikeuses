@@ -33,6 +33,7 @@ import * as migration_20260917_140000_visuels_accueil from './20260917_140000_vi
 import * as migration_20260918_090000_formulaire_contact from './20260918_090000_formulaire_contact';
 import * as migration_20260918_110000_titre_contact from './20260918_110000_titre_contact';
 import * as migration_20260921_090000_themes_du_journal from './20260921_090000_themes_du_journal';
+import * as migration_20260921_120000_emojis_en_images from './20260921_120000_emojis_en_images';
 
 export const migrations = [
   {
@@ -209,5 +210,10 @@ export const migrations = [
     up: migration_20260921_090000_themes_du_journal.up,
     down: migration_20260921_090000_themes_du_journal.down,
     name: '20260921_090000_themes_du_journal',
+  },
+  {
+    up: migration_20260921_120000_emojis_en_images.up,
+    down: migration_20260921_120000_emojis_en_images.down,
+    name: '20260921_120000_emojis_en_images',
   },
 ];
