@@ -38,6 +38,7 @@ import * as migration_20260921_150000_widget_articles_lies from './20260921_1500
 import * as migration_20260921_170000_resumes_pollues from './20260921_170000_resumes_pollues';
 import * as migration_20260921_183000_resumes_restants from './20260921_183000_resumes_restants';
 import * as migration_20260921_200000_meme_onglet from './20260921_200000_meme_onglet';
+import * as migration_20260922_090000_maillage_interne from './20260922_090000_maillage_interne';
 
 export const migrations = [
   {
@@ -239,5 +240,10 @@ export const migrations = [
     up: migration_20260921_200000_meme_onglet.up,
     down: migration_20260921_200000_meme_onglet.down,
     name: '20260921_200000_meme_onglet',
+  },
+  {
+    up: migration_20260922_090000_maillage_interne.up,
+    down: migration_20260922_090000_maillage_interne.down,
+    name: '20260922_090000_maillage_interne',
   },
 ];
