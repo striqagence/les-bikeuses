@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+
 import configPromise from '@payload-config'
 import Link from 'next/link'
 import { unstable_cache } from 'next/cache'
@@ -153,4 +155,8 @@ export const metadata: Metadata = {
   title: 'Toutes les marques d’équipement moto femme | Les Bikeuses',
   description:
     'Les maisons d’équipement moto présentes au catalogue Les Bikeuses : blousons, casques, gants et bottes coupés pour les morphologies féminines.',
+  openGraph: mergeOpenGraph({
+    title: 'Toutes les marques d’équipement moto femme | Les Bikeuses',
+    description: 'Les maisons d’équipement moto présentes au catalogue Les Bikeuses : blousons, casques, gants et bottes coupés pour les morphologies féminines.',
+  }),
 }

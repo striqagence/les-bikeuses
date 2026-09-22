@@ -11,6 +11,7 @@ import type { Category, Product } from '@/payload-types'
 import { CarteProduit } from '@/components/Boutique/CarteProduit'
 import { AchatProduit } from '@/components/Boutique/AchatProduit'
 import { Galerie } from '@/components/Boutique/Galerie'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import RichText from '@/components/RichText'
 
 export const revalidate = 600
@@ -191,8 +192,21 @@ export async function generateMetadata({ params: p }: Args): Promise<Metadata> {
   const { slug } = await p
   const produit = await queryProduit({ slug })
 
+  const titre = produit ? `${produit.title} | Les Bikeuses` : 'Produit | Les Bikeuses'
+  const description = produit?.shortDescription ?? undefined
+
+  // Le visuel de la fiche plutôt que celui du site : sans lui, les 477
+  // produits se partageaient sous la même vignette et le même intitulé.
+  const visuel = produit?.gallery?.[0]?.image
+  const image = visuel && typeof visuel === 'object' && visuel.url ? visuel.url : undefined
+
   return {
-    title: produit ? `${produit.title} | Les Bikeuses` : 'Produit | Les Bikeuses',
-    description: produit?.shortDescription ?? undefined,
+    title: titre,
+    description,
+    openGraph: mergeOpenGraph({
+      title: titre,
+      description: description ?? '',
+      ...(image ? { images: [{ url: image }] } : {}),
+    }),
   }
 }

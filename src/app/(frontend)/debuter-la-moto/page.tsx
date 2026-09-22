@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+
 import configPromise from '@payload-config'
 import Link from 'next/link'
 import { unstable_cache } from 'next/cache'
@@ -186,4 +188,8 @@ export const metadata: Metadata = {
   title: 'Débuter la moto — le parcours complet | Les Bikeuses',
   description:
     'Du premier doute au premier équipement : permis, choix de la machine et protections, expliqués étape par étape pour les femmes qui commencent la moto.',
+  openGraph: mergeOpenGraph({
+    title: 'Débuter la moto — le parcours complet | Les Bikeuses',
+    description: 'Du premier doute au premier équipement : permis, choix de la machine et protections, expliqués étape par étape pour les femmes qui commencent la moto.',
+  }),
 }

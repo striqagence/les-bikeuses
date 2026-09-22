@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+
 import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
@@ -192,10 +194,13 @@ export default async function AvisDesClients({ searchParams: sp }: Args) {
 export async function generateMetadata(): Promise<Metadata> {
   const { total, moyenne } = await chargerSynthese()
 
+  const description = `${total} avis vérifiés sur l’équipement moto femme Les Bikeuses, pour une note moyenne de ${moyenne
+    .toFixed(1)
+    .replace('.', ',')} sur 5.`
+
   return {
     title: 'Avis des clientes | Les Bikeuses',
-    description: `${total} avis vérifiés sur l’équipement moto femme Les Bikeuses, pour une note moyenne de ${moyenne
-      .toFixed(1)
-      .replace('.', ',')} sur 5.`,
+    description,
+    openGraph: mergeOpenGraph({ title: 'Avis des clientes | Les Bikeuses', description }),
   }
 }

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+
 import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
@@ -130,4 +132,8 @@ export const metadata: Metadata = {
   title: 'Fonds d’écran moto gratuits | Les Bikeuses',
   description:
     'Des fonds d’écran moto à télécharger gratuitement, cadrés pour smartphone et pour ordinateur.',
+  openGraph: mergeOpenGraph({
+    title: 'Fonds d’écran moto gratuits | Les Bikeuses',
+    description: 'Des fonds d’écran moto à télécharger gratuitement, cadrés pour smartphone et pour ordinateur.',
+  }),
 }

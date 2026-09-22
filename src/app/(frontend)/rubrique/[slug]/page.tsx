@@ -11,6 +11,7 @@ import type { Product } from '@/payload-types'
 import { CarteProduit } from '@/components/Boutique/CarteProduit'
 import { Facettes, Jetons, type Facette } from '@/components/Boutique/Facettes'
 import { PaginationRayon } from '@/components/Boutique/PaginationRayon'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 
 // La page lit `searchParams` : Next la rend donc dynamiquement à chaque
 // visite, et `revalidate` ne s'y applique pas. Les deux requêtes qui ne
@@ -239,10 +240,14 @@ export async function generateMetadata({ params: p }: Args): Promise<Metadata> {
   const { slug } = await p
   const rubrique = await queryRubrique({ slug })
 
+  const titre = rubrique ? `${rubrique.title} | Les Bikeuses` : 'Boutique | Les Bikeuses'
+  const description = rubrique
+    ? `${rubrique.title} pour femmes : notre sélection d’équipement moto, coupes pensées pour les morphologies féminines.`
+    : undefined
+
   return {
-    title: rubrique ? `${rubrique.title} | Les Bikeuses` : 'Boutique | Les Bikeuses',
-    description: rubrique
-      ? `${rubrique.title} pour femmes : notre sélection d’équipement moto, coupes pensées pour les morphologies féminines.`
-      : undefined,
+    title: titre,
+    description,
+    openGraph: mergeOpenGraph({ title: titre, description: description ?? '' }),
   }
 }

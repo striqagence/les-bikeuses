@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import React from 'react'
 
 import { VuePanier } from '@/components/Boutique/VuePanier'
@@ -18,4 +20,7 @@ export default function Panier() {
 export const metadata: Metadata = {
   title: 'Votre panier | Les Bikeuses',
   robots: { index: false, follow: true },
+  openGraph: mergeOpenGraph({
+    title: 'Votre panier | Les Bikeuses',
+  }),
 }

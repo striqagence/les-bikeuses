@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+
 import configPromise from '@payload-config'
 import Link from 'next/link'
 import { unstable_cache } from 'next/cache'
@@ -202,4 +204,8 @@ export const metadata: Metadata = {
   title: 'Questions fréquentes | Les Bikeuses',
   description:
     'Tailles, retours, échanges, paiement sécurisé et communauté : les réponses aux questions que se posent les motardes avant de commander.',
+  openGraph: mergeOpenGraph({
+    title: 'Questions fréquentes | Les Bikeuses',
+    description: 'Tailles, retours, échanges, paiement sécurisé et communauté : les réponses aux questions que se posent les motardes avant de commander.',
+  }),
 }

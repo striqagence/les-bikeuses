@@ -4,6 +4,7 @@ import { CollectionArchive } from '@/components/CollectionArchive'
 import { FiltreThemes } from '@/components/Journal/FiltreThemes'
 import { PaginationRayon } from '@/components/Boutique/PaginationRayon'
 import { THEMES } from '@/utilities/themesJournal'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
@@ -148,8 +149,14 @@ export async function generateMetadata({ searchParams: sp }: Args): Promise<Meta
   const params = await sp
   const theme = THEMES.find((t) => t.slug === params.theme)
 
+  const titre = theme ? `${theme.libelle} — Le journal | Les Bikeuses` : 'Le journal | Les Bikeuses'
+  const description =
+    'Essais, conseils et routes à faire : choisir sa première moto, s’équiper pour la saison, préparer un long trajet.'
+
   return {
-    title: theme ? `${theme.libelle} — Le journal | Les Bikeuses` : 'Le journal | Les Bikeuses',
+    title: titre,
+    description,
+    openGraph: mergeOpenGraph({ title: titre, description }),
     // Les vues filtrées pointent vers le journal entier : ce sont des tris
     // d'une même collection, pas des pages à indexer séparément.
     alternates: { canonical: '/posts' },

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+
 import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
@@ -195,4 +197,8 @@ export const metadata: Metadata = {
   title: 'Dictionnaire moto | Les Bikeuses',
   description:
     'Tous les modèles passés en revue, classés par cylindrée, poids, gabarit et compatibilité permis A2. Trouvez la moto adaptée à votre taille et à votre budget.',
+  openGraph: mergeOpenGraph({
+    title: 'Dictionnaire moto | Les Bikeuses',
+    description: 'Tous les modèles passés en revue, classés par cylindrée, poids, gabarit et compatibilité permis A2. Trouvez la moto adaptée à votre taille et à votre budget.',
+  }),
 }

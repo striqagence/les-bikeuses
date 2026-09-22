@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+
 import configPromise from '@payload-config'
 import Link from 'next/link'
 import { unstable_cache } from 'next/cache'
@@ -135,4 +137,8 @@ export const metadata: Metadata = {
   title: 'Apprendre la moto — conduite, normes et entretien | Les Bikeuses',
   description:
     'Maniement, conduite par mauvais temps, normes de protection et entretien : les leçons qui viennent après le permis, pour les femmes à moto.',
+  openGraph: mergeOpenGraph({
+    title: 'Apprendre la moto — conduite, normes et entretien | Les Bikeuses',
+    description: 'Maniement, conduite par mauvais temps, normes de protection et entretien : les leçons qui viennent après le permis, pour les femmes à moto.',
+  }),
 }
