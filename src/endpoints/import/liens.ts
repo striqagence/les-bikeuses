@@ -34,6 +34,12 @@ const ROUTES_DEDIEES = [
   'avis-des-clients',
   'fond-decran-et-wallpaper',
   'debuter-la-moto',
+  'apprendre-la-moto',
+  'marques',
+  'faq',
+  'contact',
+  'panier',
+  'posts',
 ]
 
 export type RapportLiens = {
@@ -85,6 +91,16 @@ export const internaliserLiens = async (
     // L'entrée de la boutique : le premier rayon du menu.
     if (propre === 'shop') return slugsRayons.has('blousons-moto') ? '/rubrique/blousons-moto' : null
     if (propre === 'blog') return '/posts'
+
+    /*
+     * Sous-pages du dictionnaire que ce site rend par un filtre plutôt que
+     * par une page à part. Les recopier aurait créé deux pages disant la même
+     * chose, qui se cannibalisent dans les résultats de recherche ; le lien
+     * mène donc au dictionnaire déjà filtré.
+     */
+    if (propre === 'dictionnaire-moto/motos-faciles-a-conduire')
+      return '/dictionnaire-moto?gabarit=Petit+gabarit'
+    if (propre === 'dictionnaire-moto/categories-moto') return '/dictionnaire-moto'
 
     if (propre.includes('/')) return null
     if (slugsArticles.has(propre) || slugsPages.has(propre)) return `/${propre}`
