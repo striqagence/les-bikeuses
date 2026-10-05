@@ -1,0 +1,4 @@
+# Repris tel quel de lesbikeuses.fr/ads.txt le 05/10/2026.
+# Sans ce fichier, Google classe l'inventaire comme non autorisé et les
+# annonceurs cessent d'enchérir. Il doit rester servi à la racine du domaine.
+google.com, pub-8880624511708445, DIRECT, f08c47fec0942fa0
