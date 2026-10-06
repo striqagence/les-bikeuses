@@ -43,6 +43,7 @@ import * as migration_20260922_110000_maillage_restant from './20260922_110000_m
 import * as migration_20261006_090000_bandeau_contenu from './20261006_090000_bandeau_contenu';
 import * as migration_20261006_134937_caracteristiques_moto from './20261006_134937_caracteristiques_moto';
 import * as migration_20261006_140000_remplir_fiches_moto from './20261006_140000_remplir_fiches_moto';
+import * as migration_20261006_160000_cylindree_rocket3 from './20261006_160000_cylindree_rocket3';
 
 export const migrations = [
   {
@@ -269,5 +270,10 @@ export const migrations = [
     up: migration_20261006_140000_remplir_fiches_moto.up,
     down: migration_20261006_140000_remplir_fiches_moto.down,
     name: '20261006_140000_remplir_fiches_moto',
+  },
+  {
+    up: migration_20261006_160000_cylindree_rocket3.up,
+    down: migration_20261006_160000_cylindree_rocket3.down,
+    name: '20261006_160000_cylindree_rocket3',
   },
 ];
