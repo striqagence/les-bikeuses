@@ -5,6 +5,7 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
+import Link from 'next/link'
 import React from 'react'
 
 import type { Post } from '@/payload-types'
@@ -45,6 +46,64 @@ const GROUPES: {
   },
 ]
 
+/** Valeur numérique d'une fiche technique, ou `null` si elle manque. */
+const valeurDe = (post: Post, champ: 'prix' | 'hauteurSelle' | 'poids'): number | null => {
+  const v = post.moto?.[champ]
+  return typeof v === 'number' ? v : null
+}
+
+/**
+ * Facettes par tranche, assises sur la fiche technique.
+ *
+ * Les groupes ci-dessus reposent sur la taxonomie héritée, qui range une moto
+ * dans « Plus de 600cc » sans jamais dire combien. Ces tranches-ci lisent les
+ * valeurs réelles, désormais normalisées — d'où la possibilité de demander
+ * « moins de 76 cm de selle », ce qu'aucune catégorie ne savait exprimer.
+ *
+ * Le découpage de la selle suit l'usage plutôt qu'une progression régulière :
+ * 76 cm est le seuil autour duquel une personne d'1 m 60 pose les deux pieds,
+ * et c'est la question que pose ce lectorat avant toutes les autres.
+ */
+const TRANCHES: {
+  cle: string
+  titre: string
+  valeurs: { valeur: string; test: (m: Post) => boolean }[]
+}[] = [
+  {
+    cle: 'selle',
+    titre: 'Hauteur de selle',
+    valeurs: [
+      { valeur: 'Moins de 76 cm', test: (m) => (valeurDe(m, 'hauteurSelle') ?? 1e9) < 760 },
+      { valeur: '76 à 80 cm', test: (m) => { const h = valeurDe(m, 'hauteurSelle'); return h !== null && h >= 760 && h < 800 } },
+      { valeur: '80 à 84 cm', test: (m) => { const h = valeurDe(m, 'hauteurSelle'); return h !== null && h >= 800 && h < 840 } },
+      { valeur: '84 cm et plus', test: (m) => (valeurDe(m, 'hauteurSelle') ?? -1) >= 840 },
+    ],
+  },
+  {
+    cle: 'budget',
+    titre: 'Budget',
+    valeurs: [
+      { valeur: 'Moins de 5 000 €', test: (m) => (valeurDe(m, 'prix') ?? 1e9) < 5000 },
+      { valeur: '5 000 à 10 000 €', test: (m) => { const p = valeurDe(m, 'prix'); return p !== null && p >= 5000 && p < 10000 } },
+      { valeur: '10 000 à 15 000 €', test: (m) => { const p = valeurDe(m, 'prix'); return p !== null && p >= 10000 && p < 15000 } },
+      { valeur: '15 000 € et plus', test: (m) => (valeurDe(m, 'prix') ?? -1) >= 15000 },
+    ],
+  },
+]
+
+/**
+ * Tris disponibles.
+ *
+ * Les fiches sans valeur passent en dernier plutôt qu'en tête : une moto dont
+ * on ignore le poids n'est pas la plus légère.
+ */
+const TRIS: Record<string, { libelle: string; champ: 'prix' | 'hauteurSelle' | 'poids'; sens: 1 | -1 }> = {
+  'prix-croissant': { libelle: 'Prix croissant', champ: 'prix', sens: 1 },
+  'prix-decroissant': { libelle: 'Prix décroissant', champ: 'prix', sens: -1 },
+  'selle-basse': { libelle: 'Selle la plus basse', champ: 'hauteurSelle', sens: 1 },
+  'plus-legere': { libelle: 'La plus légère', champ: 'poids', sens: 1 },
+}
+
 /** Tout ce qui n'appartient à aucun groupe technique est une marque. */
 const NON_MARQUES = new Set([MARQUEUR, ...GROUPES.flatMap((g) => g.valeurs), 'À la une', 'Lieux'])
 
@@ -73,12 +132,34 @@ export default async function Dictionnaire({ searchParams: sp }: Args) {
   const filtres = [...GROUPES.map((g) => g.cle), 'marque']
   const retenues = motos.filter((moto) => {
     const titres = new Set(titresDe(moto))
-    return filtres.every((cle) => {
+    const parTaxonomie = filtres.every((cle) => {
       const choisies = liste(params[cle])
       if (!choisies.length) return true
       return choisies.every((v) => (cle === 'marque' ? marqueDe(moto) === v : titres.has(v)))
     })
+    if (!parTaxonomie) return false
+
+    // Les tranches se cumulent en OU à l'intérieur d'un même critère — deux
+    // fourchettes de prix cochées élargissent la recherche — et en ET entre
+    // critères, comme le reste des facettes.
+    return TRANCHES.every(({ cle, valeurs }) => {
+      const choisies = liste(params[cle])
+      if (!choisies.length) return true
+      return choisies.some((v) => valeurs.find((t) => t.valeur === v)?.test(moto))
+    })
   })
+
+  const tri = typeof params.tri === 'string' ? TRIS[params.tri] : undefined
+  if (tri) {
+    retenues.sort((a, b) => {
+      const va = valeurDe(a, tri.champ)
+      const vb = valeurDe(b, tri.champ)
+      // Une valeur absente part en fin de liste quel que soit le sens.
+      if (va === null) return vb === null ? 0 : 1
+      if (vb === null) return -1
+      return (va - vb) * tri.sens
+    })
+  }
 
   const page = Math.max(1, Number(params.page) || 1)
   const totalPages = Math.max(1, Math.ceil(retenues.length / PAR_PAGE))
@@ -96,6 +177,17 @@ export default async function Dictionnaire({ searchParams: sp }: Args) {
         .map((valeur) => ({ valeur, libelle: valeur, nb: compter(valeur, 'marque') }))
         .sort((a, b) => b.nb - a.nb || a.libelle.localeCompare(b.libelle, 'fr')),
     },
+    ...TRANCHES.map(({ cle, titre, valeurs }) => ({
+      cle,
+      titre,
+      valeurs: valeurs
+        .map(({ valeur, test }) => ({
+          valeur,
+          libelle: valeur,
+          nb: motos.filter(test).length,
+        }))
+        .filter((v) => v.nb > 0),
+    })),
     ...GROUPES.map((g) => ({
       cle: g.cle,
       titre: g.titre,
@@ -132,6 +224,42 @@ export default async function Dictionnaire({ searchParams: sp }: Args) {
               {retenues.length} modèle{retenues.length > 1 ? 's' : ''}
             </p>
           </div>
+
+          {/*
+            * Tri rendu côté serveur : des liens, pas un menu piloté par le
+            * routeur. Un tri devient alors partageable et indexable, et il
+            * fonctionne sans JavaScript — même raison que pour les facettes.
+            */}
+          <nav aria-label="Trier" className="mb-7 flex flex-wrap items-center gap-2">
+            <span className="mono-label mr-1 text-muted-foreground">Trier</span>
+            {[['', 'Par défaut'] as const, ...Object.entries(TRIS).map(
+              ([cle, t]) => [cle, t.libelle] as const,
+            )].map(([cle, libelle]) => {
+              const suivant = new URLSearchParams()
+              for (const [k, v] of Object.entries(params)) {
+                if (k === 'tri' || k === 'page') continue
+                for (const x of liste(v)) suivant.append(k, x)
+              }
+              if (cle) suivant.set('tri', cle)
+              const q = suivant.toString()
+              const actif = (typeof params.tri === 'string' ? params.tri : '') === cle
+              return (
+                <Link
+                  aria-current={actif ? 'true' : undefined}
+                  className={
+                    'mono-label rounded-pilule border px-4 py-2 transition-colors ' +
+                    (actif
+                      ? 'border-foreground bg-foreground text-background'
+                      : 'border-border hover:border-primary hover:text-primary')
+                  }
+                  href={q ? `/dictionnaire-moto?${q}` : '/dictionnaire-moto'}
+                  key={cle || 'defaut'}
+                >
+                  {libelle}
+                </Link>
+              )
+            })}
+          </nav>
 
           {visibles.length ? (
             <>
