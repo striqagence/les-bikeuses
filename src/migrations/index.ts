@@ -40,6 +40,7 @@ import * as migration_20260921_183000_resumes_restants from './20260921_183000_r
 import * as migration_20260921_200000_meme_onglet from './20260921_200000_meme_onglet';
 import * as migration_20260922_090000_maillage_interne from './20260922_090000_maillage_interne';
 import * as migration_20260922_110000_maillage_restant from './20260922_110000_maillage_restant';
+import * as migration_20261006_090000_bandeau_contenu from './20261006_090000_bandeau_contenu';
 
 export const migrations = [
   {
@@ -251,5 +252,10 @@ export const migrations = [
     up: migration_20260922_110000_maillage_restant.up,
     down: migration_20260922_110000_maillage_restant.down,
     name: '20260922_110000_maillage_restant',
+  },
+  {
+    up: migration_20261006_090000_bandeau_contenu.up,
+    down: migration_20261006_090000_bandeau_contenu.down,
+    name: '20261006_090000_bandeau_contenu',
   },
 ];
