@@ -155,6 +155,53 @@ export const Posts: CollectionConfig<'posts'> = {
           label: 'Meta',
         },
         {
+          /*
+           * Fiche technique des motos du dictionnaire.
+           *
+           * Ces valeurs vivaient dans le corps de l'article, en paragraphes
+           * « Libellé : valeur ». Quatre-vingts fiches avaient produit
+           * quatre-vingt-six intitulés différents, et les unités manquaient
+           * sur la plupart : une hauteur de selle « 69 » et une « 710 »
+           * désignent la même chose dans deux échelles. Rien n'était donc
+           * comparable, ni filtrable, ni triable.
+           *
+           * Chaque champ porte son unité dans son intitulé, et le stockage
+           * est numérique : c'est ce qui rend possible « toutes les motos
+           * sous 78 cm de selle », le filtre le plus utile à ce lectorat.
+           *
+           * L'onglet reste vide sur les cent vingt et un articles qui ne sont
+           * pas des motos ; il n'y a pas de quoi créer une collection à part
+           * pour autant, une fiche de dictionnaire est un article.
+           */
+          name: 'moto',
+          label: 'Fiche technique',
+          fields: [
+            {
+              name: 'prix',
+              type: 'number',
+              label: 'Prix (€)',
+              admin: { description: 'Prix constructeur, en euros.' },
+            },
+            { name: 'typeMoto', type: 'text', label: 'Type de moto' },
+            { name: 'cylindree', type: 'number', label: 'Cylindrée (cm³)' },
+            {
+              name: 'hauteurSelle',
+              type: 'number',
+              label: 'Hauteur de selle (mm)',
+              admin: { description: 'En millimètres : 790, et non 79.' },
+            },
+            { name: 'poids', type: 'number', label: 'Poids (kg)' },
+            {
+              name: 'poidsAvecPlein',
+              type: 'checkbox',
+              label: 'Poids tous pleins faits',
+              admin: { description: 'Décoché, la valeur est un poids à sec.' },
+            },
+            { name: 'permisA2', type: 'checkbox', label: 'Compatible permis A2' },
+            { name: 'annee', type: 'number', label: 'Année du modèle' },
+          ],
+        },
+        {
           name: 'meta',
           label: 'SEO',
           fields: [

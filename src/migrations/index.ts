@@ -41,6 +41,8 @@ import * as migration_20260921_200000_meme_onglet from './20260921_200000_meme_o
 import * as migration_20260922_090000_maillage_interne from './20260922_090000_maillage_interne';
 import * as migration_20260922_110000_maillage_restant from './20260922_110000_maillage_restant';
 import * as migration_20261006_090000_bandeau_contenu from './20261006_090000_bandeau_contenu';
+import * as migration_20261006_134937_caracteristiques_moto from './20261006_134937_caracteristiques_moto';
+import * as migration_20261006_140000_remplir_fiches_moto from './20261006_140000_remplir_fiches_moto';
 
 export const migrations = [
   {
@@ -191,7 +193,7 @@ export const migrations = [
   {
     up: migration_20260916_063404_retrait_preuves.up,
     down: migration_20260916_063404_retrait_preuves.down,
-    name: '20260916_063404_retrait_preuves'
+    name: '20260916_063404_retrait_preuves',
   },
   {
     up: migration_20260917_090000_retrait_contact.up,
@@ -257,5 +259,15 @@ export const migrations = [
     up: migration_20261006_090000_bandeau_contenu.up,
     down: migration_20261006_090000_bandeau_contenu.down,
     name: '20261006_090000_bandeau_contenu',
+  },
+  {
+    up: migration_20261006_134937_caracteristiques_moto.up,
+    down: migration_20261006_134937_caracteristiques_moto.down,
+    name: '20261006_134937_caracteristiques_moto'
+  },
+  {
+    up: migration_20261006_140000_remplir_fiches_moto.up,
+    down: migration_20261006_140000_remplir_fiches_moto.down,
+    name: '20261006_140000_remplir_fiches_moto',
   },
 ];

@@ -296,6 +296,25 @@ export interface Post {
   };
   relatedPosts?: (number | Post)[] | null;
   categories?: (number | Category)[] | null;
+  moto?: {
+    /**
+     * Prix constructeur, en euros.
+     */
+    prix?: number | null;
+    typeMoto?: string | null;
+    cylindree?: number | null;
+    /**
+     * En millimètres : 790, et non 79.
+     */
+    hauteurSelle?: number | null;
+    poids?: number | null;
+    /**
+     * Décoché, la valeur est un poids à sec.
+     */
+    poidsAvecPlein?: boolean | null;
+    permisA2?: boolean | null;
+    annee?: number | null;
+  };
   meta?: {
     title?: string | null;
     /**
@@ -1831,6 +1850,18 @@ export interface PostsSelect<T extends boolean = true> {
   content?: T;
   relatedPosts?: T;
   categories?: T;
+  moto?:
+    | T
+    | {
+        prix?: T;
+        typeMoto?: T;
+        cylindree?: T;
+        hauteurSelle?: T;
+        poids?: T;
+        poidsAvecPlein?: T;
+        permisA2?: T;
+        annee?: T;
+      };
   meta?:
     | T
     | {
