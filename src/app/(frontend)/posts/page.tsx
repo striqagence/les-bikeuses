@@ -1,6 +1,8 @@
 import type { Metadata } from 'next/types'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
+import { ChargeurPub } from '@/components/Publicite/Chargeur'
+import { Emplacement } from '@/components/Publicite/Emplacement'
 import { FiltreThemes } from '@/components/Journal/FiltreThemes'
 import { PaginationRayon } from '@/components/Boutique/PaginationRayon'
 import { THEMES } from '@/utilities/themesJournal'
@@ -106,6 +108,7 @@ export default async function Page({ searchParams: sp }: Args) {
   return (
     <div className="pt-10 pb-24 md:pt-16">
       <PageClient />
+      <ChargeurPub />
 
       <header className="container mb-10 md:mb-14">
         <p className="eyebrow">Le journal</p>
@@ -132,7 +135,10 @@ export default async function Page({ searchParams: sp }: Args) {
       {posts.docs.length ? (
         <>
           <CollectionArchive posts={posts.docs} />
+          {/* Un seul emplacement sur l'index, après la grille : c'est une page
+              de navigation, pas de lecture — on y passe, on n'y reste pas. */}
           <div className="container">
+            <Emplacement hauteur={250} slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_INDEX} />
             <PaginationRayon page={posts.page ?? 1} total={posts.totalPages} />
           </div>
         </>

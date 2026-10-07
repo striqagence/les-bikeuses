@@ -3,6 +3,8 @@ import React from 'react'
 import type { Post } from '@/payload-types'
 
 import { Caracteristiques } from '@/components/Article/Caracteristiques'
+import { ChargeurPub } from '@/components/Publicite/Chargeur'
+import { Emplacement } from '@/components/Publicite/Emplacement'
 import { Essentiel } from '@/components/Article/Essentiel'
 import { ProgressionLecture } from '@/components/Article/ProgressionLecture'
 import { Sommaire } from '@/components/Article/Sommaire'
@@ -10,7 +12,7 @@ import { PostHero } from '@/heros/PostHero'
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import RichText from '@/components/RichText'
 import { construireSommaire } from '@/utilities/sommaire'
-import { extraireSpecs } from '@/utilities/specsMoto'
+import { couperApres, extraireSpecs } from '@/utilities/specsMoto'
 
 /**
  * Rendu complet d'un article.
@@ -28,8 +30,14 @@ export const VueArticle: React.FC<{ post: Post }> = ({ post }) => {
   // est une affaire de rendu, elle ne doit pas lui retirer d'ancre.
   const { specs, avant, apres } = extraireSpecs(post.content)
 
+  // Sur une fiche du dictionnaire, la coupure existe déjà : le tableau
+  // technique sépare l'entrée en matière de l'avis. Ailleurs, on coupe après
+  // le quatrième bloc — passé l'accroche, avant que la lecture s'installe.
+  const coupe = specs.length > 0 ? null : couperApres(post.content, 4)
+
   return (
     <>
+      <ChargeurPub />
       <ProgressionLecture />
       <PostHero post={post} />
 
@@ -46,11 +54,27 @@ export const VueArticle: React.FC<{ post: Post }> = ({ post }) => {
                   moitié : il porte l'ancre du sommaire. */}
               <RichText className="corps-article" data={avant} enableGutter={false} />
               <Caracteristiques specs={specs} />
+              <Emplacement slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_CORPS} />
               {apres && <RichText className="corps-article" data={apres} enableGutter={false} />}
             </>
           ) : (
-            <RichText className="corps-article" data={post.content} enableGutter={false} />
+            <>
+              <RichText
+                className="corps-article"
+                data={coupe?.apres ? coupe.avant : post.content}
+                enableGutter={false}
+              />
+              {coupe?.apres && (
+                <>
+                  <Emplacement slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_CORPS} />
+                  <RichText className="corps-article" data={coupe.apres} enableGutter={false} />
+                </>
+              )}
+            </>
           )}
+
+          {/* Second emplacement en fin de lecture, plus bas donc plus court. */}
+          <Emplacement hauteur={250} slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_PIED} />
         </div>
       </div>
 

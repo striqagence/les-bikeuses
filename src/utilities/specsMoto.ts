@@ -64,3 +64,33 @@ export const extraireSpecs = (
 
   return { specs, avant: decouper(0, iTitre + 1), apres: decouper(i) }
 }
+
+/**
+ * Coupe le corps après le n-ième bloc de premier niveau.
+ *
+ * Sert à glisser un emplacement publicitaire en cours de lecture plutôt qu'en
+ * pied d'article, où personne ne descend. La coupe ne tombe qu'entre deux
+ * blocs : jamais au milieu d'un paragraphe, jamais entre un titre et le texte
+ * qu'il annonce — d'où le décalage d'un cran quand le bloc visé est un titre.
+ *
+ * Rend `null` pour la seconde moitié quand l'article est trop court pour
+ * supporter une coupure : mieux vaut pas d'emplacement qu'un emplacement qui
+ * hache trois paragraphes.
+ */
+export const couperApres = (
+  content: Post['content'],
+  n: number,
+): { avant: Post['content']; apres: Post['content'] | null } => {
+  const racine = (content as { root?: { children?: Noeud[] } } | null)?.root
+  const enfants = racine?.children
+  if (!Array.isArray(enfants) || enfants.length < n + 3) return { avant: content, apres: null }
+
+  // Un titre annonce ce qui suit : couper juste après l'en séparerait.
+  let coupe = n
+  while (coupe < enfants.length - 2 && enfants[coupe]?.type === 'heading') coupe++
+
+  const decouper = (debut: number, fin?: number) =>
+    ({ ...(content as object), root: { ...racine, children: enfants.slice(debut, fin) } }) as Post['content']
+
+  return { avant: decouper(0, coupe), apres: decouper(coupe) }
+}
