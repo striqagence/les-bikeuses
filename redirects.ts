@@ -172,6 +172,28 @@ export const redirects: NextConfig['redirects'] = async () => {
   ]
 
   /*
+   * Formes que l'ancien site redirige sans les déclarer dans son plan.
+   *
+   * Un plan de site ne liste que les adresses courantes. Celles-ci sont
+   * antérieures — un préfixe `/blog/` pour les articles, une base
+   * `/category/` pour les rubriques — et le WordPress les rattrape par des
+   * 301 qu'on ne voit nulle part. Elles disparaîtraient donc le jour de
+   * l'extinction, en silence, en emportant les liens entrants accumulés
+   * dessus. Vérifié le 07/10/2026 : l'ancien site les sert encore.
+   */
+  const anciennesFormes = {
+    source: '/blog/:slug((?!page$)[^/]+)',
+    destination: '/:slug',
+    permanent: true,
+  }
+
+  // Même destination que `/c/`, l'ancienne base ayant été renommée en cours
+  // de route — les deux formes circulent donc.
+  const categoriesAncienneBase: [string, string][] = categories.map(
+    ([source, destination]) => [source.replace(/^\/c\//, '/category/'), destination],
+  )
+
+  /*
    * Étiquettes d'avis. Elles n'ont pas d'équivalent : ce site range les avis
    * par rayon, pas par étiquette. La page des avis est le plus proche.
    */
@@ -218,6 +240,12 @@ export const redirects: NextConfig['redirects'] = async () => {
     ...catalogue,
     ...slugsChanges,
     ...categories.map(([source, destination]) => ({ source, destination, permanent: true })),
+    ...categoriesAncienneBase.map(([source, destination]) => ({
+      source,
+      destination,
+      permanent: true,
+    })),
+    anciennesFormes,
     rayonsImbriques,
     etiquettesAvis,
     ...boutiqueWoo,
