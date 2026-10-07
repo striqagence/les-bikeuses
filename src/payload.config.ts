@@ -61,9 +61,9 @@ const connexionPostgres = (): string | undefined =>
  * Un expéditeur non vérifié ne provoque pas une erreur visible : le message
  * part, et finit en indésirable.
  */
-const email = process.env.RESEND_API_KEY
+const email = process.env.RESEND
   ? resendAdapter({
-      apiKey: process.env.RESEND_API_KEY,
+      apiKey: process.env.RESEND,
       defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || 'contact@lesbikeuses.fr',
       defaultFromName: process.env.EMAIL_FROM_NAME || 'Les Bikeuses',
     })
