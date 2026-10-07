@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { resendAdapter } from '@payloadcms/email-resend'
 import sharp from 'sharp'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
@@ -47,6 +48,26 @@ const connexionPostgres = (): string | undefined =>
   enMigration
     ? (process.env.DATABASE_URL_SESSION ?? process.env.DATABASE_URL)
     : process.env.DATABASE_URL
+
+/**
+ * Envoi d'e-mails.
+ *
+ * Posé seulement si la clé est renseignée : sans adaptateur, Payload écrit
+ * les messages dans la console du serveur plutôt que d'échouer. Le site
+ * continue donc de tourner, et une soumission de formulaire reste enregistrée
+ * en base — elle ne prévient simplement personne, ce qui est l'état actuel.
+ *
+ * L'adresse d'expédition doit appartenir à un domaine vérifié chez Resend.
+ * Un expéditeur non vérifié ne provoque pas une erreur visible : le message
+ * part, et finit en indésirable.
+ */
+const email = process.env.RESEND_API_KEY
+  ? resendAdapter({
+      apiKey: process.env.RESEND_API_KEY,
+      defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || 'contact@lesbikeuses.fr',
+      defaultFromName: process.env.EMAIL_FROM_NAME || 'Les Bikeuses',
+    })
+  : undefined
 
 export default buildConfig({
   admin: {
@@ -115,6 +136,7 @@ export default buildConfig({
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,
+  email,
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   typescript: {
