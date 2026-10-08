@@ -12,7 +12,7 @@ import { PostHero } from '@/heros/PostHero'
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import RichText from '@/components/RichText'
 import { construireSommaire } from '@/utilities/sommaire'
-import { couperApres, extraireSpecs } from '@/utilities/specsMoto'
+import { decouperEnTranches, extraireSpecs, nombreEmplacements } from '@/utilities/specsMoto'
 
 /**
  * Rendu complet d'un article.
@@ -30,10 +30,21 @@ export const VueArticle: React.FC<{ post: Post }> = ({ post }) => {
   // est une affaire de rendu, elle ne doit pas lui retirer d'ancre.
   const { specs, avant, apres } = extraireSpecs(post.content)
 
-  // Sur une fiche du dictionnaire, la coupure existe déjà : le tableau
-  // technique sépare l'entrée en matière de l'avis. Ailleurs, on coupe après
-  // le quatrième bloc — passé l'accroche, avant que la lecture s'installe.
-  const coupe = specs.length > 0 ? null : couperApres(post.content, 4)
+  /*
+   * Emplacements publicitaires, en nombre proportionnel à la longueur.
+   *
+   * Les articles vont de 526 à 31 597 caractères : un nombre fixe écrasait
+   * les plus courts et sous-exploitait les plus longs. Un emplacement est
+   * toujours en fin de lecture ; les autres se répartissent dans le corps.
+   *
+   * Sur une fiche du dictionnaire, le tableau technique offre déjà une
+   * coupure naturelle — elle sert de premier emplacement quand la fiche en
+   * supporte plus d'un.
+   */
+  const totalPubs = nombreEmplacements(post.content)
+  const tranches = specs.length > 0
+    ? decouperEnTranches(apres ?? post.content, Math.max(0, totalPubs - 2))
+    : decouperEnTranches(post.content, totalPubs - 1)
 
   return (
     <>
@@ -48,32 +59,26 @@ export const VueArticle: React.FC<{ post: Post }> = ({ post }) => {
         <div className="max-w-[68ch]">
           {essentiel.length > 0 && <Essentiel points={essentiel} />}
 
-          {specs.length > 0 ? (
+          {specs.length > 0 && (
             <>
               {/* Le titre « Caractéristiques » reste en fin de première
                   moitié : il porte l'ancre du sommaire. */}
               <RichText className="corps-article" data={avant} enableGutter={false} />
               <Caracteristiques specs={specs} />
-              <Emplacement slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_CORPS} />
-              {apres && <RichText className="corps-article" data={apres} enableGutter={false} />}
-            </>
-          ) : (
-            <>
-              <RichText
-                className="corps-article"
-                data={coupe?.apres ? coupe.avant : post.content}
-                enableGutter={false}
-              />
-              {coupe?.apres && (
-                <>
-                  <Emplacement slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_CORPS} />
-                  <RichText className="corps-article" data={coupe.apres} enableGutter={false} />
-                </>
+              {totalPubs > 1 && (
+                <Emplacement slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_CORPS} />
               )}
             </>
           )}
 
-          {/* Second emplacement en fin de lecture, plus bas donc plus court. */}
+          {tranches.map((tranche, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <Emplacement slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_CORPS} />}
+              <RichText className="corps-article" data={tranche} enableGutter={false} />
+            </React.Fragment>
+          ))}
+
+          {/* Dernier emplacement en fin de lecture, plus bas donc plus court. */}
           <Emplacement hauteur={250} slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_PIED} />
         </div>
       </div>

@@ -94,3 +94,74 @@ export const couperApres = (
 
   return { avant: decouper(0, coupe), apres: decouper(coupe) }
 }
+
+/** Longueur du texte d'un corps, en caractères. */
+const longueurDe = (content: Post['content']): number => {
+  const enfants = (content as { root?: { children?: Noeud[] } } | null)?.root?.children
+  if (!Array.isArray(enfants)) return 0
+  return enfants.map(plat).join(' ').replace(/\s+/g, ' ').trim().length
+}
+
+/**
+ * Nombre d'emplacements publicitaires pour un article.
+ *
+ * Proportionnel à la longueur et non fixe : les 201 articles vont de 526 à
+ * 31 597 caractères, soit un écart de soixante fois. Deux blocs partout
+ * revenait à écraser une fiche de cinq paragraphes et à laisser un dossier de
+ * trente mille signes sous-exploité.
+ *
+ * Plafonné à six : au-delà, la page cesse d'être un article avec de la
+ * publicité pour devenir l'inverse, et la lectrice s'en va.
+ */
+export const nombreEmplacements = (content: Post['content']): number => {
+  const n = longueurDe(content)
+  if (n < 1500) return 1
+  if (n < 3000) return 2
+  if (n < 6000) return 3
+  return Math.min(6, 4 + Math.floor((n - 6000) / 5000))
+}
+
+/**
+ * Découpe le corps en tranches de longueur comparable.
+ *
+ * La coupure tombe entre deux blocs, et jamais juste après un titre : celui-ci
+ * annonce ce qui suit, les séparer laisserait un intertitre orphelin au-dessus
+ * d'une publicité.
+ *
+ * Rend une seule tranche quand l'article est trop court pour supporter une
+ * coupure — mieux vaut pas d'emplacement intercalaire qu'un emplacement qui
+ * hache trois paragraphes.
+ */
+export const decouperEnTranches = (
+  content: Post['content'],
+  coupures: number,
+): Post['content'][] => {
+  const racine = (content as { root?: { children?: Noeud[] } } | null)?.root
+  const enfants = racine?.children
+  if (!Array.isArray(enfants) || coupures < 1 || enfants.length < (coupures + 1) * 3) {
+    return [content]
+  }
+
+  const decouper = (debut: number, fin?: number) =>
+    ({ ...(content as object), root: { ...racine, children: enfants.slice(debut, fin) } }) as Post['content']
+
+  const points: number[] = []
+  const pas = enfants.length / (coupures + 1)
+
+  for (let i = 1; i <= coupures; i++) {
+    let p = Math.round(i * pas)
+    while (p < enfants.length - 2 && enfants[p]?.type === 'heading') p++
+    // Deux coupures ne tombent jamais au même endroit, ni collées.
+    if (points.length && p - points[points.length - 1] < 2) continue
+    if (p > 1 && p < enfants.length - 1) points.push(p)
+  }
+
+  const tranches: Post['content'][] = []
+  let debut = 0
+  for (const p of points) {
+    tranches.push(decouper(debut, p))
+    debut = p
+  }
+  tranches.push(decouper(debut))
+  return tranches
+}
