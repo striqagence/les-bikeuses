@@ -45,6 +45,7 @@ import * as migration_20261006_134937_caracteristiques_moto from './20261006_134
 import * as migration_20261006_140000_remplir_fiches_moto from './20261006_140000_remplir_fiches_moto';
 import * as migration_20261006_160000_cylindree_rocket3 from './20261006_160000_cylindree_rocket3';
 import * as migration_20261007_100000_notification_contact from './20261007_100000_notification_contact';
+import * as migration_20261015_090000_codes_courts_thrive from './20261015_090000_codes_courts_thrive';
 
 export const migrations = [
   {
@@ -281,5 +282,10 @@ export const migrations = [
     up: migration_20261007_100000_notification_contact.up,
     down: migration_20261007_100000_notification_contact.down,
     name: '20261007_100000_notification_contact',
+  },
+  {
+    up: migration_20261015_090000_codes_courts_thrive.up,
+    down: migration_20261015_090000_codes_courts_thrive.down,
+    name: '20261015_090000_codes_courts_thrive',
   },
 ];

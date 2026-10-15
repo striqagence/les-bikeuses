@@ -109,23 +109,17 @@ export const AchatProduit: React.FC<{
         )}
       </div>
 
-      {/* Le paiement n'est pas ouvert : on le dit plutôt que de laisser la
-          cliente le découvrir au bout du tunnel. */}
+      {/*
+        * Le paiement n'est pas ouvert : on le dit plutôt que de laisser la
+        * cliente le découvrir au bout du tunnel.
+        *
+        * Le renvoi vers lesbikeuses.fr est retiré : ce domaine va désigner ce
+        * site, la phrase inviterait donc à commander ici même, où l'on ne
+        * peut pas. Elle était juste tant que les deux sites coexistaient.
+        */}
       <p className="mt-4 rounded-xl border border-primary/25 bg-accent px-4 py-3 text-sm">
         <strong>Le paiement n’est pas encore ouvert ici.</strong> Vous pouvez constituer votre
-        panier ; la commande se fait pour l’instant sur{' '}
-        {produit.sourceUrl ? (
-          <a
-            className="underline underline-offset-2"
-            href={produit.sourceUrl}
-            rel="noopener noreferrer"
-          >
-            lesbikeuses.fr
-          </a>
-        ) : (
-          'lesbikeuses.fr'
-        )}
-        .
+        panier, votre sélection est conservée.
       </p>
     </>
   )
