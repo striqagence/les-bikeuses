@@ -46,6 +46,7 @@ import * as migration_20261006_140000_remplir_fiches_moto from './20261006_14000
 import * as migration_20261006_160000_cylindree_rocket3 from './20261006_160000_cylindree_rocket3';
 import * as migration_20261007_100000_notification_contact from './20261007_100000_notification_contact';
 import * as migration_20261015_090000_codes_courts_thrive from './20261015_090000_codes_courts_thrive';
+import * as migration_20261023_090000_codes_courts_malformes from './20261023_090000_codes_courts_malformes';
 
 export const migrations = [
   {
@@ -287,5 +288,10 @@ export const migrations = [
     up: migration_20261015_090000_codes_courts_thrive.up,
     down: migration_20261015_090000_codes_courts_thrive.down,
     name: '20261015_090000_codes_courts_thrive',
+  },
+  {
+    up: migration_20261023_090000_codes_courts_malformes.up,
+    down: migration_20261023_090000_codes_courts_malformes.down,
+    name: '20261023_090000_codes_courts_malformes',
   },
 ];
