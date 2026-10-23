@@ -15,10 +15,12 @@ import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-postgres'
  * Le libellé qui précède devient un lien vers la politique de retour, comme
  * sur les 190 autres fiches — c'est ce que le code court désignait.
  */
-// `[a-z0-9_]` et non `[a-z_]` : le code s'appelle « thrive_2step », avec un
-// chiffre au milieu. C'est précisément ce qui l'avait fait échapper à la
-// première passe, où seul un motif le nommant en toutes lettres l'attrapait.
-const CODE = /\[\/?(?:thrive_[a-z0-9_]+|alma-[a-z0-9-]+)\b[^\])]{0,80}[\])]/gi
+// ⚠ Ce motif n'attrape pas « thrive_2step » : `[a-z_]` exclut les chiffres.
+// Cette migration n'a donc rien retiré. Elle est laissée telle qu'elle s'est
+// exécutée — une migration appliquée ne se réécrit pas, sans quoi le fichier
+// cesse de dire ce qui est arrivé à la base. La reprise est dans
+// 20261023_140000_codes_courts_chiffres.
+const CODE = /\[\/?(?:thrive_[a-z_]+|alma-[a-z-]+)\b[^\]).]{0,80}[\])]/gi
 
 type Noeud = Record<string, unknown> & { type?: string; text?: string; children?: Noeud[] }
 
